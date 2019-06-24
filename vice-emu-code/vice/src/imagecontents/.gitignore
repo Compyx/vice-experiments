@@ -1,0 +1,5 @@
+.deps
+libimagecontents.a
+Makefile
+Makefile.in
+

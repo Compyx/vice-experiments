@@ -1,0 +1,5 @@
+.deps
+libdiskimage.a
+Makefile
+Makefile.in
+

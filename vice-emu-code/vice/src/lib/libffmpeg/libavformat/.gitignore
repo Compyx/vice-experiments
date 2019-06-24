@@ -1,0 +1,8 @@
+libavformat.pc
+*.d
+libavformat.ver
+*.def
+*.dll
+*.lib
+lib*.a
+

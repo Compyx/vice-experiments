@@ -1,0 +1,8 @@
+libswresample.pc
+*.d
+libswresample.ver
+*.def
+*.dll
+*.lib
+lib*.a
+

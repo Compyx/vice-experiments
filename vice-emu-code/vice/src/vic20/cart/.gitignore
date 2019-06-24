@@ -1,0 +1,6 @@
+Makefile
+Makefile.in
+.deps
+libmascuerade.a
+libvic20cart.a
+

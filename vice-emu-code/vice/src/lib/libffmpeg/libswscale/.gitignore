@@ -1,0 +1,8 @@
+libswscale.pc
+*.d
+libswscale.ver
+*.dll
+*.def
+*.lib
+lib*.a
+

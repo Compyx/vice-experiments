@@ -1,0 +1,13 @@
+config.h
+x264
+x264.pc
+.depend
+config.mak
+x264_config.h
+.aclocal.out
+config.log
+*.exe
+*.dll
+conftest*
+libx264.a
+

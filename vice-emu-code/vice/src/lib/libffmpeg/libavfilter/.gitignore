@@ -1,0 +1,8 @@
+libavfilter.pc
+*.d
+libavfilter.ver
+*.def
+*.dll
+*.lib
+lib*.a
+

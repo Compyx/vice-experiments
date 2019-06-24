@@ -1,0 +1,5 @@
+.deps
+libc128.a
+Makefile
+Makefile.in
+

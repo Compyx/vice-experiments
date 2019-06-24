@@ -1,0 +1,10 @@
+*.exe
+Makefile
+Makefile.in
+vice.ini
+vice.log
+*.exp
+*.lib
+*.ilk
+*.pdb
+

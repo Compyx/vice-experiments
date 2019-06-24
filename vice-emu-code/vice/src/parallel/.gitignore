@@ -1,0 +1,5 @@
+.deps
+libparallel.a
+Makefile
+Makefile.in
+

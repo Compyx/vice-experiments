@@ -1,0 +1,5 @@
+.deps
+librtc.a
+Makefile
+Makefile.in
+

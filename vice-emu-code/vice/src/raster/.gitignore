@@ -1,0 +1,5 @@
+.deps
+libraster.a
+Makefile
+Makefile.in
+
