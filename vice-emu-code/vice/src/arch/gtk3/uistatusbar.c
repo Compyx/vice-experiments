@@ -82,6 +82,7 @@
 #include "joystickmenupopup.h"
 #include "statusbarspeedwidget.h"
 #include "statusbarrecordingwidget.h"
+#include "kbddebugwidget.h"
 
 #include "uistatusbar.h"
 
@@ -232,6 +233,11 @@ typedef struct ui_statusbar_s {
     /** \brief The hand-shaped cursor to change to when popup menus
      *         are available. */
     GdkCursor *hand_ptr;
+
+    /** \brief  Keyboard debugging widget
+     */
+    GtkWidget *kbd_debug;
+
 } ui_statusbar_t;
 
 
@@ -838,6 +844,14 @@ static void destroy_statusbar_cb(GtkWidget *sb, gpointer ignored)
                 g_object_unref(G_OBJECT(allocated_bars[i].volume));
                 allocated_bars[i].volume = NULL;
             }
+
+            /* why? */
+            if (allocated_bars[i].kbd_debug != NULL) {
+                g_object_unref(G_OBJECT(allocated_bars[i].kbd_debug));
+                allocated_bars[i].kbd_debug = NULL;
+            }
+
+
             if (allocated_bars[i].hand_ptr) {
                 g_object_unref(G_OBJECT(allocated_bars[i].hand_ptr));
                 allocated_bars[i].hand_ptr = NULL;
@@ -1366,6 +1380,7 @@ void ui_statusbar_init(void)
             allocated_bars[i].drive_popups[j] = NULL;
         }
         allocated_bars[i].volume = NULL;
+        allocated_bars[i].kbd_debug = NULL;
         allocated_bars[i].hand_ptr = NULL;
     }
 
@@ -1412,6 +1427,7 @@ GtkWidget *ui_statusbar_create(void)
     GtkWidget *volume;
     GtkWidget *message;
     GtkWidget *recording;
+    GtkWidget *kbd_debug_widget;
     int sound_vol;
     int i, j;
 
@@ -1567,6 +1583,14 @@ GtkWidget *ui_statusbar_create(void)
     }
     allocated_bars[i].volume = volume;
 
+    /*
+     * Add keyboard debugging widget
+     */
+    debug_gtk3("Adding kbd debug widget.");
+    kbd_debug_widget = kbd_debug_widget_create();
+    allocated_bars[i].kbd_debug = kbd_debug_widget;
+    g_object_ref_sink(kbd_debug_widget);
+    gtk_grid_attach(GTK_GRID(sb), kbd_debug_widget, 0, 2, 16, 1);
 
     /* Set an impossible number of joyports to enabled so that the status
      * is guarenteed to be updated. */
@@ -2065,3 +2089,57 @@ void ui_display_speed(float percent, float framerate, int warp_flag)
         statusbar_speed_widget_update(speed, percent, framerate, warp_flag);
     }
 }
+
+
+/** \brief  Show/hide the statusbar kdb debug widget of \a window
+ *
+ * \param[in,out]   window  GtkWindow instance
+ * \param[in]       state   Display state
+ *
+ * \todo    Replace integer literals
+ */
+static void kbd_statusbar_widget_enable(GtkWidget *window, gboolean state)
+{
+    GtkWidget *main_grid;
+    GtkWidget *statusbar;
+    GtkWidget *kbd;
+
+    main_grid = gtk_bin_get_child(GTK_BIN(window));
+    if (main_grid != NULL) {
+        statusbar = gtk_grid_get_child_at(GTK_GRID(main_grid), 0, 2);
+        if (statusbar != NULL) {
+            kbd = gtk_grid_get_child_at(GTK_GRID(statusbar), 0, 2);
+            if (kbd != NULL) {
+                if (state) {
+                    gtk_widget_show_all(kbd);
+                } else {
+                    gtk_widget_hide(kbd);
+                }
+            }
+        }
+    }
+}
+
+
+/** \brief  Show/hide the keyboard debugging widget on the statusbar
+ *
+ * \param[in]   state   visible state
+ */
+void ui_statusbar_set_kbd_debug(gboolean state)
+{
+    GtkWidget *window;
+
+    /* standard VIC/VICII/TED/CRTC window */
+    window = ui_get_window_by_index(0);
+    kbd_statusbar_widget_enable(window, state);
+    /* reduce window size so we don't have weird extra lines */
+    gtk_window_resize(GTK_WINDOW(window), 1, 1);
+
+    /* C128: Handle the VDC */
+    if (machine_class == VICE_MACHINE_C128) {
+        window = ui_get_window_by_index(1); /* VDC */
+        kbd_statusbar_widget_enable(window, state);
+        gtk_window_resize(GTK_WINDOW(window), 1, 1);
+    }
+}
+

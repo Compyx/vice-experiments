@@ -313,10 +313,8 @@ gboolean ui_open_manual_callback(GtkWidget *widget, gpointer user_data)
 #endif
     if (!res) {
         vice_gtk3_message_error(
-                "Failed to load PDF: %s.",
+                "Failed to load PDF, (No more joke here, guess the joke about Germans not having a sense of humor is at least partially true)",
                 error != NULL ? error->message : "<no message>");
-        gtk_show_uri_on_window(NULL, "https://youtu.be/pkJG53d7p3U?t=173",
-                GDK_CURRENT_TIME, NULL);
     }
     lib_free(uri);
     g_free(final_uri);
