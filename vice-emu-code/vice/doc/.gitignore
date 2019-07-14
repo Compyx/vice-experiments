@@ -4,7 +4,6 @@ Makefile.in
 VICE.ph
 checkdoc
 checkdoc.exe
-texinfo.tex
 vice.GID
 vice.guide
 vice.html
