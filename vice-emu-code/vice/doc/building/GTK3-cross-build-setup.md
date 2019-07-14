@@ -5,17 +5,50 @@
 
 ## Test machine setup details
 
-I'll be using a Debian 9.8 64-bit VM, and the target is to create a cross-build
+I'll be using a Debian 10.0 64-bit VM, and the target is to create a cross-build
 system for 64-bit Windows. I choose Debian since that is what pokefinder uses,
 it is widely used, I'm familiar with it, and our other build instructions use
-Debian as well.
+Debian as well. I'll be using 'vice' as the username for both root and the
+default user, passwords for both will also be 'vice', to keep thing simple.
+
 
 I used the netinstall CD image to install Debian:
-<https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-9.8.0-amd64-netinst.iso>
+<https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-10.0.0-amd64-netinst.iso>
 
-When the installer runs dselect(?), select only 'base system' and 'ssh server'.
-We want a headless box so all this can (hopefully) be reproduced on the pokefinder
-server.
+When the installer asks for the 'Software selection', select only 'SSH server'
+and 'standard system utilities', nothing else.
+We want a headless box so all this can (hopefully) be reproduced on the
+pokefinder server.
+
+When the installer asks to reboot, do so.
+
+After reboot log in as the normal user, and do `su`.
+
+Update any packages:
+
+$ apt update
+$ apt upgrade
+
+Reboot if required (ie kernal update or so)
+
+
+### Enable sudo
+
+Debian 10.0 no longer updates $PATH when using `su` which means some binaries
+in /sbin may not be found, such as `shutdown` and `reboot`, which is annoying,
+to say the least.
+
+So as the normal user:
+
+$ su
+$ apt install sudo
+
+We don't have /sbin in our path, so we need to do this:
+$ /sbin/adduser vice sudo
+
+Now log out from the root shell AND the normal user shell and log back in as
+the normal user for the sudoers changes to take effect.
+
 
 
 ### Installing required packages on the VM
@@ -30,31 +63,37 @@ We need quite a few packages on the VM:
 * byacc
 * flex
 * texinfo
-* texlive-\* (?) (for pdf)
+* texlive-fonts-recommended
 * mingw-w64
-* mingw-x64-tools
-* meson + ninja (a build system used by GLib, Python based)
-
-    Do not use apt, but use pip (as root):
-
-    $ apt-get install python3-pip
-    $ pip3 install meson ninja
-
-(lots more, I forgot)
-
-* A decent text editor, I'm using Vim
-
-
-* gettext (required by Atk, not sure if need to build a Windows version)
+* mingw-w64-tools
+* subversion
+* git
 * curl
+* xa65
+* python3-pip
+* meson + ninja (a build system used by Gnome/Gtk, Python based)
+
+    Do not use apt, but use pip3:
+
+    $ sudo pip3 install meson ninja
+
+(Perhaps more, we'll get to it when we hit a problem)
 
 
 #### Optional packages
 
-links, a text-based web browser to download source packages, but wget will
-probably do fine.
+* A decent text editor, I'm using Vim:
+$ apt install vim
 
-Virtualbox Guest Additions
+* A text mode web browser, I use links2, had good experience with it when
+  setting up Gentoo:
+$ apt install links2
+
+
+##### VirtualBox guest additions
+
+-- end-of-last-edit --
+
 
 Install dmks, then in the VBox UI select "Devices" -> "Insert Guest Additions Cd Image ...".
 On my VM the CD didn't automount, so (as root) mount the CD with `mount /dev/cdrom /media/cdrom`
