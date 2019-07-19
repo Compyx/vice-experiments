@@ -1,6 +1,6 @@
-/** \file   archdep_cbmfont.h
- * \brief   CBM font handling - header
- * \author  Bas Wassink <b.wassink@ziggo.nl>
+/** \file   archdep_require_vkbd.c
+ * \brief   
+ * \author  groepaz <groepaz@gmx.net>
  */
 
 /*
@@ -22,14 +22,15 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  *
- */
+ */ 
 
-#ifndef VICE_ARCHDEP_CBMFONT_H
-#define VICE_ARCHDEP_CBMFONT_H
+#include "vice.h"
+#include "archdep_defs.h"
 
-/* Register CBM font with the OS without installing */
-int     archdep_register_cbmfont(void);
-/* Unregister CBM font */
-void    archdep_unregister_cbmfont(void);
+#include "archdep_require_vkbd.h"
 
-#endif
+/* amiga, beos, os2, unix, win32 */
+int archdep_require_vkbd(void)
+{
+    return 0;
+}

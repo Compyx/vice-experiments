@@ -1,6 +1,6 @@
-/** \file   archdep_cbmfont.h
- * \brief   CBM font handling - header
- * \author  Bas Wassink <b.wassink@ziggo.nl>
+/** \file   archdep_rtc_get_centisecond.c
+ * \brief   get centiseconds time when gettimeofday() is not available
+ * \author  groepaz <groepaz@gmx.net>
  */
 
 /*
@@ -22,14 +22,42 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  *
- */
+ */ 
 
-#ifndef VICE_ARCHDEP_CBMFONT_H
-#define VICE_ARCHDEP_CBMFONT_H
+#include "vice.h"
+#include "archdep_defs.h"
 
-/* Register CBM font with the OS without installing */
-int     archdep_register_cbmfont(void);
-/* Unregister CBM font */
-void    archdep_unregister_cbmfont(void);
+/* FIXME: includes for OS2 */
+
+#if defined(ARCHDEP_OS_WINDOWS)
+# include <windows.h>
+#endif
+
+#include "archdep_rtc_get_centisecond.h"
+
+#if defined(ARCHDEP_OS_OS2)
+
+#ifndef HAVE_GETTIMEOFDAY
+int archdep_rtc_get_centisecond(void)
+{
+    struct timeb tb;
+
+    __ftime(&tb);
+
+    return (int)tb.millitm / 10;
+}
+#endif
+
+#endif
+
+#if defined(ARCHDEP_OS_WINDOWS)
+
+int archdep_rtc_get_centisecond(void)
+{
+    SYSTEMTIME t;
+
+    GetSystemTime(&t);
+    return (int)(t.wMilliseconds / 10);
+}
 
 #endif

@@ -1,6 +1,7 @@
-/** \file   archdep_cbmfont.h
- * \brief   CBM font handling - header
- * \author  Bas Wassink <b.wassink@ziggo.nl>
+/** \file   dynlib.c
+ * \brief   Dynamic library loading wrapper
+ *
+ * \author  Marco van den Heuvel <blackystardust68@yahoo.com>
  */
 
 /*
@@ -24,12 +25,16 @@
  *
  */
 
-#ifndef VICE_ARCHDEP_CBMFONT_H
-#define VICE_ARCHDEP_CBMFONT_H
+#include "dynlib.h"
 
-/* Register CBM font with the OS without installing */
-int     archdep_register_cbmfont(void);
-/* Unregister CBM font */
-void    archdep_unregister_cbmfont(void);
+#ifdef HAVE_DYNLIB_SUPPORT
+
+#ifdef UNIX_COMPILE
+#include "dynlib-unix.c"
+#endif
+
+#ifdef WIN32_COMPILE
+#include "dynlib-win32.c"
+#endif
 
 #endif

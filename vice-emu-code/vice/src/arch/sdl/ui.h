@@ -34,19 +34,10 @@
 
 #include "vice_sdl.h"
 
+#include "archdep.h"
 #include "types.h"
 #include "uiapi.h"
 #include "uimenu.h"
-
-/* Allow native monitor code for various platforms. */
-#if defined(UNIX_COMPILE)
-#define ALLOW_NATIVE_MONITOR
-#endif
-
-
-/* Tell menu system to ignore a string for translation
-   (e.g. filenames in fliplists) */
-#define NO_TRANS "no-trans"
 
 typedef enum {
     UI_BUTTON_NONE, UI_BUTTON_CLOSE, UI_BUTTON_OK, UI_BUTTON_CANCEL,
@@ -90,10 +81,6 @@ extern void ui_common_shutdown(void);
 extern void ui_sdl_quit(void);
 
 extern int native_monitor;
-
-#ifdef BEOS_COMPILE
-extern int CheckForHaiku(void);
-#endif
 
 /*
  * For VSID drag-n-drop support

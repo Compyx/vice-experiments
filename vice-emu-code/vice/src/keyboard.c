@@ -43,6 +43,7 @@
 
 #include "alarm.h"
 #include "archdep.h"
+#include "archdep_kbd_get_host_mapping.h"
 #include "cmdline.h"
 #include "joystick.h"
 #include "joy.h"
@@ -1471,7 +1472,7 @@ int keyboard_get_num_mappings(void)
     return KBD_MAPPING_NUM;
 }
 
-/* (keep in sync with constants in keyboard.c) */
+/* (keep in sync with constants in keyboard.h) */
 static mapping_info_t kbdinfo[KBD_MAPPING_NUM + 1] = {
     { "American (us)", KBD_MAPPING_US, "" },
     { "British (uk)", KBD_MAPPING_UK, "uk" },
@@ -1743,7 +1744,7 @@ int keyboard_resources_init(void)
     DBG((">>keyboard_resources_init(first start:%s)\n", (npos && nsym) ? "yes" : "no"));
 
     if (npos && nsym) {
-        mapping = kbd_arch_get_host_mapping();
+        mapping = archdep_kbd_get_host_mapping();
         log_verbose("Setting up default keyboard mapping for host type %d (%s)",
                     mapping, keyboard_get_mapping_name(mapping));
         if (resources_set_int("KeymapIndex", KBD_INDEX_SYM) < 0) {

@@ -38,12 +38,6 @@
 #include "log.h"
 #include "ui.h"
 #include "kbddebugwidget.h"
-
-/* UNIX-specific; for kbd_arch_get_host_mapping */
-#include <locale.h>
-#include <string.h>
-
-
 #include "keyboard.h"
 #include "kbd.h"
 #include "uimenu.h"
@@ -77,30 +71,6 @@ static int hotkeys_count = 0;
 
 
 
-int kbd_arch_get_host_mapping(void)
-{
-    int n;
-    char *l;
-    int maps[KBD_MAPPING_NUM] = {
-        KBD_MAPPING_US, KBD_MAPPING_UK, KBD_MAPPING_DE, KBD_MAPPING_DA,
-        KBD_MAPPING_NO, KBD_MAPPING_FI, KBD_MAPPING_IT };
-    /* TODO: This is a UNIX-specific version lifted from the SDL
-     * implementation. */
-    char str[KBD_MAPPING_NUM][6] = {
-        "en_US", "en_UK", "de", "da", "no", "fi", "it"};
-    setlocale(LC_ALL, "");
-    l = setlocale(LC_ALL, NULL);
-    if (l && (strlen(l) > 1)) {
-        for (n = 1; n < KBD_MAPPING_NUM; n++) {
-            if (strncmp(l, str[n], strlen(str[n])) == 0) {
-                return maps[n];
-            }
-        }
-    }
-    return KBD_MAPPING_US;
-}
-
-
 /** \brief  Initialize keyboard handling
  */
 void kbd_arch_init(void)
@@ -122,6 +92,7 @@ void kbd_arch_shutdown(void)
 signed long kbd_arch_keyname_to_keynum(char *keyname)
 {
     guint sym = gdk_keyval_from_name(keyname);
+    /* printf("kbd_arch_keyname_to_keynum %s=%u\n", keyname, sym); */
 
     if (sym == GDK_KEY_VoidSymbol) {
         return -1;
@@ -155,11 +126,30 @@ static gboolean kbd_event_handler(GtkWidget *w, GdkEvent *report, gpointer gp)
     key = report->key.keyval;
     switch (report->type) {
         case GDK_KEY_PRESS:
-            /* fprintf(stderr, "KeyPress: %d.\n", key); */
-
+            /* fprintf(stderr, "GDK_KEY_PRESS: %u %04x.\n",  report->key.keyval,  report->key.state); */
+#ifdef WIN32_COMPILE
+/* HACK: The Alt-Gr Key seems to work differently on windows and linux.
+         On Linux one Keypress "ISO_Level3_Shift" will be produced, and
+         the modifier mask for combined keys will be GDK_MOD5_MAS.
+         On Windows two Keypresses will be produced, first "Control_L"
+         then "Alt_R", and the modifier mask for combined keys will be
+         GDK_MOD2_MASK.
+         The following is a hack to compensate for that and make it
+         always work like on linux.
+*/
+            if ((report->key.keyval == GDK_KEY_Alt_R) && (report->key.state & GDK_MOD2_MASK)) {
+                /* Alt-R with modifier MOD2 */
+                key = report->key.keyval = GDK_KEY_ISO_Level3_Shift;
+                report->key.state &= ~GDK_MOD2_MASK;
+                keyboard_key_released(GDK_KEY_Control_L); /* release control in the emulated keymap */
+            } else if (report->key.state & GDK_MOD2_MASK) {
+                report->key.state &= ~GDK_MOD2_MASK;
+                report->key.state |= GDK_MOD5_MASK;
+            }
+            /* fprintf(stderr, "               %u %04x.\n",  report->key.keyval,  report->key.state); */
+#endif
             kdb_debug_widget_update(report);
-
-
+            
             if (gtk_window_activate_key(GTK_WINDOW(w), (GdkEventKey *)report)) {
                 return TRUE;
             }
@@ -187,8 +177,16 @@ static gboolean kbd_event_handler(GtkWidget *w, GdkEvent *report, gpointer gp)
             keyboard_key_pressed((signed long)key);
             return TRUE;
         case GDK_KEY_RELEASE:
-            /* fprintf(stderr, "KeyRelease: %d.\n", key); */
-            if (key == GDK_KEY_Shift_L || key == GDK_KEY_Shift_R || 
+            /* fprintf(stderr, "GDK_KEY_RELEASE: %u %04x.\n",  report->key.keyval,  report->key.state); */
+#ifdef WIN32_COMPILE
+            /* HACK: remap control,alt+r to alt-gr, see above */
+            if (report->key.keyval == GDK_KEY_Alt_R) {
+                key = report->key.keyval = GDK_KEY_ISO_Level3_Shift;
+            }
+            /* fprintf(stderr, "                 %u %04x.\n",  report->key.keyval,  report->key.state); */
+#endif
+            if (key == GDK_KEY_Shift_L || 
+                key == GDK_KEY_Shift_R || 
                 key == GDK_KEY_ISO_Level3_Shift) {
                 keyboard_key_clear();
             }

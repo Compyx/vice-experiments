@@ -1,9 +1,9 @@
+/** \file   archdep_pref_path.h
+ * \brief   
+ * \author  groepaz <groepaz@gmx.net>
+ */
+
 /*
- * console.c - Console access interface wrapper.
- *
- * Written by
- *  Marco van den Heuvel <blackystardust68@yahoo.com>
- *
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
  *
@@ -24,18 +24,9 @@
  *
  */
 
-#include "vice.h"
+#ifndef VICE_ARCHDEP_DEFAULT_HOTKEY_FILE_NAME
+#define VICE_ARCHDEP_DEFAULT_HOTKEY_FILE_NAME
 
-#ifdef AMIGA_SUPPORT
-#define CONSOLE_ARCH_INCLUDED
-#include "console_amiga.c"
-#endif
+char *archdep_default_hotkey_file_name(void);
 
-#ifdef UNIX_COMPILE
-#define CONSOLE_ARCH_INCLUDED
-#include "console_unix.c"
-#endif
-
-#ifndef CONSOLE_ARCH_INCLUDED
-#include "console_sdl.c"
 #endif

@@ -1,7 +1,7 @@
-/** \file   dynlib.c
- * \brief   Dynamic library loading wrapper for the native GTK3 UI
+/** \file   archdep_is_haiku.h
+ * \brief   Determine if BeOS is "Haiku"
  *
- * \author  Marco van den Heuvel <blackystardust68@yahoo.com>
+ * \author  groepaz <groepaz@gmx.net>
  */
 
 /*
@@ -25,16 +25,14 @@
  *
  */
 
-#include "dynlib.h"
+#ifndef VICE_ARCHDEP_IS_HAIKU_H
+#define VICE_ARCHDEP_IS_HAIKU_H
 
-#ifdef HAVE_DYNLIB_SUPPORT
+#include "archdep_defs.h"
 
-#ifdef UNIX_COMPILE
-#include "dynlib-unix.c"
+#ifdef ARCHDEP_OS_BEOS
+
+int archdep_is_haiku(void);
+
 #endif
-
-#ifdef WIN32_COMPILE
-#include "dynlib-win32.c"
-#endif
-
 #endif

@@ -1,10 +1,9 @@
+/** \file   archdep_rtc_get_centisecond.h
+ * \brief   get centiseconds time when gettimeofday() is not available
+ * \author  groepaz <groepaz@gmx.net>
+ */
+
 /*
- * signals.c
- *
- * Written by
- *  Hannu Nuotio <hannu.nuotio@tut.fi>
- *  Marco van den Heuvel <blackystardust68@yahoo.com>
- *
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
  *
@@ -25,29 +24,11 @@
  *
  */
 
-#include "vice.h"
+#ifndef ARCHDEP_RTC_GET_CENTISECOND_H
+#define ARCHDEP_RTC_GET_CENTISECOND_H
 
-#include "archdep.h"
-#include "signals.h"
+int archdep_rtc_get_centisecond(void);
 
-/*
-    used once at init time to setup all signal handlers
-*/
-void signals_init(int do_core_dumps)
-{
-    archdep_signals_init(do_core_dumps);
-}
-
-/*
-    these two are used for socket send/recv. in this case we might
-    get SIGPIPE if the connection is unexpectedly closed.
-*/
-void signals_pipe_set(void)
-{
-    archdep_signals_pipe_set();
-}
-
-void signals_pipe_unset(void)
-{
-    archdep_signals_pipe_unset();
-}
+#endif
+ 
+ 

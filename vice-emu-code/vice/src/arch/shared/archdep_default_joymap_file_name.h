@@ -1,9 +1,9 @@
+/** \file   archdep_pref_path.h
+ * \brief   
+ * \author  groepaz <groepaz@gmx.net>
+ */
+
 /*
- * dynlib.c - Dynamic library loading wrapper for the SDL UI.
- *
- * Written by
- *  Marco van den Heuvel <blackystardust68@yahoo.com>
- *
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
  *
@@ -24,16 +24,9 @@
  *
  */
 
-#include "dynlib.h"
+#ifndef VICE_ARCHDEP_DEFAULT_JOYMAP_FILE_NAME
+#define VICE_ARCHDEP_DEFAULT_JOYMAP_FILE_NAME
 
-#ifdef HAVE_DYNLIB_SUPPORT
-
-#ifdef UNIX_COMPILE
-#include "dynlib-unix.c"
-#endif
-
-#ifdef WIN32_COMPILE
-#include "dynlib-win32.c"
-#endif
+char *archdep_default_joymap_file_name(void);
 
 #endif

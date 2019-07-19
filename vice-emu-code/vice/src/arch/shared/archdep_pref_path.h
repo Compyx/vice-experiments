@@ -1,6 +1,6 @@
-/** \file   archdep_cbmfont.h
- * \brief   CBM font handling - header
- * \author  Bas Wassink <b.wassink@ziggo.nl>
+/** \file   archdep_pref_path.h
+ * \brief   
+ * \author  groepaz <groepaz@gmx.net>
  */
 
 /*
@@ -24,12 +24,9 @@
  *
  */
 
-#ifndef VICE_ARCHDEP_CBMFONT_H
-#define VICE_ARCHDEP_CBMFONT_H
+#ifndef VICE_ARCHDEP_PREF_PATH
+#define VICE_ARCHDEP_PREF_PATH
 
-/* Register CBM font with the OS without installing */
-int     archdep_register_cbmfont(void);
-/* Unregister CBM font */
-void    archdep_unregister_cbmfont(void);
+const char *archdep_pref_path(void);
 
 #endif

@@ -5,7 +5,7 @@ extra_includes = -I$(top_srcdir)/src/arch/mingw32-pcap/wpcap
 else
 extra_includes =
 endif
- 
+
 if DUMMY_COMPILE
 # this will get remove soons as well
 SUBDIRS = \
@@ -14,6 +14,7 @@ endif
 
 AM_CPPFLAGS = \
 	@ARCH_INCLUDES@ \
+	-I$(top_srcdir)/src/arch/shared \
 	$(extra_includes) \
 	-I$(top_builddir)/src \
 	-I$(top_srcdir)/src/drive \
@@ -58,11 +59,6 @@ libarch_a_SOURCES = \
 	archdep.c \
 	archdep.h \
 	blockdev.c \
-	console.c \
-	console_unix.c \
-	coproc.c \
-	coproc.h \
-	dynlib.c \
 	fullscreen.c \
 	fullscreenarch.h \
 	icon.c \
@@ -169,10 +165,7 @@ libarch_a_SOURCES = \
 	menu_video.h \
 	mousedrv.c \
 	mousedrv.h \
-	rawnetarch.c \
-	rs232dev.c \
 	sdlmain.c \
-	signals.c \
 	ui.c \
 	ui.h \
 	uifontscbm2.c \
@@ -215,29 +208,12 @@ libarch_a_SOURCES = \
 	xvic_ui.c
 
 EXTRA_DIST = \
-	archdep_amiga.c \
-	archdep_amiga.h \
-	archdep_beos.c \
-	archdep_beos.h \
-	archdep_os2.c \
-	archdep_os2.h \
-	archdep_unix.c \
-	archdep_unix.h \
-	archdep_win32.c \
-	archdep_win32.h \
-	console_amiga.c \
-	console_sdl.c \
-	console_unix.c \
-	dynlib-unix.c \
-	dynlib-win32.c \
 	make-bindist_amiga.sh \
 	make-bindist_beos.sh \
 	make-bindist_osx.sh \
 	make-bindist_scosol.sh \
 	make-bindist_skyos.sh \
 	make-bindist_win32.sh \
-	rs232dev-unix.c \
-	rs232dev-win32.c \
 	Info.plist \
 	macOS-launcher.sh \
 	Resources/VICE.icns \

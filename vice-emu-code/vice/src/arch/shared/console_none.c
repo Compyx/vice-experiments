@@ -1,10 +1,11 @@
 /*
- * coproc.h - co-process fork
+ * console.c - SDL specific console access interface.
  *
  * Written by
- *  Andre Fachat <a.fachat@physik.tu-chemnitz.de>
+ *  Hannu Nuotio <hannu.nuotio@tut.fi>
  *
- * Patches by
+ * Based on code by
+ *  Andreas Boose <viceteam@t-online.de>
  *
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
@@ -26,9 +27,49 @@
  *
  */
 
-#ifndef VICE_COPROC_H
-#define VICE_COPROC_H
+#include "vice.h"
 
-extern int fork_coproc(int *fd_wr, int *fd_rd, char *cmd);
+#include <stdio.h>
 
+#include "console.h"
+
+int native_console_init(void)
+{
+    return 0;
+}
+
+char *native_console_in(console_t *log, const char *prompt)
+{
+    return NULL;
+}
+
+int native_console_out(console_t *log, const char *format, ...)
+{
+#ifdef DEBUG_CONSOLE
+    fprintf(stderr, "%s - remove this\n", __func__);
 #endif
+    return 0;
+}
+
+int native_console_petscii_out(console_t *log, const char *format, ...)
+{
+#ifdef DEBUG_CONSOLE
+    fprintf(stderr, "%s - remove this\n", __func__);
+#endif
+    return 0;
+}
+
+int native_console_close_all(void)
+{
+    return 0;
+}
+
+console_t *native_console_open(const char *id)
+{
+    return NULL;
+}
+
+int native_console_close(console_t *log)
+{
+    return 0;
+}

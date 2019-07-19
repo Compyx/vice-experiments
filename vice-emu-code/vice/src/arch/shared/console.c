@@ -1,5 +1,5 @@
 /*
- * rawnetarch.c - rawnetarch.c wrapper for the SDL UI.
+ * console.c - Console access interface wrapper.
  *
  * Written by
  *  Marco van den Heuvel <blackystardust68@yahoo.com>
@@ -24,18 +24,20 @@
  *
  */
 
-#include <stdint.h>
-
 #include "vice.h"
 
-#ifdef HAVE_RAWNET
+/* #define DEBUG_CONSOLE */
+
+#ifdef AMIGA_SUPPORT
+#define CONSOLE_ARCH_INCLUDED
+#include "console_amiga.c"
+#endif
 
 #ifdef UNIX_COMPILE
-#include "../gtk3/rawnetarch_unix.c"
+#define CONSOLE_ARCH_INCLUDED
+#include "console_unix.c"
 #endif
 
-#ifdef WIN32_COMPILE
-#include "../gtk3/rawnetarch_win32.c"
-#endif
-
+#ifndef CONSOLE_ARCH_INCLUDED
+#include "console_none.c"
 #endif

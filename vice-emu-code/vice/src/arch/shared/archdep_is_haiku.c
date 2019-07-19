@@ -1,9 +1,10 @@
+/** \file   archdep_is_haiku.c
+ * \brief   Determine if BeOS is "Haiku"
+ *
+ * \author  groepaz <groepaz@gmx.net>
+ */
+
 /*
- * rs232dev.c - rs232dev.c wrapper for the sdl port.
- *
- * Written by
- *  Marco van den Heuvel <blackystardust68@yahoo.com>
- *
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
  *
@@ -24,12 +25,29 @@
  *
  */
 
-#include "vice.h"
+#include "archdep_defs.h"
 
-#ifdef UNIX_COMPILE
-#include "rs232dev-unix.c"
-#endif
+#include <strings.h>
 
-#ifdef WIN32_COMPILE
-#include "rs232dev-win32.c"
+/* FIXME: includes for beos */
+
+#ifdef ARCHDEP_OS_BEOS
+
+#include <sys/utsname.h>
+
+#include "archdep_is_haiku.h"
+
+/* This check is needed for haiku, since it always returns 1 on
+   SupportsWindowMode() */
+int archdep_is_haiku(void)
+{
+    struct utsname name;
+
+    uname(&name);
+    if (!strncasecmp(name.sysname, "Haiku", 5)) {
+        return -1;
+    }
+    return 0;
+}
+
 #endif

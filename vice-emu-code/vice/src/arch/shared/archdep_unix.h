@@ -1,11 +1,10 @@
+/** \file   archdep_unix.h
+ * \brief   Miscellaneous UNIX-specific stuff - header
+ *
+ * \author  Marco van den Heuvel <blackystardust68@yahoo.com>
+ */
+
 /*
- * archdep_unix.h - Miscellaneous system-specific stuff.
- *
- * Written by
- *  Ettore Perazzoli <ettore@comm2000.it>
- *  Andreas Boose <viceteam@t-online.de>
- *  Marco van den Heuvel <blackystardust68@yahoo.com>
- *
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
  *
@@ -33,25 +32,42 @@
 #include "archapi.h"
 #undef VICE_ARCHAPI_PRIVATE_API
 
-/* Filesystem dependant operators.  */
-#define FSDEVICE_DEFAULT_DIR "."
-#define FSDEV_DIR_SEP_STR    "/"
-#define FSDEV_DIR_SEP_CHR    '/'
-#define FSDEV_EXT_SEP_STR    "."
-#define FSDEV_EXT_SEP_CHR    '.'
+/* Default MIDI devices. */
+#define ARCHDEP_MIDI_IN_DEV  "/dev/midi"    /**< MIDI input dev */
+#define ARCHDEP_MIDI_OUT_DEV "/dev/midi"    /**< MIDI output dev */
+
+/* Filesystem dependent operators.  */
+#define FSDEVICE_DEFAULT_DIR "."    /**< CWD */
+#define FSDEV_DIR_SEP_STR    "/"    /**< directory separator as a string */
+#define FSDEV_DIR_SEP_CHR    '/'    /**< directory separator as an integer */
+#define FSDEV_EXT_SEP_STR    "."    /**< file extension separator as a string
+                                         (doesn't exist on Unix) */
+#define FSDEV_EXT_SEP_CHR    '.'    /**< file extension separator as an integer
+                                         (doesn't exist on Unix) */
 
 /* Path separator.  */
+
+/** \brief  Separator character to split directory lists, as an integer
+ */
 #define ARCHDEP_FINDPATH_SEPARATOR_CHAR   ':'
+
+/** \brief  Separator character to split directory lists, as a string
+ */
 #define ARCHDEP_FINDPATH_SEPARATOR_STRING ":"
 
-/* Modes for fopen().  */
-#define MODE_READ              "r"
-#define MODE_READ_TEXT         "r"
-#define MODE_READ_WRITE        "r+"
-#define MODE_WRITE             "w"
-#define MODE_WRITE_TEXT        "w"
-#define MODE_APPEND            "a"
-#define MODE_APPEND_READ_WRITE "a+"
+/* Modes for fopen()
+ *
+ * I'm not going to document this, just use "rb" or "wb" on all OS'es, and
+ * handle line endings accordingly. At least that way using ftell()/fseek()
+ * works properly without having to deal with any Windows weirdness.
+ */
+#define MODE_READ              "r"  /**< read mode (binary) */
+#define MODE_READ_TEXT         "r"  /**< read mode (text) */
+#define MODE_READ_WRITE        "r+" /**< read/write mode */
+#define MODE_WRITE             "w"  /**< write mode (binary) */
+#define MODE_WRITE_TEXT        "w"  /**< write mode (text) */
+#define MODE_APPEND            "a"  /**< append mode */
+#define MODE_APPEND_READ_WRITE "a+" /**< append mode and read/write(?) */
 
 /* Printer default devices.  */
 #define ARCHDEP_PRINTER_DEFAULT_DEV1 "print.dump"
@@ -86,11 +102,6 @@
 /* Default sound fragment size */
 #define ARCHDEP_SOUND_FRAGMENT_SIZE SOUND_FRAGMENT_MEDIUM
 
-extern const char *archdep_home_path(void);
-
-/* set this path to customize the preference storage */
-extern const char *archdep_pref_path;
-
 #define LIBDIR VICEDIR
 
 #if defined(__FreeBSD__) || defined(__NetBSD__)
@@ -105,9 +116,9 @@ extern const char *archdep_pref_path;
     these are used for socket send/recv. in this case we might
     get SIGPIPE if the connection is unexpectedly closed.
 */
-extern void archdep_signals_init(int do_core_dumps);
-extern void archdep_signals_pipe_set(void);
-extern void archdep_signals_pipe_unset(void);
+void archdep_signals_init(int do_core_dumps);
+void archdep_signals_pipe_set(void);
+void archdep_signals_pipe_unset(void);
 
 #ifdef MACOSX_SUPPORT
 #define MAKE_SO_NAME_VERSION_PROTO(name, version)  "lib" #name "." #version ".dylib"
@@ -126,7 +137,10 @@ extern void archdep_signals_pipe_unset(void);
 #define ARCHDEP_LAME_SO_NAME     "libmp3lame.so"
 #endif
 
-/* what to use to return an error when a socket error happens */
+/* what to use to return an error when a socket error happens
+ *
+ * Really?
+ */
 #define ARCHDEP_SOCKET_ERROR errno
 
 

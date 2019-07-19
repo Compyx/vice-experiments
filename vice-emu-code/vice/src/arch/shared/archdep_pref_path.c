@@ -1,8 +1,3 @@
-/** \file   archdep_cbmfont.h
- * \brief   CBM font handling - header
- * \author  Bas Wassink <b.wassink@ziggo.nl>
- */
-
 /*
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
@@ -24,12 +19,27 @@
  *
  */
 
-#ifndef VICE_ARCHDEP_CBMFONT_H
-#define VICE_ARCHDEP_CBMFONT_H
+#include "vice.h"
+#include "archdep_defs.h"
 
-/* Register CBM font with the OS without installing */
-int     archdep_register_cbmfont(void);
-/* Unregister CBM font */
-void    archdep_unregister_cbmfont(void);
+#include <stdlib.h>
+#include <stdio.h>
 
+#include "archdep.h"
+
+#include "archdep_pref_path.h"
+#include "archdep_user_config_path.h"
+
+/* alternate storage of preferences */
+static char *pref_path = NULL; /* NULL -> use home_path + ".vice" */
+
+const char *archdep_pref_path(void)
+{
+    if (pref_path == NULL) {
+#ifdef UNIX_COMPILE
+        /* unix */
+        pref_path = archdep_user_config_path();
 #endif
+    }
+    return pref_path;
+}

@@ -74,12 +74,6 @@
  */
 static char *argv0 = NULL;
 
-
-/** \brief  Path to the preferences directory of the emu
- */
-const char *archdep_pref_path = NULL;
-
-
 /** \brief  Arch-dependent init
  *
  * \param[in]   argc    pointer to argument count
@@ -117,12 +111,6 @@ int archdep_init(int *argc, char **argv)
     vice_ini = archdep_default_resource_file_name();
     datadir = archdep_get_vice_datadir();
     docsdir = archdep_get_vice_docsdir();
-
-# if defined(ARCHDEP_OS_LINUX) && defined(ARCHDEP_OS_BSD)
-    xdg_cache = archdep_xdg_cache_home();
-    xdg_config = archdep_xdg_config_home();
-    xdg_data = archdep_xdg_data_home()l
-# endif 
 
     debug_gtk3("program name    = \"%s\"", prg_name);
     debug_gtk3("user home dir   = \"%s\"", archdep_home_path());
@@ -165,7 +153,7 @@ int archdep_init(int *argc, char **argv)
 }
 
 
-/** \brief  Architecture-dependent shutdown hanlder
+/** \brief  Architecture-dependent shutdown handler
  */
 void archdep_shutdown(void)
 {

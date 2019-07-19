@@ -1,9 +1,5 @@
+
 /*
- * coproc.c - coproc.c wrapper for the sdl port.
- *
- * Written by
- *  Marco van den Heuvel <blackystardust68@yahoo.com>
- *
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
  *
@@ -25,7 +21,49 @@
  */
 
 #include "vice.h"
+#include "archdep_defs.h"
 
-#ifdef UNIX_COMPILE
-#include "../gtk3/coproc.c"
+#include <string.h>
+
+#include "archdep.h"
+#include "ioutil.h"
+
+/* FIXME: includes for os/2 */
+/* FIXME: includes for amiga */
+
+#if defined(ARCHDEP_OS_WINDOWS) || defined(__OS2__)
+
+/* FIXME: is this needed* */
+#ifdef SDL_CHOOSE_DRIVES
+char *archdep_get_current_drive(void)
+{
+    char *p = ioutil_current_dir();
+    char *p2 = strchr(p, '\\');
+    p2[0] = '/';
+    p2[1] = '\0';
+    return p;
+}
+#endif
+
+#endif
+
+#if defined(ARCHDEP_OS_AMIGA)
+
+/* FIXME: is this needed* */
+#ifdef SDL_CHOOSE_DRIVES
+char *archdep_get_current_drive(void)
+{
+    char *p = ioutil_current_dir();
+    char *p2 = strchr(p, ':');
+
+    if (p2 == NULL) {
+        return lib_strdup("PROGDIR:");
+    }
+
+    p2[1] = '\0';
+
+    return p;
+}
+#endif
+
 #endif

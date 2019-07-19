@@ -1,9 +1,9 @@
+/** \file   archdep_require_vkbd.h
+ * \brief   
+ * \author  groepaz <groepaz@gmx.net>
+ */
+
 /*
- * dynlib.c - Win32 support for dynamic library loading.
- *
- * Written by
- *  Christian Vogelgsang <chris@vogelgsang.org>
- *
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
  *
@@ -24,31 +24,11 @@
  *
  */
 
-#include <windows.h>
+#ifndef ARCHDEP_REQUIRE_VKBD_H
+#define ARCHDEP_REQUIRE_VKBD_H
 
-#include "dynlib.h"
+int archdep_require_vkbd(void);
 
-void *vice_dynlib_open(const char *name)
-{
-    return LoadLibrary(name);
-}
-
-void *vice_dynlib_symbol(void *handle,const char *name)
-{
-    return GetProcAddress((HMODULE)handle, name);
-}
-
-char *vice_dynlib_error(void)
-{
-    return "unknown";
-}
-
-int vice_dynlib_close(void *handle)
-{
-    if (FreeLibrary(handle)) {
-        return 0;
-    } else {
-        return -1;
-    }
-}
-
+#endif
+ 
+ 

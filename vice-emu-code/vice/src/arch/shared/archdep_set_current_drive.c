@@ -1,9 +1,5 @@
+
 /*
- * dynlib.c - Unix support for dynamic library loading.
- *
- * Written by
- *  Christian Vogelgsang <chris@vogelgsang.org>
- *
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
  *
@@ -24,59 +20,48 @@
  *
  */
 
-#include <stdlib.h>
-#include "dynlib.h"
+#include "vice.h"
+#include "archdep_defs.h"
 
-#ifdef HAVE_DYNLIB_SUPPORT
-
-#include <dlfcn.h>
-
-#ifndef RTLD_LOCAL
-#define RTLD_LOCAL 0
+#if defined(ARCHDEP_OS_WINDOWS)
+# include <direct.h>
 #endif
 
-void *vice_dynlib_open(const char *name)
-{
-    return dlopen(name, RTLD_LAZY | RTLD_LOCAL);
-}
+#include "archdep.h"
+#include "ui.h"
 
-void *vice_dynlib_symbol(void *handle,const char *name)
-{
-    return dlsym(handle, name);
-}
+/* FIXME: includes for os/2 */
+/* FIXME: includes for amiga */
 
-char *vice_dynlib_error(void)
-{
-     char *error = dlerror();
-     
-     return error ? error : "no error";
-}
+#if defined(__OS2__) || defined(ARCHDEP_OS_WINDOWS)
 
-int vice_dynlib_close(void *handle)
+/* FIXME: is this needed* */
+#ifdef SDL_CHOOSE_DRIVES
+void archdep_set_current_drive(const char *drive)
 {
-    return dlclose(handle);
+    if (_chdir(drive)) {
+        ui_error("Failed to change drive to %s", drive);
+    }
 }
+#endif 
 
-#else
+#endif
 
-void *vice_dynlib_open(const char *name)
+#if defined(ARCHDEP_OS_AMIGA)
+
+/* FIXME: is this needed* */
+#ifdef SDL_CHOOSE_DRIVES
+void archdep_set_current_drive(const char *drive)
 {
-    return NULL;
-}
+    BPTR lck = Lock(drive, ACCESS_READ);
 
-void *vice_dynlib_symbol(void *handle,const char *name)
-{
-    return NULL;
+    if (lck) {
+        CurrentDir(lck);
+        UnLock(lck);
+    } else {
+        ui_error("Failed to change to drive %s", drive);
+    }
 }
-
-char *vice_dynlib_error(void)
-{
-    return "no error";
-}
-
-int vice_dynlib_close(void *handle)
-{
-    return -1;
-}
+#endif 
 
 #endif

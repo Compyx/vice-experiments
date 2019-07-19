@@ -114,9 +114,9 @@ DIST_SUBDIRS = \
 
 AM_CPPFLAGS = \
 	@ARCH_INCLUDES@ \
+	-I$(top_srcdir)/src/arch/shared \
 	-I$(top_builddir)/src \
 	-I$(top_srcdir)/src \
-	-I$(top_srcdir)/src/arch/unix/readline \
 	-I$(top_srcdir)/src/c64 \
 	-I$(top_srcdir)/src/drive \
 	-I$(top_srcdir)/src/monitor \
@@ -133,8 +133,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/tapeport \
 	-I$(top_srcdir)/src/tape \
 	-I$(top_srcdir)/src/socketdrv \
-	-I$(top_srcdir)/src/hvsc \
-	-I$(top_srcdir)/src/arch/shared
+	-I$(top_srcdir)/src/hvsc
 
 noinst_HEADERS = \
 	6510core.h \
@@ -1319,7 +1318,7 @@ blockdev_lib =
 endif
 
 if HAVE_REALDEVICE
-realdevice_lib = opencbmlib.o @ARCH_DIR@/dynlib.o
+realdevice_lib = opencbmlib.o $(top_builddir)/src/arch/shared/dynlib.o
 else
 realdevice_lib =
 endif
