@@ -1,0 +1,4 @@
+SUBDIRS = \
+	android \
+	beos \
+	macosx
