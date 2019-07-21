@@ -119,6 +119,27 @@ void kbd_initialize_numpad_joykeys(int *joykeys)
     joykeys[8] = GDK_KEY_KP_9;
 }
 
+static int kbd_get_modifier(GdkEvent *report)
+{
+    int ret = 0;
+    if (report->key.state & GDK_SHIFT_MASK) {
+        ret |= KBD_MOD_LSHIFT;
+    }
+    if (report->key.state & GDK_SHIFT_MASK) {
+        ret |= KBD_MOD_RSHIFT;
+    }
+    if (report->key.state & GDK_MOD1_MASK) {
+        ret |= KBD_MOD_LALT;
+    }
+    if (report->key.state & GDK_MOD5_MASK) {
+        ret |= KBD_MOD_RALT;
+    }
+    if (report->key.state & GDK_CONTROL_MASK) {
+        ret |= KBD_MOD_LCTRL;
+    }
+    return ret;
+}
+
 static gboolean kbd_event_handler(GtkWidget *w, GdkEvent *report, gpointer gp)
 {
     gint key;
@@ -130,7 +151,7 @@ static gboolean kbd_event_handler(GtkWidget *w, GdkEvent *report, gpointer gp)
 #ifdef WIN32_COMPILE
 /* HACK: The Alt-Gr Key seems to work differently on windows and linux.
          On Linux one Keypress "ISO_Level3_Shift" will be produced, and
-         the modifier mask for combined keys will be GDK_MOD5_MAS.
+         the modifier mask for combined keys will be GDK_MOD5_MASK.
          On Windows two Keypresses will be produced, first "Control_L"
          then "Alt_R", and the modifier mask for combined keys will be
          GDK_MOD2_MASK.
@@ -141,7 +162,7 @@ static gboolean kbd_event_handler(GtkWidget *w, GdkEvent *report, gpointer gp)
                 /* Alt-R with modifier MOD2 */
                 key = report->key.keyval = GDK_KEY_ISO_Level3_Shift;
                 report->key.state &= ~GDK_MOD2_MASK;
-                keyboard_key_released(GDK_KEY_Control_L); /* release control in the emulated keymap */
+                keyboard_key_released(GDK_KEY_Control_L, KBD_MOD_LCTRL); /* release control in the emulated keymap */
             } else if (report->key.state & GDK_MOD2_MASK) {
                 report->key.state &= ~GDK_MOD2_MASK;
                 report->key.state |= GDK_MOD5_MASK;
@@ -149,7 +170,7 @@ static gboolean kbd_event_handler(GtkWidget *w, GdkEvent *report, gpointer gp)
             /* fprintf(stderr, "               %u %04x.\n",  report->key.keyval,  report->key.state); */
 #endif
             kdb_debug_widget_update(report);
-            
+
             if (gtk_window_activate_key(GTK_WINDOW(w), (GdkEventKey *)report)) {
                 return TRUE;
             }
@@ -174,7 +195,7 @@ static gboolean kbd_event_handler(GtkWidget *w, GdkEvent *report, gpointer gp)
             }
 #endif
 
-            keyboard_key_pressed((signed long)key);
+            keyboard_key_pressed((signed long)key, kbd_get_modifier(report));
             return TRUE;
         case GDK_KEY_RELEASE:
             /* fprintf(stderr, "GDK_KEY_RELEASE: %u %04x.\n",  report->key.keyval,  report->key.state); */
@@ -190,7 +211,7 @@ static gboolean kbd_event_handler(GtkWidget *w, GdkEvent *report, gpointer gp)
                 key == GDK_KEY_ISO_Level3_Shift) {
                 keyboard_key_clear();
             }
-            keyboard_key_released(key);
+            keyboard_key_released(key, kbd_get_modifier(report));
             break;
         case GDK_ENTER_NOTIFY:
         case GDK_LEAVE_NOTIFY:
