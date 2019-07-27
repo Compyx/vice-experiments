@@ -287,6 +287,7 @@ static void rsuser_setup(void)
     alarm_set(rsuser_alarm, maincpu_clk + char_clk_ticks / 8);
 }
 
+/* called by VIA/CIA when cpu writes to user port */
 void rsuser_write_ctrl(uint8_t b)
 {
     int new_dtr = b & DTR_OUT;  /* = 0 is active, != 0 is inactive */
@@ -320,7 +321,7 @@ static void check_tx_buffer(void)
 
     if (valid >= 10) {     /* (valid-1)-th bit is not set = start bit! */
         if (!(buf & masks[valid - 10])) {
-            log_error(LOG_DEFAULT, "Frame error!");
+            log_error(LOG_DEFAULT, "rsuser: framing mismatch - outgoing baudrates ok?");
         } else {
             c = (buf >> (valid - 9)) & 0xff;
             if (fd != -1) {
@@ -419,6 +420,7 @@ uint8_t rsuser_get_rx_bit(void)
     return byte;
 }
 
+/* called by VIA/CIA when cpu reads from user port */
 uint8_t rsuser_read_ctrl(uint8_t b)
 {
     return b & (rsuser_get_rx_bit() | CTS_IN | (rsuser_baudrate > 2400 ? 0 : DCD_IN));
