@@ -294,7 +294,6 @@ gboolean ui_open_manual_callback(GtkWidget *widget, gpointer user_data)
                 uri);
         g_clear_error(&error);
         lib_free(uri);
-        lib_free(path);
         return FALSE;
     }
 
@@ -332,7 +331,6 @@ gboolean ui_open_manual_callback(GtkWidget *widget, gpointer user_data)
          *
          * -- compyx
          */
-        lib_free(path);
         return TRUE;
     }
 

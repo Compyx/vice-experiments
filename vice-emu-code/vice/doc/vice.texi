@@ -5016,12 +5016,12 @@ Enable/disable virtual devices
 
 The VICE emulators can emulate the RS232 device most of the machines
 have.  The C64, C128 and VIC20 emulators emulate the userport RS232
-interface at 300 and 1200 baud.  The C64 and C128 can also use the 9600
+interface at 300, 1200 and 2400 baud.  The C64 and C128 can also use the 9600
 baud interface by Daniel Dallmann, using the shift registers of the two
 CIA 6526 chips.  The PET can have a 6551 ACIA RS232 interface when
 running as a SuperPET, and the CBM-II has such an ACIA by default.  The
-C64 and C128 emulators can emulate an ACIA 6551 (also known as Datapump
-for example) as extension at @code{$de**}.
+C64 and C128 emulators can emulate an ACIA 6551 (also known as Swithlink, Datapump
+or Turbo232 for example) as extension at @code{$de**}.
 
 Emulation can be achieved by either:
 
@@ -5032,13 +5032,16 @@ connecting a real UNIX serial device;
 dumping to a file;
 @item
 piping through a process.
+@item
+connect through a network socket.
 @end itemize
 
 It is possible to define up to four UNIX serial devices, and then decide
 which interface should be connected to which device.  This is done by
 so-called @dfn{rs232 device file names}; an rs232 device file name can
-be either a simple path, or a command name preceeded by a pipe symbol
-@samp{|}.  If the path specifies a special device (e.g. @file{/dev/ttyS0}) it
+be either a simple path, a network address, or a command name preceeded 
+by a pipe symbol @samp{|}.  
+If the path specifies a special device (e.g. @file{/dev/ttyS0}) it
 is recognized by VICE and the emulator can set the baudrate.
 
 For example, rs232 device @samp{filename} will cause the output to be
@@ -5055,11 +5058,6 @@ of your PC, setup one port for login and use the other in VICE.  Then you
 can login from your emulator via the RS232 emulation and the null-modem
 cable to your machine again.
 
-You can not simply run a shell from VICE, as the shell will notice that
-it does not run on its own pseudo terminal and will thus buffer its
-output.  You need to write some program that opens an own pseudo terminal
-and runs the shell from there (not yet finished).
-
 Up to four RS232 devices may be specified through the following
 resources:
 
@@ -5069,16 +5067,13 @@ device 1, whose default value is @code{/dev/ttyS0};
 @item
 device 2, whose default value is @code{/dev/ttyS1};
 @item
-device 3, whose default value is @code{rs232.dump};
+device 3, whose default value is @code{127.0.0.1:25232};
 @item
-device 4, whose default value is @code{|lpr}.
+device 4, whose default value is @code{|nc 127.0.0.1:25232}.
 @end itemize
 
-For the first two devices you can change the baudrate the tty device is
-set to by specifying it on the commandline or in the menu.  This
-baudrate is 9600 by default for the latter two, but can be changed only
-by resources (The baudrate is independent from the baudrate the emulator
-actually expects).
+You can change the baudrate the tty device is set to by specifying it on the 
+commandline or in the menu.
 
 @menu
 * RS232 resources::
@@ -5100,6 +5095,21 @@ actually expects).
 @itemx RsDevice3
 @itemx RsDevice4
 Strings specifying the RS232 devices (@pxref{RS232 settings}).
+
+@end table
+
+@table @code
+
+@vindex RsDevice1ip232
+@vindex RsDevice2ip232
+@vindex RsDevice3ip232
+@vindex RsDevice4ip232
+@item RsDevice1ip232
+@itemx RsDevice2ip232
+@itemx RsDevice3ip232
+@itemx RsDevice4ip232
+Boolean specifying whether the respective RS232 devices (@pxref{RS232 settings}) use the IP232 protocol.
+This only works with Socket connections.
 
 @end table
 
@@ -5128,7 +5138,7 @@ Integer specifying the type of emulated RS232 interface (x64, x64sc, xscpu64, xv
 @vindex Acia1Irq
 @item Acia1Irq
 Integer specifying which interrupt to use (x64, x64sc, xscpu64, xvic and x128 only, and only if RS232 support is enabled and supported at compile time).
-(0 = none, 1 = IRQ, 2 = NMI)
+(0 = none, 1 = NMI, 2 = IRQ)
 
 @end table
 
@@ -5189,6 +5199,25 @@ Specify <Name> as RS232 devices 1, 2, 3 and 4, respectively
 
 @table @code
 
+@findex -rsdev1ip232, +rsdev1ip232
+@item -rsdev1ip232
+@itemx +rsdev1ip232
+@findex -rsdev2ip232, +rsdev2ip232
+@item -rsdev2ip232
+@itemx +rsdev2ip232
+@findex -rsdev3ip232, +rsdev3ip232
+@item -rsdev3ip232
+@itemx +rsdev3ip232
+@findex -rsdev4ip232, +rsdev4ip232
+@item -rsdev4ip232
+@itemx +rsdev4ip232
+Enable/Disable whether the respective RS232 devices (@pxref{RS232 settings}) use the IP232 protocol.
+This only works with Socket connections.
+
+@end table
+
+@table @code
+
 @findex -acia1, +acia1
 @item -acia1
 @itemx +acia1
@@ -5220,7 +5249,7 @@ Set the ACIA mode
 Set the ACIA interrupt
 (@code{Acia1Irq})
 (x64, x64sc, xscpu64, xvic and x128 only, and only if RS232 support is enabled and supported at compile time).
-(0: None, 1: IRQ, 2: NMI)
+(0: None, 1: NMI, 2: IRQ)
 
 @end table
 
@@ -5276,8 +5305,10 @@ Normally you should set it up to use the modem as "/dev/modem".
 @item start VICE
 
 @item Setup VICE to use your modem as "serial device 1"
-Go to the RS232 settings menu and change "Serial 1 device" to "/dev/modem" (or the device where you attached your modem to)
-Then go to the RS232 settings menu and change "Serial 1 baudrate" to the baudrate your modem should run at.
+Go to the RS232 settings menu and change "Serial 1 device" to "/dev/modem" 
+(or the device where you attached your modem to)
+Then go to the RS232 settings menu and change "Serial 1 baudrate" to the 
+baudrate your modem should run at.
   Watch out, e.g. on Linux there is an additional multiplier
   to multiply with the baudrate (so e.g. 19200 gives 115200 or so baud)
   See the "setserial" manpage on Linux for example.
@@ -5298,7 +5329,7 @@ If you want to use the Userport emulation, go to the RS232 settings and
 If it is able to detect an
   RS232 cartridge like swiftlink or so, try to detect the ACIA emulation
   if enabled.
-  Otherwise just set the baudrate to either 300, 1200 or 9600 according
+  Otherwise just set the baudrate to either 300, 1200, 2400 or 9600 according
   to what you enabled in the VICE menu for the userport.
 
 @end table
@@ -22091,7 +22122,7 @@ Camels"@dots{}
                      calculated from offset $0000). The default  (also  the
                      minimum) value is $40.  Some  cartridges  exist  which
                      show a value of $00000020 which is wrong.
-         0014-0015 - Cartridge version (high/low, presently 01.00)
+         0014-0015 - Cartridge version (high/low, presently 01.01)
          0016-0017 - Cartridge hardware type ($0000, high/low)
                        0 - Normal cartridge
                        1 - Action Replay
@@ -22161,7 +22192,8 @@ Camels"@dots{}
               0019 - Cartridge port GAME line status
                       0 - active (lo)
                       1 - inactive (hi)
-         001A-001F - Reserved for future use
+              001A - Cartridge Hardware Revision/Subtype (usually 0)
+         001B-001F - Reserved for future use
          0020-003F - 32-byte cartridge  name  "CCSMON"  (uppercase,  padded
                      with null characters)
          0040-xxxx - Cartridge contents (called CHIP PACKETS, as there  can
@@ -23952,6 +23984,9 @@ load files of this type.
 0050: 09 80 0C 80 C3 C2 CD 38 30 4C 7F 81 4C 87 81 4C  .......80L..L..L
 @end example
 
+    Note: When the Cartridge Hardware Subtype/Revision (Offset 0x1A in the
+    CRT Header) is 1, then the image utilizes features only present in the
+    "Nordic Replay" (see description of Nordic/Atomic Power)
 
     The Retro Replay has three registers: Two write-only ($DE00  &  $DE01)
     and one read-only register ($DE00 & $DE01 giving the same results).
