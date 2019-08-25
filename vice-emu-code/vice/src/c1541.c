@@ -106,6 +106,7 @@
 #include "p64.h"
 #include "fileio/p00.h"
 
+#include "lib/linenoise-ng/linenoise.h"
 
 /* #define DEBUG_DRIVE */
 
@@ -582,6 +583,7 @@ const command_t command_list[] = {
 
 /* ------------------------------------------------------------------------- */
 
+#if 0
 #if defined(HAVE_READLINE) && defined(HAVE_READLINE_READLINE_H)
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -627,7 +629,7 @@ static char *read_line(const char *prompt)
 }
 
 #endif
-
+#endif
 
 
 /** \brief  Split \a line into a list of arguments
@@ -4740,6 +4742,7 @@ int main(int argc, char **argv)
     int i;
     int retval = EXIT_SUCCESS;
 
+
     archdep_init(&argc, argv);
 
     /* This causes all the logging messages from the various VICE modules to
@@ -4773,11 +4776,17 @@ int main(int argc, char **argv)
 
         /* Interactive mode.  */
         interactive_mode = 1;
-
+#if 0
         /* properly init GNU readline, if available */
 #ifdef HAVE_READLINE_READLINE_H
         using_history();
 #endif
+#endif
+        /* init linenoise-ng */
+        linenoiseHistorySetMaxLen(100);
+
+        /* TODO: Add completions on Windows, somehow, or perhaps not */
+
         version_cmd(0, NULL);
         printf("Copyright 1995-2018 The VICE Development Team.\n"
                "C1541 is free software, covered by the GNU General Public License,"
@@ -4787,12 +4796,21 @@ int main(int argc, char **argv)
                "Type `show copying' to see the conditions.\n"
                "There is absolutely no warranty for C1541.  Type `show warranty'"
                " for details.\n");
+#if 0
+        fflush(stdout); /* needs flushing on windows, it seems */
+#endif
 
         while (1) {
             fflush(stderr);
             lib_free(buf);
             buf = lib_msprintf("c1541 #%d> ", drive_index | 8);
+#if 0
             line = read_line(buf);
+#endif
+#if 0
+            fflush(stdout); /* required for Windows */
+#endif
+            line = linenoise(buf);
 
             if (line == NULL) {
                 putchar('\n');
@@ -4819,9 +4837,12 @@ int main(int argc, char **argv)
             }
         }
         /* properly clean up GNU readline's history, if used */
+#if 0
 #ifdef HAVE_READLINE_READLINE_H
         clear_history();
 #endif
+#endif
+        linenoiseHistoryFree();
     } else {
         while (i < argc) {
             args[0] = argv[i] + 1;

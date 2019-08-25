@@ -11,6 +11,10 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/rs232drv
 
+AM_CFLAGS = $(VICE_CFLAGS)
+
+AM_CXXFLAGS = $(VICE_CXXFLAGS)
+
 noinst_LIBRARIES = libarchdep.a
 
 libarchdep_a_SOURCES = \

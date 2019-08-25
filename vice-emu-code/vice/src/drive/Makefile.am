@@ -17,6 +17,10 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/drive/tcbm \
 	-I$(top_srcdir)/src/drive/ieee
 
+AM_CFLAGS = $(VICE_CFLAGS)
+
+AM_CXXFLAGS = $(VICE_CXXFLAGS)
+
 noinst_LIBRARIES = libdrive.a
 
 libdrive_a_SOURCES = \

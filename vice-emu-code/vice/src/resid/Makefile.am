@@ -2,6 +2,10 @@
 
 AR = @AR@
 
+AM_CFLAGS = $(VICE_CFLAGS)
+
+AM_CXXFLAGS = $(VICE_CXXFLAGS)
+
 noinst_LIBRARIES = libresid.a
 
 if NEW_8580_FILTER

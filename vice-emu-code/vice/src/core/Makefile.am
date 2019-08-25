@@ -4,6 +4,10 @@ AM_CPPFLAGS = \
 	-I$(top_builddir)/src \
 	-I$(top_srcdir)/src
 
+AM_CFLAGS = $(VICE_CFLAGS)
+
+AM_CXXFLAGS = $(VICE_CXXFLAGS)
+
 noinst_LIBRARIES = libcore.a
 
 libcore_a_SOURCES = \

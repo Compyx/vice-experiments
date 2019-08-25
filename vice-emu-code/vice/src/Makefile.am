@@ -1,7 +1,11 @@
 # We have to override the automake default, because we need to use
 # $(CXX) instead of $(CC) when compiling with reSID.
-LINK = @LINKCC@ $(CFLAGS) $(LDFLAGS) -o $@
+LINK = @LINKCC@ $(VICE_CFLAGS) $(LDFLAGS) -o $@
 CCLD = @LINKCC@
+
+AM_CFLAGS = $(VICE_CFLAGS)
+
+AM_CXXFLAGS = $(VICE_CXXFLAGS)
 
 ARCH_LIBS = @ARCH_LIBS@
 
@@ -133,7 +137,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/tapeport \
 	-I$(top_srcdir)/src/tape \
 	-I$(top_srcdir)/src/socketdrv \
-	-I$(top_srcdir)/src/hvsc
+	-I$(top_srcdir)/src/hvsc \
+	-I$(top_srcdir)/src/lib/linenoise-ng
 
 noinst_HEADERS = \
 	6510core.h \
@@ -1268,6 +1273,7 @@ iecbus_lib = $(top_builddir)/src/iecbus/libiecbus.a
 imagecontents_lib = $(top_builddir)/src/imagecontents/libimagecontents.a
 iodrv_lib = $(top_builddir)/src/iodrv/libiodrv.a
 joyport_lib = $(top_builddir)/src/joyport/libjoyport.a
+linenoise_ng_lib = $(top_builddir)/src/lib/linenoise-ng/liblinenoiseng.a
 mascuerade_lib = $(top_builddir)/src/vic20/cart/libmascuerade.a
 mididrv_lib = $(top_builddir)/src/mididrv/libmididrv.a
 monitor_lib = $(top_builddir)/src/monitor/libmonitor.a
@@ -1317,8 +1323,16 @@ else
 blockdev_lib =
 endif
 
+# Bit of a hack to make both Linux and BSD link agains dynlib
+# Someone with a better understand of the differences between Linux and BSD
+# should have a proper look at this issue.
+# -- compyx
 if HAVE_REALDEVICE
+#if HAVE_BSD
+#realdevice_lib = opencbmlib.o
+#else
 realdevice_lib = opencbmlib.o $(top_builddir)/src/arch/shared/dynlib.o
+#endif
 else
 realdevice_lib =
 endif
@@ -2250,6 +2264,7 @@ c1541_LDADD = \
 	$(tape_lib) \
 	$(serial_lib) \
 	$(socketdrv_lib) \
+	$(linenoise_ng_lib) \
 	@SDL_EXTRA_LIBS@ \
 	@READLINE@ @READLINE_LIBS@ \
 	@ZLIB_LIBS@ @DYNLIB_LIBS@

@@ -16,6 +16,10 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/raster \
 	-I$(top_srcdir)/src/tapeport
 
+AM_CFLAGS = $(VICE_CFLAGS)
+
+AM_CXXFLAGS = $(VICE_CXXFLAGS)
+
 noinst_LIBRARIES = libplus4.a
 
 libplus4_a_SOURCES = \
