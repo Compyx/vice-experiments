@@ -1120,6 +1120,12 @@ void mem_bank_write(int bank, uint16_t addr, uint8_t byte, void *context)
     mem_ram[addr] = byte;
 }
 
+/* used by monitor if sfx off */
+void mem_bank_poke(int bank, uint16_t addr, uint8_t byte, void *context)
+{
+    mem_bank_write(bank, addr, byte, context);
+}
+
 static int mem_dump_io(void *context, uint16_t addr)
 {
     if ((addr >= 0xff00) && (addr <= 0xff3f)) {
@@ -1183,93 +1189,99 @@ static int memconfig_dump(void)
 /* ------------------------------------------------------------------------- */
 
 static io_source_t mem_config_device = {
-    "MEMCONFIG",
-    IO_DETACH_CART, /* dummy */
-    NULL,           /* dummy */
-    0xfdd0, 0xfddf, 0xf,
-    0, /* read is never valid */
-    mem_config_rom_set_store,
-    NULL, /* no read */
-    NULL, /* no peek */
-    memconfig_dump,
-    0, /* dummy (not a cartridge) */
-    IO_PRIO_NORMAL,
-    0
+    "MEMCONFIG",              /* name of the chip */
+    IO_DETACH_NEVER,          /* chip is never involved in collisions, so no detach */
+    IO_DETACH_NO_RESOURCE,    /* does not use a resource for detach */
+    0xfdd0, 0xfddf, 0x0f,     /* range of the device, regs:$fdd0-$fddf */
+    0,                        /* read is never valid */
+    mem_config_rom_set_store, /* store function */
+    NULL,                     /* NO poke function */
+    NULL,                     /* NO read function */
+    NULL,                     /* NO peek function */
+    memconfig_dump,           /* chip state information dump function */
+    IO_CART_ID_NONE,          /* not a cartridge */
+    IO_PRIO_NORMAL,           /* normal priority, device read needs to be checked for collisions */
+    0                         /* insertion order, gets filled in by the registration function */
 };
 
 static io_source_t pio1_with_mirrors_device = {
-    "PIO1",
-    IO_DETACH_CART, /* dummy */
-    NULL,           /* dummy */
-    0xfd10, 0xfd1f, 1,
-    1, /* read is always valid */
-    pio1_store,
-    pio1_read,
-    NULL, /* no peek */
-    NULL, /* nothing to dump */
-    0, /* dummy (not a cartridge) */
-    IO_PRIO_NORMAL,
-    0
+    "PIO1",                /* name of the chip */
+    IO_DETACH_NEVER,       /* chip is never involved in collisions, so no detach */
+    IO_DETACH_NO_RESOURCE, /* does not use a resource for detach */
+    0xfd10, 0xfd1f, 0x00,  /* range for the device, reg:$fd10, mirrors:$fd11-$fd1f */
+    1,                     /* read is always valid */
+    pio1_store,            /* store function */
+    NULL,                  /* NO poke function */
+    pio1_read,             /* read function */
+    NULL,                  /* TODO: peek function */
+    NULL,                  /* nothing to dump */
+    IO_CART_ID_NONE,       /* not a cartridge */
+    IO_PRIO_NORMAL,        /* normal priority, device read needs to be checked for collisions */
+    0                      /* insertion order, gets filled in by the registration function */
 };
 
 static io_source_t pio1_only_device = {
-    "PIO1",
-    IO_DETACH_CART, /* dummy */
-    NULL,           /* dummy */
-    0xfd10, 0xfd10, 1,
-    1, /* read is always valid */
-    pio1_store,
-    pio1_read,
-    NULL, /* no peek */
-    NULL, /* nothing to dump */
-    0, /* dummy (not a cartridge) */
-    IO_PRIO_NORMAL,
-    0
+    "PIO1",                /* name of the chip */
+    IO_DETACH_NEVER,       /* chip is never involved in collisions, so no detach */
+    IO_DETACH_NO_RESOURCE, /* does not use a resource for detach */
+    0xfd10, 0xfd10, 0x00,  /* range for the device, reg:$fd10 */ 
+    1,                     /* read is always valid */
+    pio1_store,            /* store function */
+    NULL,                  /* NO poke function */
+    pio1_read,             /* read function */
+    NULL,                  /* TODO: peek function */
+    NULL,                  /* nothing to dump */
+    IO_CART_ID_NONE,       /* not a cartridge */
+    IO_PRIO_NORMAL,        /* normal priority, device read needs to be checked for collisions */
+    0                      /* insertion order, gets filled in by the registration function */
 };
 
 static io_source_t pio2_device = {
-    "PIO2",
-    IO_DETACH_CART, /* dummy */
-    NULL,           /* dummy */
-    0xfd30, 0xfd3f, 1,
-    1, /* read is always valid */
-    pio2_store,
-    pio2_read,
-    NULL, /* no peek */
-    NULL, /* nothing to dump */
-    0, /* dummy (not a cartridge) */
-    IO_PRIO_NORMAL,
-    0
+    "PIO2",                /* name of the chip */
+    IO_DETACH_NEVER,       /* chip is never involved in collisions, so no detach */
+    IO_DETACH_NO_RESOURCE, /* does not use a resource for detach */
+    0xfd30, 0xfd3f, 0x00,  /* range for the device, reg:$fd30, mirrors:$fd31-$fd3f */
+    1,                     /* read is always valid */
+    pio2_store,            /* store function */
+    NULL,                  /* NO poke function */
+    pio2_read,             /* read function */
+    NULL,                  /* TODO: peek function */
+    NULL,                  /* nothing to dump */
+    IO_CART_ID_NONE,       /* not a cartridge */
+    IO_PRIO_NORMAL,        /* normal priority, device read needs to be checked for collisions */
+    0                      /* insertion order, gets filled in by the registration function */
 };
 
 static io_source_t tcbm1_device = {
-    "TCBM1",
-    IO_DETACH_CART, /* dummy */
-    NULL,           /* dummy */
-    0xfee0, 0xfeff, 0x1f,
-    1, /* read is always valid */
-    plus4tcbm1_store,
-    plus4tcbm1_read,
-    NULL, /* no peek */
-    NULL, /* TODO: dump */
-    0, /* dummy (not a cartridge) */
-    IO_PRIO_NORMAL,
-    0
+    "TCBM1",               /* name of the chip */
+    IO_DETACH_NEVER,       /* chip is never involved in collisions, so no detach */
+    IO_DETACH_NO_RESOURCE, /* does not use a resource for detach */
+    0xfee0, 0xfeff, 0x1f,  /* range for the device, regs:$fee0-$feff */
+    1,                     /* read is always valid */
+    plus4tcbm1_store,      /* store function */
+    NULL,                  /* NO poke function */
+    plus4tcbm1_read,       /* read function */
+    NULL,                  /* TODO: peek function */
+    NULL,                  /* TODO: chip state information dump function */
+    IO_CART_ID_NONE,       /* not a cartridge */
+    IO_PRIO_NORMAL,        /* normal priority, device read needs to be checked for collisions */
+    0                      /* insertion order, gets filled in by the registration function */
 };
 
 static io_source_t tcbm2_device = {
-    "TCBM2",
-    IO_DETACH_CART, /* dummy */
-    NULL,           /* dummy */
-    0xfec0, 0xfedf, 0x1f,
-    1, /* read is always valid */
-    plus4tcbm2_store,
-    plus4tcbm2_read,
-    NULL, /* no peek */
-    NULL, /* TODO: dump */
-    0, /* dummy (not a cartridge) */
-    IO_PRIO_NORMAL,
-    0
+    "TCBM2",               /* name of the chip */
+    IO_DETACH_NEVER,       /* chip is never involved in collisions, so no detach */
+    IO_DETACH_NO_RESOURCE, /* does not use a resource for detach */
+    0xfec0, 0xfedf, 0x1f,  /* range for the device, regs:$fec0-$fedf */
+    1,                     /* read is always valid */
+    plus4tcbm2_store,      /* store function */
+    NULL,                  /* NO poke function */
+    plus4tcbm2_read,       /* read function */
+    NULL,                  /* TODO: peek function */
+    NULL,                  /* TODO: chip state information dump function */
+    IO_CART_ID_NONE,       /* not a cartridge */
+    IO_PRIO_NORMAL,        /* normal priority, device read needs to be checked for collisions */
+    0                      /* insertion order, gets filled in by the registration function */
 };
 
 static io_source_list_t *mem_config_list_item = NULL;

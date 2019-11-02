@@ -1,4 +1,5 @@
 AM_CPPFLAGS = \
+	@VICE_CPPFLAGS@ \
 	@ARCH_INCLUDES@ \
 	-I$(top_srcdir)/src/arch/shared \
 	-I$(top_builddir)/src \
@@ -13,11 +14,12 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/lib/p64 \
 	-I$(top_srcdir)/src/joyport \
 	-I$(top_srcdir)/src/samplerdrv \
+	-I$(top_srcdir)/src/rs232drv \
 	-I$(top_srcdir)/src/tapeport
 
-AM_CFLAGS = $(VICE_CFLAGS)
+AM_CFLAGS = @VICE_CFLAGS@
 
-AM_CXXFLAGS = $(VICE_CXXFLAGS)
+AM_CXXFLAGS = @VICE_CXXFLAGS@
 
 noinst_LIBRARIES = libpet.a
 

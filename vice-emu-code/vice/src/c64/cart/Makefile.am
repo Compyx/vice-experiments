@@ -1,4 +1,5 @@
 AM_CPPFLAGS = \
+	@VICE_CPPFLAGS@ \
 	@ARCH_INCLUDES@ \
 	-I$(top_builddir)/src \
 	-I$(top_srcdir)/src \
@@ -11,11 +12,12 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/vicii \
 	-I$(top_srcdir)/src/rtc \
 	-I$(top_srcdir)/src/samplerdrv \
+	-I$(top_srcdir)/src/rs232drv \
 	-I$(top_srcdir)/src/arch/shared
 
-AM_CFLAGS = $(VICE_CFLAGS)
+AM_CFLAGS = @VICE_CFLAGS@
 
-AM_CXXFLAGS = $(VICE_CXXFLAGS)
+AM_CXXFLAGS = @VICE_CXXFLAGS@
 
 noinst_LIBRARIES = libc64cartsystem.a libc64cart.a libc64commoncart.a
 

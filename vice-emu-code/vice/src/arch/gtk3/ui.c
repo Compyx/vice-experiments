@@ -182,6 +182,17 @@ static kbd_gtk3_hotkey_t default_hotkeys[] = {
 
     { GDK_KEY_F12, VICE_MOD_MASK|GDK_SHIFT_MASK, uimedia_auto_screenshot },
 
+    /* Alt+J = swap joysticks */
+    { GDK_KEY_j, VICE_MOD_MASK,
+        (void *)ui_swap_joysticks_callback },
+    /* Alt+Shift+U = swap userport joysticks */
+    { GDK_KEY_u, VICE_MOD_MASK|GDK_SHIFT_MASK,
+        (void *)ui_swap_userport_joysticks_callback },
+    { GDK_KEY_J, VICE_MOD_MASK|GDK_SHIFT_MASK,
+        (void *)ui_toggle_keyset_joysticks },
+    { GDK_KEY_m, VICE_MOD_MASK,
+        (void *)ui_toggle_mouse_grab },
+
     /* Arnie */
     { 0, 0, NULL }
 };
@@ -1027,21 +1038,35 @@ static gboolean on_window_configure_event(GtkWidget *widget,
                                           gpointer data)
 {
     if (event->type == GDK_CONFIGURE) {
+#if 0
         GdkEventConfigure *cfg = (GdkEventConfigure *)event;
-
+#endif
         /* determine Window index */
         int windex = GPOINTER_TO_INT(data);
 
+        /* DO NOT UNCOMMENT
+         * Uncommenting this will cause the code after it compile just fine.
+         * But it would trigger C99.
+         */
 #if 0
         debug_gtk3("updating window #%d coords and size to (%d,%d)/(%d*%d)"
                 " in resources.",
                 0, cfg->x, cfg->y, cfg->width, cfg->height);
 #endif
         /* set resources, ignore failures */
-        resources_set_int_sprintf("Window%dWidth", cfg->width, windex);
-        resources_set_int_sprintf("Window%dHeight", cfg->height, windex);
-        resources_set_int_sprintf("Window%dXpos", cfg->x, windex);
-        resources_set_int_sprintf("Window%dYpos", cfg->y, windex);
+
+        gint root_x;
+        gint root_y;
+        gint width;
+        gint height;
+
+        gtk_window_get_position(GTK_WINDOW(widget), &root_x, &root_y);
+        gtk_window_get_size(GTK_WINDOW(widget), &width, &height);
+
+        resources_set_int_sprintf("Window%dWidth", width, windex);
+        resources_set_int_sprintf("Window%dHeight", height, windex);
+        resources_set_int_sprintf("Window%dXpos", root_x, windex);
+        resources_set_int_sprintf("Window%dYpos", root_y, windex);
     }
     return FALSE;
 }

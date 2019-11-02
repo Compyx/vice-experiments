@@ -904,6 +904,31 @@ void store_bank_io(uint16_t addr, uint8_t byte)
     return;
 }
 
+void poke_bank_io(uint16_t addr, uint8_t byte)
+{
+    /* FIXME: open ends */
+    switch (addr & 0xff00) {
+        case 0xd000:
+            /* c64io_d000_poke(addr, byte); */
+            vicii_poke(addr & 0x3f, byte);
+            break;
+        case 0xd100:
+            /* c64io_d100_poke(addr, byte); */
+            vicii_poke(addr & 0x3f, byte);
+            break;
+        case 0xd200:
+            /* c64io_d200_poke(addr, byte); */
+            vicii_poke(addr & 0x3f, byte);
+            break;
+        case 0xd300:
+            /* c64io_d300_poke(addr, byte); */
+            vicii_poke(addr & 0x3f, byte);
+            break;
+    }
+    store_bank_io(addr, byte);
+    return;
+}
+
 uint8_t read_bank_io(uint16_t addr)
 {
     switch (addr & 0xff00) {
@@ -1040,6 +1065,7 @@ uint8_t mem_bank_read(int bank, uint16_t addr, void *context)
     return mem_ram[addr];
 }
 
+/* used by monitor if sfx off */
 uint8_t mem_bank_peek(int bank, uint16_t addr, void *context)
 {
     switch (bank) {
@@ -1091,6 +1117,32 @@ void mem_bank_write(int bank, uint16_t addr, uint8_t byte, void *context)
             break;
     }
     mem_ram[addr] = byte;
+}
+
+/* used by monitor if sfx off */
+void mem_bank_poke(int bank, uint16_t addr, uint8_t byte, void *context)
+{
+    switch (bank) {
+        case 0:                   /* current */
+            /* we must check for which bank is currently active, and only use peek_bank_io
+               when needed to avoid side effects */
+            if (c64meminit_io_config[mem_config]) {
+                /* is i/o */
+                if ((addr >= 0xd000) && (addr < 0xe000)) {
+                    poke_bank_io(addr, byte);
+                    return;
+                }
+            }
+            break;
+        case 3:                   /* io */
+            if (addr >= 0xd000 && addr < 0xe000) {
+                poke_bank_io(addr, byte);
+                return;
+            }
+            break;
+    }
+    
+    mem_bank_write(bank, addr, byte, context);
 }
 
 static int mem_dump_io(void *context, uint16_t addr)

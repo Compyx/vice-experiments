@@ -1,6 +1,7 @@
 SUBDIRS = cart
 
 AM_CPPFLAGS = \
+	@VICE_CPPFLAGS@ \
 	@ARCH_INCLUDES@ \
 	-I$(top_srcdir)/src/arch/shared \
 	-I$(top_builddir)/src \
@@ -21,11 +22,12 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/samplerdrv \
 	-I$(top_srcdir)/src/tapeport \
 	-I$(top_srcdir)/src/core \
+	-I$(top_srcdir)/src/rs232drv \
 	-I$(top_srcdir)/src/hvsc
 
-AM_CFLAGS = $(VICE_CFLAGS)
+AM_CFLAGS = @VICE_CFLAGS@
 
-AM_CXXFLAGS = $(VICE_CXXFLAGS)
+AM_CXXFLAGS = @VICE_CXXFLAGS@
 
 noinst_LIBRARIES = libvsid.a libc64.a libc64sc.a libc64c128.a libc64c64dtv.a libc64scpu64.a
 

@@ -594,6 +594,7 @@ static ui_menu_item_t *settings_menu_joy_section = NULL;
  */
 static ui_menu_item_t settings_menu_all_joy[] = {
 
+#if 0
     { "Swap joysticks", UI_MENU_TYPE_ITEM_ACTION,
         "joystick-swap", (void *)(ui_swap_joysticks_callback), NULL,
         GDK_KEY_J, VICE_MOD_MASK },
@@ -607,6 +608,7 @@ static ui_menu_item_t settings_menu_all_joy[] = {
         "mouse", (void *)(ui_toggle_resource), (void *)"Mouse",
         GDK_KEY_M, VICE_MOD_MASK },
 
+#endif
     UI_MENU_TERMINATOR
 };
 
@@ -615,7 +617,7 @@ static ui_menu_item_t settings_menu_all_joy[] = {
  * Only valid for x64dtv/xcbm5x0
  */
 static ui_menu_item_t settings_menu_cbm5x0_joy[] = {
-
+#if 0
     { "Swap joysticks", UI_MENU_TYPE_ITEM_ACTION,
         "joystick-swap", (void *)(ui_swap_joysticks_callback), NULL,
         GDK_KEY_J, VICE_MOD_MASK },
@@ -626,6 +628,7 @@ static ui_menu_item_t settings_menu_cbm5x0_joy[] = {
         "mouse", (void *)(ui_toggle_resource), (void *)"Mouse",
         GDK_KEY_M, VICE_MOD_MASK },
 
+#endif
     UI_MENU_TERMINATOR
 };
 
@@ -634,6 +637,7 @@ static ui_menu_item_t settings_menu_cbm5x0_joy[] = {
  * Only valid for xvic/xpet/xcbm2
  */
 static ui_menu_item_t settings_menu_userport_joy[] = {
+#if 0
     { "Swap userport joysticks", UI_MENU_TYPE_ITEM_ACTION,
         "userportjoy-swap", (void *)(ui_swap_userport_joysticks_callback), NULL,
         GDK_KEY_U, VICE_MOD_MASK | GDK_SHIFT_MASK },
@@ -644,6 +648,7 @@ static ui_menu_item_t settings_menu_userport_joy[] = {
         "mouse", (void *)(ui_toggle_resource), (void *)"Mouse",
         GDK_KEY_M, VICE_MOD_MASK },
 
+#endif
     UI_MENU_TERMINATOR
 };
 
@@ -660,13 +665,13 @@ static ui_menu_item_t settings_menu_tail[] = {
     { "Load settings", UI_MENU_TYPE_ITEM_ACTION,
         "settings-load", settings_load_callback, NULL,
         0, 0 },
-    { "Load custom settings ...", UI_MENU_TYPE_ITEM_ACTION,
+    { "Load settings from ...", UI_MENU_TYPE_ITEM_ACTION,
         "settings-load-custom", settings_load_custom_callback, NULL,
         0, 0 },
     { "Save settings", UI_MENU_TYPE_ITEM_ACTION,
         "settings-save", settings_save_callback, NULL,
         0, 0 },
-    { "Save custom settings ...", UI_MENU_TYPE_ITEM_ACTION,
+    { "Save settings to ...", UI_MENU_TYPE_ITEM_ACTION,
         "settings-save-custom", settings_save_custom_callback, NULL,
         0, 0 },
     { "Restore default settings", UI_MENU_TYPE_ITEM_ACTION,
@@ -743,7 +748,7 @@ static ui_menu_item_t debug_menu_c64dtv[] = {
     { "IEC bus trace", UI_MENU_TYPE_ITEM_CHECK,
         "trace-iec", (void *)(ui_toggle_resource), (void *)"IEC_TRACE",
         0, 0 },
-    
+
     { "Drive #8 CPU trace", UI_MENU_TYPE_ITEM_CHECK,
         "trace-drive8", (void *)(ui_toggle_resource), (void *)"Drive0CPU_TRACE",
         0, 0 },

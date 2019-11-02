@@ -1,11 +1,10 @@
 # We have to override the automake default, because we need to use
 # $(CXX) instead of $(CC) when compiling with reSID.
-LINK = @LINKCC@ $(VICE_CFLAGS) $(LDFLAGS) -o $@
+LINK = @LINKCC@ @VICE_CFLAGS@ $(LDFLAGS) -o $@
 CCLD = @LINKCC@
 
-AM_CFLAGS = $(VICE_CFLAGS)
-
-AM_CXXFLAGS = $(VICE_CXXFLAGS)
+AM_CFLAGS = @VICE_CFLAGS@
+AM_CXXFLAGS = @VICE_CXXFLAGS@
 
 ARCH_LIBS = @ARCH_LIBS@
 
@@ -117,6 +116,7 @@ DIST_SUBDIRS = \
 	hvsc
 
 AM_CPPFLAGS = \
+	@VICE_CPPFLAGS@ \
 	@ARCH_INCLUDES@ \
 	-I$(top_srcdir)/src/arch/shared \
 	-I$(top_builddir)/src \
@@ -236,10 +236,6 @@ noinst_HEADERS = \
 	resources.h \
 	riot.h \
 	romset.h \
-	rs232dev.h \
-	rs232drv.h \
-	rs232net.h \
-	rsuser.h \
 	scpu64ui.h \
 	screenshot.h \
 	serial.h \
@@ -1328,11 +1324,11 @@ endif
 # should have a proper look at this issue.
 # -- compyx
 if HAVE_REALDEVICE
-#if HAVE_BSD
-#realdevice_lib = opencbmlib.o
-#else
+if HAVE_BSD_FREE
+realdevice_lib = opencbmlib.o
+else
 realdevice_lib = opencbmlib.o $(top_builddir)/src/arch/shared/dynlib.o
-#endif
+endif
 else
 realdevice_lib =
 endif

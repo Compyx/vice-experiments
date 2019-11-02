@@ -1,14 +1,15 @@
 # Makefile.am for `libsounddrv.a'.
 
 AM_CPPFLAGS = \
+	@VICE_CPPFLAGS@ \
 	@ARCH_INCLUDES@ \
 	-I$(top_srcdir)/src/arch/shared \
 	-I$(top_builddir)/src \
 	-I$(top_srcdir)/src
 
-AM_CFLAGS = $(VICE_CFLAGS)
+AM_CFLAGS = @VICE_CFLAGS@
 
-AM_CXXFLAGS = $(VICE_CXXFLAGS)
+AM_CXXFLAGS = @VICE_CXXFLAGS@
 
 noinst_LIBRARIES = libsounddrv.a
 

@@ -51,4 +51,8 @@ gboolean ui_restore_display(GtkWidget *widget, gpointer data);
 
 gboolean ui_restore_default_settings(GtkWidget *widget, gpointer data);
 
+gboolean ui_toggle_keyset_joysticks(GtkWidget *widget, gpointer data);
+
+gboolean ui_toggle_mouse_grab(GtkWidget *widget, gpointer data);
+
 #endif

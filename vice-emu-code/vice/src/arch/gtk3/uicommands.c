@@ -70,8 +70,8 @@
  */
 gboolean ui_swap_joysticks_callback(GtkWidget *widget, gpointer user_data)
 {
-    int joy1;
-    int joy2;
+    int joy1 = -1;
+    int joy2 = -1;
 
     resources_get_int("JoyDevice1", &joy1);
     resources_get_int("JoyDevice2", &joy2);
@@ -92,8 +92,8 @@ gboolean ui_swap_joysticks_callback(GtkWidget *widget, gpointer user_data)
 gboolean ui_swap_userport_joysticks_callback(GtkWidget *widget,
                                              gpointer user_data)
 {
-    int joy3;
-    int joy4;
+    int joy3 = -1;
+    int joy4 = -1;
 
     resources_get_int("JoyDevice3", &joy3);
     resources_get_int("JoyDevice4", &joy4);
@@ -101,6 +101,47 @@ gboolean ui_swap_userport_joysticks_callback(GtkWidget *widget,
     resources_set_int("JoyDevice4", joy3);
 
     return TRUE;
+}
+
+
+/** \brief  Toggle resource 'KeySetEnable'
+ *
+ * \param[in]   widget
+ * \param[in]   data    (unused?)
+ *
+ * \return  TRUE (so the UI eats the event)
+ */
+gboolean ui_toggle_keyset_joysticks(GtkWidget *widget, gpointer data)
+{
+    int enable;
+
+    resources_get_int("KeySetEnable", &enable);
+    resources_set_int("KeySetEnable", !enable);
+
+    return TRUE;    /* don't let any shortcut key end up in the emulated machine */
+}
+
+
+/** \brief  Toggle resource 'Mouse' (mouse-grab)
+ *
+ * \param[in]   widget
+ * \param[in]   data    (unused?)
+ *
+ * \return  TRUE (so the UI eats the event)
+ */
+gboolean ui_toggle_mouse_grab(GtkWidget *widget, gpointer data)
+{
+    int mouse;
+
+    resources_get_int("Mouse", &mouse);
+    resources_set_int("Mouse", !mouse);
+    if (mouse) {
+        ui_mouse_grab_pointer();
+    } else {
+        ui_mouse_ungrab_pointer();
+    }
+
+    return TRUE;    /* don't let any shortcut key end up in the emulated machine */
 }
 
 
@@ -136,7 +177,7 @@ gboolean ui_drive_reset_callback(GtkWidget *widget, gpointer user_data)
  */
 static gboolean confirm_exit(void)
 {
-    int confirm;
+    int confirm = FALSE;
 
     resources_get_int("ConfirmOnExit", &confirm);
     if (!confirm) {

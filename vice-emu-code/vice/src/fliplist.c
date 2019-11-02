@@ -144,22 +144,20 @@ void fliplist_set_current(unsigned int unit, const char *filename)
     current_drive = unit;
 }
 
-#if 0
 char *fliplist_get_head(unsigned int unit)
 {
     if (fliplist[unit - 8]) {
         return fliplist[unit - 8]->image;
     }
-    return (char *) NULL;
+    return NULL;
 }
-#endif
 
 const char *fliplist_get_next(unsigned int unit)
 {
     if (fliplist[unit - 8]) {
         return fliplist[unit - 8]->next->image;
     }
-    return (const char *) NULL;
+    return NULL;
 }
 
 const char *fliplist_get_prev(unsigned int unit)
@@ -167,7 +165,7 @@ const char *fliplist_get_prev(unsigned int unit)
     if (fliplist[unit - 8]) {
         return fliplist[unit - 8]->prev->image;
     }
-    return (const char *) NULL;
+    return NULL;
 }
 
 const char *fliplist_get_image(fliplist_t fl)
@@ -413,7 +411,7 @@ int fliplist_load_list(unsigned int unit, const char *filename, int autoattach)
 
         if (strncmp("UNIT ", buffer, 5) == 0) {
             if (all_units != 0) {
-                long unit_long;
+                long unit_long = -1;
 
                 util_string_to_long(buffer + 5, NULL, 10, &unit_long);
 
