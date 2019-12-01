@@ -804,24 +804,52 @@ void mem_powerup(void)
 
 /* ------------------------------------------------------------------------- */
 
-/* FIXME: To do!  */
-
 void mem_get_basic_text(uint16_t *start, uint16_t *end)
 {
+    if (start != NULL) {
+        *start = mem_page_zero[0x2d] | (mem_page_zero[0x2e] << 8);
+    }
+    if (end != NULL) {
+        *end = mem_page_zero[0x2f] | (mem_page_zero[0x30] << 8);
+    }
 }
 
+/* FIXME: This is likely incomplete!  */
 void mem_set_basic_text(uint16_t start, uint16_t end)
 {
+    mem_page_zero[0x2d] = start & 0xff;
+    mem_page_zero[0x2e] = start >> 8;
+    mem_page_zero[0x2f] = end & 0xff;
+    mem_page_zero[0x30] = end >> 8;
+}
+
+/* this function should always read from the screen currently used by the kernal
+   for output, normally this does just return system ram - except when the 
+   videoram is not memory mapped.
+   used by autostart to "read" the kernal messages
+*/
+uint8_t mem_read_screen(uint16_t addr)
+{
+    return mem_read(addr);
 }
 
 void mem_inject(uint32_t addr, uint8_t value)
 {
-    /* just call mem_store() to be safe.
-       This could possibly be changed to write straight into the
-       memory array.  mem_ram[addr & mask] = value; */
-    mem_store((uint16_t)(addr & 0xffff), value);
+    /* since this is used by autostart, this should point to basic memory */
+    /* FIXME: handle > 64kb */
+    mem_ram[0x10000 + (addr & 0xffff)] = value;
 }
-
+/* In banked memory architectures this will always write to the bank that
+   contains the keyboard buffer and "number of keys in buffer", regardless of
+   what the CPU "sees" currently.
+   In all other cases this just writes to the first 64kb block, usually by
+   wrapping to mem_inject().
+*/
+void mem_inject_key(uint16_t addr, uint8_t value)
+{
+    /* write to "romio" bank */
+    mem_bank_write(16, addr, value, NULL);
+}
 /* ------------------------------------------------------------------------- */
 
 int mem_rom_trap_allowed(uint16_t addr)
@@ -974,6 +1002,19 @@ void mem_get_screen_parameter(uint16_t *base, uint8_t *rows, uint8_t *columns, i
     *rows = 25;
     *columns = 80;
     *bank = 16;
+}
+
+/* used by autostart to locate and "read" kernal output on the current screen
+ * this function should return whatever the kernal currently uses, regardless
+ * what is currently visible/active in the UI 
+ */
+void mem_get_cursor_parameter(uint16_t *screen_addr, uint8_t *cursor_column, uint8_t *line_length, int *blinking)
+{
+    /* Cursor Blink enable: 1 = Flash Cursor, 0 = Cursor disabled, -1 = n/a */
+    *blinking = -1;
+    *screen_addr = zero_read(0xc8) + zero_read(0xc9) * 256; /* Current Screen Line Address */
+    *cursor_column = zero_read(0xcb);    /* Cursor Column on Current Line */
+    *line_length = 80;                   /* Physical Screen Line Length */
 }
 
 /* ------------------------------------------------------------------------- */

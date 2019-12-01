@@ -690,7 +690,8 @@ be as good as the C64 or VIC20 one, as they are still under construction.
 @section C64 emulator features
 
 As of version 2.3, two C64 emulators are provided: @samp{x64} (fast)
-and @samp{x64sc} (accurate).
+and @samp{x64sc} (accurate). As of version 3.4 @samp{x64} will no more get
+built by default and is not contained in the default binary packages.
 
 The fast C64 emulator, called @samp{x64}, features a fairly complete
 emulation of the VIC-II video chip: sprites, all registers and all video
@@ -742,14 +743,11 @@ The VIC20 emulates all the internal hardware, including the VIA chips.
 The VIC-I video chip is fully emulated except NTSC interlace mode, so most
 graphical effects will work correctly.
 
-Sound support is implemented, but is still at an experimental stage.  If
-you think it could be improved and know how to do so, feel
-free to contact us (@pxref{Contacts}).
-
-The VIC20 emulator now allows the use of the VIC1112 IEEE488
+The VIC20 emulator allows the use of the VIC1112 IEEE488
 interface. You have to enable the hardware (by menu, resource, or
 commandline option) and then load the IEEE488 ROM (see for
-example @uref{http://www.funet.fi/pub/cbm/schematics/cartridges/vic20/ieee-488/325329-04.bin}, but you have to double the size to 4k for now).
+example @uref{http://www.funet.fi/pub/cbm/schematics/cartridges/vic20/ieee-488/325329-04.bin}, 
+but you have to double the size to 4k for now).
 The IEEE-488 code is then started by @code{SYS45065}.
 
 
@@ -767,9 +765,6 @@ Both the 40 column and 80 column CRTC video chips are emulated (from the
 4032 onward), but a few of the features are not implemented yet (numbers
 of rasterlines per char and lines per screen).  Fortunately, they are
 not very important for average applications.
-
-Sound is available for the PET as well, but like the VIC20's it is still
-under construction.
 
 The PET 8096 is basically a PET 8032 with a 64k extension board which
 allows remapping the upper 32k with RAM.  You have to write to a special
@@ -920,27 +915,24 @@ the @emph{unshifted} @key{*} key pressed (as @key{*} is unshifted on the
 C64 keyboard).  Likewise, pressing @key{'} on the same U.S. keyboard
 without any shift key will cause the combination @kbd{Shift-7} to be
 pressed in the emulated C64.  This way, it becomes quite obvious what
-keys should be typed to obtain all the symbols.
+keys should be typed to obtain all the symbols. @dfn{The key printed on the 
+host keyboard will be pressed in the emulator}.
 
 There is, however, one problem with symbolic mapping: some keys really
-need to be mapped specially regardless.  The most important examples
-being, in the VIC20, C64 and C128 emulators, that @key{CTRL} is mapped
-to @key{Tab} and that the @key{Commodore} key is mapped to the left
-@key{Control}). The @key{RUN/STOP} key is mapped to the @key{ESC} key
-on the PC keyboard. The PET emulator, lacking the @key{Commodore} key
-but having an @key{ESC} key, uses the left @key{Control} key as
-@key{RUN/STOP} and the @key{ESC} key as @key{ESC} of course.
-
-@c FIXME: add a detailed list of all keys
+need to be mapped specially regardless (those that do not exist on a PC
+keyboard).  Some examples are the @key{Commodore} key, @key{RUN/STOP}, 
+@key{Clear/Home}. The exact mapping depends on your host layout, but should
+be easy to find out by try and error :) If in doubt, you can read the keyboard
+mapping files.
 
 The second way (@dfn{positional mapping}) is to map every key on the
-``real'' keyboard to the key which has the same position on the keyboard
-of the emulated machine.  This way, no @key{Shift} key is forced by the
-program (with the exception of the function keys @key{F2}, @key{F4},
-@key{F6} and @key{F8}, which require @key{Shift} on the Commodore
-keyboards), and the keyboard is more comfortable to use in those
-programs (such as some games) that require the keys to be in the correct
-positions.
+host keyboard to the key which has the same position on the keyboard
+of the emulated machine.  This way the keyboard is more comfortable to use 
+in those programs (such as some games) that require the keys to be in the 
+correct positions. On the other hand it can be quite confusing if you are not
+very familiar with the original emulated keyboards. Also not all keys can be
+mapped exactly this way either, which means some of them still need to be
+mapped to other keys (see above).
 
 @strong{Warning:} unlike the real C64, VICE ``presses'' the @key{Shift}
 key @emph{together} with the key to shift when the @key{Shift} must be
@@ -951,16 +943,18 @@ For instance, @kbd{F6} (which on the real C64 is obtained with
 the shift key manually (i.e., type @kbd{Shift + F5} in the example).
 Yes, we know this is a bug.
 
-The @kbd{RESTORE} key is mapped to @kbd{Page Up} (or @kbd{Prev}) by
-default.
+We depend a lot on your support to improve the keyboard maps, as we can not
+test all emulators in all possible configurations and using all host keyboard
+mappings. Please report any problems to us so we can fix them!
 
+To find out the keycodes to use, incase you want to edit the keymaps yourself,
+you can enable showing the keycodes in the status bar in the settings.
 
 @node Joystick emulation, Disk drive emulation, Keyboard emulation, Preface
 @section The joystick emulation
 
 Joysticks can be emulated both via the keyboard and via a real joystick
-connected to the host machine (the latter only works on GNU/Linux
-systems).
+connected to the host machine.
 
 There are two keyboard layouts for joystick use, known as @dfn{numpad}
 and @dfn{custom}.
@@ -969,10 +963,7 @@ The @dfn{numpad} layout uses the numeric keypad keys, i.e., the numbers
 @key{1}@dots{}@key{9} which emulate all the directions including the
 diagonal ones; @key{0} emulates the fire button.
 
-The @dfn{custom} layout uses the keys @key{w}, @key{e}, @key{r},
-@key{s}, @key{d}, @key{f}, @key{x}, @key{c}, @key{v} for the directions
-and @key{space} for the fire button instead.
-
+The @dfn{custom} layout is configurable to your liking.
 
 @node Disk drive emulation, Supported file formats, Joystick emulation, Preface
 @section The disk drive emulation
@@ -980,7 +971,7 @@ and @key{space} for the fire button instead.
 All the emulators support up to 4 external disk drives as
 devices 8, 9, 10 and 11.  Each of these devices can emulate virtual
 Commodore 1541, 1541-II, 1571, 1581, 2031, 2040, 3040, 4040, 1001, 8050 and
-8250 drives in one of four ways:
+8250 drives in one of the following ways:
 
 @itemize @bullet
 @item
@@ -994,19 +985,9 @@ without having to copy them to disk images; this also allows you to
 read and write files in the @code{P00} format (again, consult the
 @code{comp.emulators.cbm} FAQ for more info).
 @item
-accessing a real device connected to the host machine. As of VICE 1.11
-it is possible to connect real drives like Commodore 1541 to the
-printer port of the host using the XA1541 or XM1541 cable. Currently
-this only works on Linux or Windows using the OpenCBM library. You can
-get it from @uref{http://www.lb.shuttle.de/puffin/cbm4linux} (cbm4linux,
-Linux version) or from @uref{http://cbm4win.sf.net} (cbm4win, Windows
-version).
+accessing a real device connected to the host machine. This works using the 
+OpenCBM library. You can get it from @uref{http://cbm4win.sf.net}.
 
-@item
-directly using the disk drive of the host. The 3.5" disk drive of the
-host can be used to read or write Commodore 1581 formatted disks.
-Currently this raw drive access feature is only available for Linux
-hosts.
 @end itemize
 
 When using disk images there are two available types of drive
@@ -1015,7 +996,7 @@ emulation.  One of them the @dfn{virtual drive} emulation.  It does
 (with the so-called @dfn{kernal traps}) so that serial line operations
 can be emulated via C language routines.  This emulation is very fast,
 but only allows use of standard DOS functions (and not even all of
-them).  For real device or raw drive access it is required to enable
+them).  For real device access it is required to enable
 this type of emulation.
 
 The IEEE488 drives (2031, 2040, 3040, 4040, 1001, 8050 and 8250) do
@@ -1146,6 +1127,9 @@ VICE supports the most popular Commodore file formats:
 @item
 @code{CRT} C64 cartridge image files
 
+@item
+@code{TCRT} tapecart image files
+
 @end itemize
 
 An utility (@code{c1541}, @pxref{c1541}) is provided to allow transfers
@@ -1194,29 +1178,8 @@ If the CPU usage is ok, try using a different sound driver. You may also try
 increasing the sound buffer size (although the default should be ok for modern
 systems).
 
-Linux, AIX and SGI systems should play sound without any problems; if
-you are running Linux please use a 2.x kernel, as VICE needs some
-features that were not implemented in older versions of the Linux sound
-driver.
-
-Windows should play sound ok.
-
-macOS is currently untested.
-
 All platforms that can run the SDL port (like Amiga, BeOS, etc) should be able
 to play sound via SDL.
-
-@cindex HP-UX and Solaris audio problems
-On the other hand, HP-UX and Solaris machines are known to cause
-troubles.  If you think you can help debugging the code for these
-systems, your help would be really appreciated.  We are having troubles
-finding HP-UX and SUN consoles to work at@dots{}
-
-@cindex OSS/Linux problems
-Some problems have been reported with the proprietary version of the
-Open Sound System for Linux.  With a Crystal sound card, sound output
-was significantly delayed and, apparently, the allocated buffer size was
-completely wrong.  This is not a VICE bug, but rather an OSS bug.
 
 @node Video problems, Printer problems , Sound problems, Common problems
 @subsection Video problems
@@ -1303,10 +1266,8 @@ The names of the available emulators are:
 You can run each of them by simply typing the name from a shell or by configuring
 your window manager for example to use them to open disk images.
 
-If you want to look at the log output, or use the monitor in a port which does
-not have a dedicated monitor UI yet, you should always
-run them from a terminal window such as @code{xterm} or @code{rxvt}.  For example,
-you could do
+If you want to look at the log output run them from a terminal window such as 
+@code{xterm} or @code{rxvt}.  For example, you could do
 
 @example
 xterm -e x64sc
@@ -1358,10 +1319,6 @@ with this option you can see all resources and their current values.
 @item -logfile <name>
 Specify log file name
 (@code{LogFileName}).
-
-@findex -monlog
-@item -monlog <name>
-Specify log file name for the monitor.
 
 @findex -verbose
 @item -verbose
@@ -1767,7 +1724,7 @@ Also the character generator ROMs have a format different from the
 above.  The other character ROMs have 8 bytes of pixel data per
 character.  Those ROMs have 16 bytes per character instead.  The C6x0
 only uses the first 8 of it, but the C7x0 uses 14 lines per character
-and needs those increased ROMs.  Both ROMs hold, like the PET, two
+and needs those larger ROMs.  Both ROMs hold, like the PET, two
 character sets with 128 characters each.  Again the second half of the
 full (256 char) character set is computed by inverting.
 
@@ -1819,7 +1776,7 @@ key (or combination of keys) must be mapped to each keysym.
 
 In other words, the keyboard emulation works like this: whenever the
 user presses or releases a key while the emulation window has the input
-focus, the emulator receives an X-Window event with a value that
+focus, the emulator receives an event with a value that
 identifies that key.  That value is called a @dfn{keysym} and is unique
 to that key.  The emulator then looks up that keysym in an internal
 table that tells it which key(s) to press or release on the emulated
@@ -1837,8 +1794,8 @@ Where:
 @itemize @bullet
 
 @item
-@code{KEYSYM} is a string identifying the keysym: you can use the
-@code{xev} utility (shipped with the X Window system) to see what keysym
+@code{KEYSYM} is a string (GTK) or number (SDL) identifying the keysym: you can 
+use the "show keycodes in statusbar" feature to see what keysym
 is bound to any key;
 
 @item
@@ -1863,6 +1820,39 @@ is bound to any key;
 
 @item
 @code{8}: the key can be (optionally) shifted by the user.
+
+@item
+@code{16}: deshift key for this keysym/scancode
+
+@item
+@code{32}: another definition for this keysym/scancode follows
+
+@item
+@code{64}: key is shift-lock on emulated machine
+
+@item
+@code{128}: shift modifier required on host
+
+@item
+@code{256}: key is used for an alternative keyboard mapping
+
+@item
+@code{512}: alt-r (alt-gr) modifier required on host
+
+@item
+@code{1024}: ctrl modifier required on host
+
+@item
+@code{2048}: key is combined with cbm for this keysym/scancode
+
+@item
+@code{4096}: key is combined with ctrl for this keysym/scancode
+
+@item
+@code{8192}: key is (left) cbm on emulated machine
+
+@item
+@code{16384}: key is (left) ctrl on emulated machine
 
 @end itemize
 
@@ -1893,6 +1883,14 @@ necessary to put this at the beginning of the file if you want the
 keymap file to override all of the current internal settings;
 
 @item
+@code{!INCLUDE} followed by "filename" reads (inserts) file as mapping file. This is useful
+when adding local mappings to an otherwise generic file (so you dont have to
+copy the while file, but just add/modify a few keys).
+
+@item
+@code{!UNDEF} keysym'        remove keysym from table
+
+@item
 @code{!LSHIFT}, @code{!RSHIFT}, followed by a row and a column
 value, specify where the left and right shift keys are located on the
 emulated keyboard; for example, C64 default keymaps will specify
@@ -1901,6 +1899,30 @@ emulated keyboard; for example, C64 default keymaps will specify
 !LSHIFT 1 7
 !RSHIFT 6 4
 @end example
+
+@item
+@code{!LCTRL}, followed by a row and a column value, specifiy where the left 
+control key is located on the emulated keyboard.
+
+@item
+@code{!LCBM}, followed by a row and a column value, specifiy where the left 
+CBM key is located on the emulated keyboard.
+
+@item
+@code{!VSHIFT}, followed by a shiftkey (RSHIFT or LSHIFT), specify what key will
+be used as a virtual shift key when the shift flag is set.
+
+@item
+@code{!SHIFTL}, followed by a shiftkey (RSHIFT or LSHIFT), specify what key will
+be used as a virtual shift-lock key.
+
+@item
+@code{!VCTRL}, followed by a ctrlkey (LCTRL), specify what key will
+be used as a virtual control key.
+
+@item
+@code{!VCBM}, followed by a cbmkey (LCBM), specify what key will
+be used as a virtual CBM key.
 
 @end itemize
 
@@ -2023,7 +2045,7 @@ has been fired up.
 @section The emulation window
 
 When the emulator is run, the screen of the emulated machine is
-displayed in a standard X Window which we will call the @dfn{emulation
+displayed in a window which we will call the @dfn{emulation
 window}.  This window will be updated in real time, displaying the same
 contents that a real monitor or TV set would.
 
@@ -2764,14 +2786,6 @@ The following resources affect the screen emulation.
 @item HwScalePossible
 Boolean that indicates whether hardware scaling is possible or not.
 
-@vindex openGL_sync
-@item openGL_sync
-Boolean, if true enable Open-GL frame sync.
-
-@vindex openGL_no_sync
-@item openGL_no_sync
-Boolean, if true Open-GL sync is not available.
-
 @vindex Speed
 @item Speed
 Integer specifying the maximum relative speed, as a percentage. @code{0}
@@ -2786,6 +2800,10 @@ skipping.
 @vindex WarpMode
 @item WarpMode
 Boolean specifying whether ``warp mode'' is turned on or not.
+
+@vindex FullscreenEnable
+@item FullscreenEnable
+Boolean specifying whether ``fullscreen'' is turned on at startup or not.
 
 @end table
 
@@ -3967,10 +3985,6 @@ String specifying the filename of the Supercard ROM image
 String specifying the filename of the image of the lower half of the StarDOS ROM
 (x64, x64sc, xscpu64 and x128 only).
 
-@vindex RawDriveDriver
-@item RawDriveDriver
-String specifying the name of the device to be used for raw block access.
-
 @end table
 
 @node Drive options,  , Drive resources, Drive settings
@@ -4403,11 +4417,6 @@ half using the -dos1541 option.)
 (@code{DriveStarDosName})
 (x64, x64sc, xscpu64 and x128 only).
 
-@findex -rawdrive
-@item -rawdrive <name>
-Set raw drive device name
-(@code{RawDriveDriver})
-
 @end table
 
 
@@ -4506,7 +4515,7 @@ Booleans that specify whether IEC device emulation for device #8 to #11 is enabl
 @itemx FileSystemDevice11
 Integers specifying the device type for device 8-11 respectively
 (all emulators except vsid).
-(0: None, 1: Filesystem, 2: OpenCBM (Real), 3: Block Device (Raw))
+(0: None, 1: Filesystem, 2: OpenCBM (Real))
 
 @vindex FSDevice8ConvertP00
 @vindex FSDevice9ConvertP00
@@ -4595,7 +4604,7 @@ Enable/disable IEC device emulation for device #11
 Set device type for device 8-11 respectively
 (@code{FileSystemDevice8}, @code{FileSystemDevice9}, @code{FileSystemDevice10}, @code{FileSystemDevice11})
 (all emulators except vsid).
-(0: None, 1: Filesystem, 2: OpenCBM (Real), 3: Block device (Raw))
+(0: None, 1: Filesystem, 2: OpenCBM (Real))
 
 @findex -fs8
 @findex -fs9
@@ -5541,6 +5550,14 @@ Boolean specifying whether the native monitor is enabled. When enabled, the moni
  will not run in the interface of the emulator, but instead work in the spawning
  terminal.
 
+@vindex MonitorLogEnabled
+@item MonitorLogEnabled
+Boolean specifying whether the output of the monitor will be logged to a file.
+
+@vindex MonitorLogFileName
+@item MonitorLogFileName
+String specifying the logfile name for the monitor.
+
 @end table
 
 @subsection Monitor command-line options
@@ -5578,58 +5595,152 @@ The local address the remote monitor should bind to
 Enable/Disable native monitor.
 (@code{NativeMonitor=1}, @code{NativeMonitor=0}).
 
+@findex -monlog, +monlog
+@item -monlog
+@itemx +monlog
+Enable/Disable logging monitor output to a file.
+(@code{MonitorLogEnabled=1}, @code{MonitorLogEnabled=0}).
+
+@findex -monlogname
+@item -monlogname <name>
+Specify logfile name for the monitor.
+(@code{MonitorLogFileName}).
+
 @end table
 
 @c ----------------------------------------------------------------
 
 @c @node FIXME
-@section Memory settings
+@section RAM init pattern settings
+
+The initial content of uninitialized RAM depends on many factors, the inner
+workings of the RAM chip, the motherboard, etc. Generally, many RAM chips are
+build in a way that - however - at powerup about half the bits turn out 1, and
+about the other half turns out 0. As a consequence, and depending on what kind
+of RAM chips have been used in what kind of way, the typical patterns can be
+"seen" by the CPU right after powerup.
+
+VICE tries to model (some of) the real patterns accurately. Please be aware of
+the fact that there is - technically buggy - software out there that will only
+work with a certain RAM init pattern.
+
+How generating the pattern works is easily described in three simple steps:
+
+1. A base pattern is created using blocks of @code{RAMInitStartValue}, which
+   is inverted every @code{RAMInitValueInvert} bytes. This pattern can be offset
+   ("rotated") by @code{RAMInitValueOffset} bytes. This step creates the typical
+   00 00 ff ff ff ff 00 00 etc patterns.
+   
+2. Every @code{RAMInitPatternInvert} bytes the base pattern is inverted 
+   ("xored") by @code{RAMInitPatternInvertValue}. This step creates the inverted
+   pattern every $4000 or so bytes that is typical for some boards/ICs. It may
+   also create the 0x99, 0x66 based patterns that show up on other setups.
+   
+3. Every @code{RAMInitRepeatRandom} bytes @code{RAMInitStartRandom} bytes are
+   randomly inverted ("xored"). Additionally every bit is randomly inverted with
+   a @code{RAMInitRandomChance} : 4096 chance. This step creates the typical
+   random bytes that have been observed with some boards/ICs.
 
 @c @node FIXME
-@subsection Memory resources
+@subsection RAM init pattern resources
 
 @table @code
 
 @vindex RAMInitStartValue
 @item RAMInitStartValue
-Integer specifying the value for the very first RAM address after powerup
+Integer specifying the first value of the base pattern
 (all emulators except vsid).
 (0..255)
 
 @vindex RAMInitValueInvert
 @item RAMInitValueInvert
-Integer specifying the length of the memory block initialized with the same value
+Integer specifying the number of bytes until the base pattern is inverted
+(all emulators except vsid).
+
+@vindex RAMInitValueOffset
+@item RAMInitValueOffset
+Integer specifying the number of bytes to offset the base pattern
 (all emulators except vsid).
 
 @vindex RAMInitPatternInvert
 @item RAMInitPatternInvert
-Integer specifying the length of the memory block initialized with the same pattern
+Integer specifying the length of the memory block when inverting the base pattern
+(all emulators except vsid).
+
+@vindex RAMInitPatternInvertValue
+@item RAMInitPatternInvertValue
+Integer specifying the value to use for inverting the base pattern with
+(all emulators except vsid).
+
+@vindex RAMInitStartRandom
+@item RAMInitStartRandom
+Integer specifying the number of random bytes in the random pattern
+(all emulators except vsid).
+
+@vindex RAMInitRepeatRandom
+@item RAMInitRepeatRandom
+Integer specifying the number of bytes after which to repeat the random pattern
+(all emulators except vsid).
+
+@vindex RAMInitRandomChance
+@item RAMInitRandomChance
+Integer specifying the chance of any bit to randomly toggle (0-4096)
 (all emulators except vsid).
 
 @end table
 
 @c @node FIXME
-@subsection Memory command-line options
+@subsection RAM init pattern command-line options
 
 @table @code
 
 @findex -raminitstartvalue
 @item -raminitstartvalue <value>
-Set the value for the very first RAM address after powerup
+Set the first value of the base pattern
 (@code{RAMInitStartValue})
 (all emulators except vsid).
 (0..255)
 
 @findex -raminitvalueinvert
 @item -raminitvalueinvert <num of bytes>
-Length of memory block initialized with the same value
+Set the number of bytes until the base pattern is inverted
 (@code{RAMInitValueInvert})
+(all emulators except vsid).
+
+@findex -raminitvalueoffset
+@item -raminitvalueoffset <num of bytes>
+Offset the first pattern by <num> of bytes
+(@code{RAMInitValueOffset})
 (all emulators except vsid).
 
 @findex -raminitpatterninvert
 @item -raminitpatterninvert <num of bytes>
-Length of memory block initialized with the same pattern
+Set the length of the memory block when inverting the base pattern
 (@code{RAMInitPatternInvert})
+(all emulators except vsid).
+
+@findex -raminitpatterninvertvalue
+@item -raminitpatterninvertvalue <value>
+Set the length of the memory block when inverting the base pattern
+(@code{RAMInitPatternInvertValue})
+(all emulators except vsid).
+
+@findex -raminitstartrandom
+@item -raminitstartrandom <num of bytes>
+Set the number of random bytes in the random pattern
+(@code{RAMInitStartRandom})
+(all emulators except vsid).
+
+@findex -raminitrepeatrandom
+@item -raminitrepeatrandom <num of bytes>
+Set the number of bytes after which to repeat the random pattern
+(@code{RAMInitRepeatRandom})
+(all emulators except vsid).
+
+@findex -raminitrandomchance
+@item -raminitrandomchance <value>
+Set the chance of any bit to randomly toggle (0-4096)
+(@code{RAMInitRandomChance})
 (all emulators except vsid).
 
 @end table
@@ -5893,6 +6004,7 @@ speeddos or JiffyDos) can be stored for example.
 emulator's system files.
 
 @end ifset
+
 @vindex DoCoreDump
 @item DoCoreDump
 Boolean specifying whether the emulator should dump core when it gets a signal
@@ -7129,7 +7241,7 @@ Attach CBM IEEE-488 cartridge image.
 @itemx +ieee488
 Enable/disable emulation of the IEEE488 interface
 (@code{IEEE488=1}, @code{IEEE488=0}).
-.
+
 @findex -ieee488image
 @item -ieee488image <name>
 Set IEEE488 interface image name
@@ -12433,6 +12545,11 @@ Override PSID settings for Video standard and SID model
 Specify PSID tune <number>
 (@code{PSIDTune}).
 
+@findex -hvsc-root
+@item -hvsc-root <path>
+Specify the location of the HVSC "C64Music" directory.
+(@code{HVSCRoot}).
+
 @findex -chargen
 @item -chargen <name>
 Specify name of character generator ROM image
@@ -12815,17 +12932,6 @@ Integer specifying the joystick fuzz.
 
 @end table
 
-@ifset platformdingoo
-@b{The following resource is only present if compiling for native dingoo.}
-
-@table @code
-
-@vindex OverClock
-@item OverClock
-Boolean to enable/disable overclocking.
-
-@end table
-
 @c -----------------------------------------------------------------
 @c @node FIXME
 @subsection SDL specific command-line options
@@ -12945,6 +13051,14 @@ Set the custom resolution width
 @item -sdlcustomh <height>
 Set the custom resolution height
 (@code{SDLCustomHeight}).
+
+@findex -sdlinitialw
+@item -sdlinitialw <width>
+Set initial window width.
+
+@findex -sdlinitialh
+@item -sdlinitialh <height>
+Set initial window height.
 
 @c Move to generic options
 @findex -kbdstatusbar, +kbdstatusbar
@@ -13191,6 +13305,8 @@ Set the joystick fuzz
 @end ifset
 @end ifclear
 
+@ifset platformunix
+
 This section lists the settings and commands that are common and specific to Unix, and are thus not present in other platforms.
 
 @c -----------------------------------------------------------------
@@ -13265,15 +13381,6 @@ Integers specifying the position and size of the (first) emulator window
 @itemx Window1Ypos
 Integers specifying the position and size of the (second) emulator window
 (x128 only).
-
-@vindex FOURCC
-@item FOURCC
-String specifying the YUV FOURCC format to use.
-
-@vindex UseFullscreen
-@item UseFullscreen
-Boolean specifying whether fullscreen mode is currently in use
-(all emulators except vsid).
 
 @vindex CrtcHwScale
 @item CrtcHwScale
@@ -13500,18 +13607,6 @@ Confirm quitting VICE
 Never confirm quitting VICE
 (@code{ConfirmOnExit=0}).
 
-@findex -displaydepth
-@item -displaydepth <value>
-Specify the display depth
-(@code{DisplayDepth})
-(all emulators except vsid).
-(0..32)
-
-@findex -fourcc
-@item -fourcc <fourcc>
-Set the YUV FOURCC format to use
-(@code{FOURCC}).
-
 @findex -fullscreen, +fullscreen
 @item -fullscreen
 @itemx +fullscreen
@@ -13654,8 +13749,8 @@ Specify MIDI driver
 
 @end table
 
-
 @end ifset
+@c platformunix
 
 @c -----------------------------------------------------------------
 
@@ -15954,6 +16049,16 @@ Show current working directory.
 Set the default radix to hex, decimal, octal, or binary.  With no
 argument, the current radix is printed.
 
+@item log [on|off|toggle]
+Control whether the monitor output is logged into a logfile. If the
+argument is 'on' then all output will be written into the logfile. If
+the argument is 'off' then no log is produced. If the argument is
+'toggle' then the current mode is switched. No argument displays the
+current state.
+
+@item logname "<filename>"
+Sets the filename of the logfile.
+
 @end table
 
 
@@ -16474,6 +16579,11 @@ file you want to convert the input file to.
 @item -t carttype
 This parameter is optional. It is only needed when converting to a .crt
 file. See below for the supported cartridge types.
+@findex -s
+@item -s revision
+This parameter is optional. It is only needed when converting to a .crt
+file. See the detailed description of the .crt format for which types support
+subtypes/revisions.
 @findex -n
 @item -n "cart name"
 This parameter is optional and is used as the cartridge name when creating

@@ -5,6 +5,7 @@
  *  Markus Brenner   <markus@brenner.de>
  *  Ettore Perazzoli <ettore@comm2000.it>
  *  Andreas Boose <viceteam@t-online.de>
+ *  Errol Smith <strobey@users.sourceforge.net>
  *
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
@@ -32,12 +33,14 @@
 #include <string.h>
 
 #include <stdio.h>
+#include "lib.h"
 #include "log.h"
 #include "machine.h"
 #include "maincpu.h"
 #include "monitor.h"
 #include "types.h"
 #include "vdc-mem.h"
+#include "vdc-resources.h"
 #include "vdc.h"
 #include "vdctypes.h"
 
@@ -65,7 +68,7 @@ static void vdc_write_data(void)
     ptr = (vdc.regs[18] << 8) + vdc.regs[19];
 
     /* Write data byte to update address. */
-    vdc.ram[ptr & vdc.vdc_address_mask] = vdc.regs[31];
+    vdc_ram_store(ptr & vdc.vdc_address_mask, vdc.regs[31]);
 #ifdef REG_DEBUG
     log_message(vdc.log, "STORE %04x %02x", ptr & vdc.vdc_address_mask,
                 vdc.regs[31]);
@@ -261,8 +264,13 @@ void vdc_store(uint16_t addr, uint8_t value)
 #endif
             break;
 
-        case 8:                 /* R08  unused: Interlace and Skew */
-            vdc.update_geometry = 1;
+        case 8:                 /* R08  Interlace and Skew */
+			if ((vdc.regs[8] & 0x03) == 3)  {   /* interlace */
+				vdc.interlaced = 1;
+			} else {
+				vdc.interlaced = 0;
+			}
+			//vdc.update_geometry = 1;
 #ifdef REG_DEBUG
             log_message(vdc.log, "REG 8 Interlace:%02x", vdc.regs[8]);
 #endif
@@ -501,7 +509,7 @@ uint8_t vdc_read(uint16_t addr)
         /*log_message(vdc.log, "read: addr = %x", addr);*/
 
         if (vdc.update_reg == 31) {
-            retval = vdc.ram[((vdc.regs[18] << 8) + vdc.regs[19]) & vdc.vdc_address_mask];
+            retval = vdc_ram_read((vdc.regs[18] << 8) + vdc.regs[19]);
             ptr = (1 + vdc.regs[19] + (vdc.regs[18] << 8))
                   & vdc.vdc_address_mask;
             vdc.regs[18] = (ptr >> 8) & 0xff;
@@ -579,14 +587,40 @@ uint8_t vdc_peek(uint16_t addr)    /* No sidefx read of external VDC registers *
     }
 }
 
+#if 0
+/* address translation function for a 64KB VDC in 16KB mode */
+static uint16_t vdc_64k_to_16k_map(uint16_t address)
+{
+    uint16_t new_address = address & 0x80ff;
+    uint16_t tmp = address & 0x3f00;
+    uint16_t low_bit = address & 0x0100;
+
+    tmp <<= 1;
+    tmp |= low_bit;
+    new_address |= tmp;
+    return new_address;
+}
+#endif
 
 uint8_t vdc_ram_read(uint16_t addr)
 {
+#if 0
+    /* check for 16KB memory map and 64KB VDC */
+    if (!(vdc.regs[28] & 0x10) && (vdc_resources.vdc_64kb_expansion)) {
+        return vdc.ram[vdc_64k_to_16k_map(addr & vdc.vdc_address_mask)];
+    }
+#endif
+    /* for now the default till all possible combinations have been fixed */
     return vdc.ram[addr & vdc.vdc_address_mask];
 }
 
 void vdc_ram_store(uint16_t addr, uint8_t value)
 {
+#if 0
+    if (!(vdc.regs[28] & 0x10) && (vdc_resources.vdc_64kb_expansion)) {
+        vdc.ram[vdc_64k_to_16k_map(addr & vdc.vdc_address_mask)] = value;
+    } else
+#endif
     vdc.ram[addr & vdc.vdc_address_mask] = value;
 }
 

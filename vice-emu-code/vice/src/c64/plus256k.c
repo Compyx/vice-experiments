@@ -319,6 +319,15 @@ void plus256k_ram_high_store(uint16_t addr, uint8_t value)
     }
 }
 
+void plus256k_ram_inject(uint16_t addr, uint8_t value)
+{
+    if (addr < 0x1000) {
+        plus256k_ram_low_store(addr, value);
+    } else {
+        plus256k_ram_high_store(addr, value);
+    }
+}
+
 uint8_t plus256k_ram_low_read(uint16_t addr)
 {
     return plus256k_ram[(plus256k_low_bank << 16) + addr];

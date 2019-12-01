@@ -1,9 +1,13 @@
+/* vim: set et ts=4 sw=4 sts=4 fdm=marker syntax=c.doxygen: */
+
+/** \file   fliplist.c
+ * \brief   Fliplist handling
+ *
+ * \author  pottendo <pottendo@gmx.net>
+ * \author  Bas Wassink <b.wassink@ziggo.nl>
+ */
+
 /*
- * fliplist.c
- *
- * Written by
- *  pottendo <pottendo@gmx.net>
- *
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
  *
@@ -30,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "archdep.h"
 #include "attach.h"
@@ -178,15 +183,15 @@ unsigned int fliplist_get_unit(fliplist_t fl)
     return fl->unit;
 }
 
-void fliplist_add_image(unsigned int unit)
+bool fliplist_add_image(unsigned int unit)
 {
     fliplist_t n;
 
     if (current_image == NULL) {
-        return;
+        return false;
     }
     if (strcmp(current_image, "") == 0) {
-        return;
+        return false;
     }
 
     n = lib_malloc(sizeof(struct fliplist_s));
@@ -206,7 +211,9 @@ void fliplist_add_image(unsigned int unit)
         n->prev = n;
     }
     show_fliplist(unit);
+    return true;
 }
+
 
 void fliplist_remove(unsigned int unit, const char *image)
 {
@@ -264,10 +271,18 @@ void fliplist_remove(unsigned int unit, const char *image)
     }
 }
 
-void fliplist_attach_head (unsigned int unit, int direction)
+
+/** \brief  Attach new image from the fliplist
+ *
+ * \param[in]   unit        drive unit number (8-11)
+ * \param[in]   direction   attach either next (>=1) or previous image
+ *
+ * \return  boolean
+ */
+bool fliplist_attach_head(unsigned int unit, int direction)
 {
     if (fliplist[unit - 8] == NULL) {
-        return;
+        return false;
     }
 
     if (direction) {
@@ -276,9 +291,12 @@ void fliplist_attach_head (unsigned int unit, int direction)
         fliplist[unit - 8] = fliplist[unit - 8]->prev;
     }
 
-    if (file_system_attach_disk(fliplist[unit - 8]->unit, fliplist[unit - 8]->image) < 0) {
+    if (file_system_attach_disk(fliplist[unit - 8]->unit,
+                fliplist[unit - 8]->image) < 0) {
         /* shouldn't happen, so ignore it */
+        return false;   /* handle it anyway */
     }
+    return true;
 }
 
 fliplist_t fliplist_init_iterate(unsigned int unit)

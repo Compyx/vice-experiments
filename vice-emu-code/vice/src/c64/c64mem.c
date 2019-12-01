@@ -34,6 +34,7 @@
 
 #include "alarm.h"
 #include "c64.h"
+#include "c64-memory-hacks.h"
 #include "c64-resources.h"
 #include "c64_256k.h"
 #include "c64cart.h"
@@ -877,10 +878,33 @@ void mem_set_basic_text(uint16_t start, uint16_t end)
     mem_ram[0x2e] = mem_ram[0x30] = mem_ram[0x32] = mem_ram[0xaf] = end >> 8;
 }
 
+/* this function should always read from the screen currently used by the kernal
+   for output, normally this does just return system ram - except when the 
+   videoram is not memory mapped.
+   used by autostart to "read" the kernal messages
+*/
+uint8_t mem_read_screen(uint16_t addr)
+{
+    return ram_read(addr);
+}
+
 void mem_inject(uint32_t addr, uint8_t value)
 {
-    /* could be made to handle various internal expansions in some sane way */
-    mem_ram[addr & 0xffff] = value;
+    /* printf("mem_inject addr: %04x  value: %02x\n", addr, value); */
+    if (!memory_hacks_ram_inject(addr, value)) {
+        mem_ram[addr & 0xffff] = value;
+    }
+}
+
+/* In banked memory architectures this will always write to the bank that
+   contains the keyboard buffer and "number of keys in buffer", regardless of
+   what the CPU "sees" currently.
+   In all other cases this just writes to the first 64kb block, usually by
+   wrapping to mem_inject().
+*/
+void mem_inject_key(uint16_t addr, uint8_t value)
+{
+    mem_inject(addr, value);
 }
 
 /* ------------------------------------------------------------------------- */
@@ -1188,6 +1212,19 @@ void mem_get_screen_parameter(uint16_t *base, uint8_t *rows, uint8_t *columns, i
     *rows = 25;
     *columns = 40;
     *bank = 0;
+}
+
+/* used by autostart to locate and "read" kernal output on the current screen
+ * this function should return whatever the kernal currently uses, regardless
+ * what is currently visible/active in the UI 
+ */
+void mem_get_cursor_parameter(uint16_t *screen_addr, uint8_t *cursor_column, uint8_t *line_length, int *blinking)
+{
+    /* Cursor Blink enable: 1 = Flash Cursor, 0 = Cursor disabled, -1 = n/a */
+    *blinking = mem_ram[0xcc] ? 0 : 1;
+    *screen_addr = mem_ram[0xd1] + mem_ram[0xd2] * 256; /* Current Screen Line Address */
+    *cursor_column = mem_ram[0xd3];    /* Cursor Column on Current Line */
+    *line_length = mem_ram[0xd5] + 1;  /* Physical Screen Line Length */
 }
 
 /* ------------------------------------------------------------------------- */

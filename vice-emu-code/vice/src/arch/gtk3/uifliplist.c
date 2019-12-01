@@ -1,7 +1,10 @@
+/* vim: set et ts=4 sw=4 sts=4 fdm=marker syntax=c.doxygen: */
+
 /** \file   uifliplist.c
  * \brief   Fliplist menu management
  *
  * \author  Michael C. Martin <mcmartin@gmail.com>
+ * \author  Bas Wassink <b.wassink@ziggo.nl>
  */
 
 /*
@@ -48,51 +51,107 @@ gboolean ui_fliplist_add_current_cb(GtkWidget *widget, gpointer data)
     int unit = GPOINTER_TO_INT(data);
     char buffer[MSGBUF_SIZE];
 
-    fliplist_add_image(unit);
+    if (fliplist_add_image(unit)) {
 
-    g_snprintf(buffer, MSGBUF_SIZE, "Fliplist (#%d): added '%s'",
-            unit, fliplist_get_head((unsigned int)unit));
-    ui_display_statustext(buffer, 10);
+        g_snprintf(buffer, MSGBUF_SIZE, "Fliplist (#%d): added '%s'",
+                unit, fliplist_get_head((unsigned int)unit));
+        ui_display_statustext(buffer, 10);
+    } else {
+        /* Display proper error message once we have a decent
+         * get_image_filename(unit) function which returns NULL on non-attached
+         * images.
+         */
+        g_snprintf(buffer, MSGBUF_SIZE, "Fliplist (#%d): oops", unit);
+        ui_display_statustext(buffer, 10);
+    }
     return TRUE;
 }
 
+
+/** \brief  Remove current image from fliplist
+ *
+ * \param[in]   widget  unused
+ * \param[in]   data    unit number
+ *
+ * \return  TRUE (make sure GLib 'consumes' the key event so it doesn't end up
+ *          in the emulated machine
+ */
 gboolean ui_fliplist_remove_current_cb(GtkWidget *widget, gpointer data)
 {
     int unit = GPOINTER_TO_INT(data);
     char buffer[MSGBUF_SIZE];
+    const char *image;
 
     /* get image filename before removing image */
-    g_snprintf(buffer, MSGBUF_SIZE, "Fliplist (#%d): Removed '%s'",
-            unit, fliplist_get_head((unsigned int)unit));
+    image = fliplist_get_head((unsigned int)unit);
+
+    if (image != NULL) {
+        g_snprintf(buffer, MSGBUF_SIZE, "Fliplist (#%d): Removed '%s'",
+                unit, image);
+    } else {
+        g_snprintf(buffer, MSGBUF_SIZE, "Fliplist (#%d): Nothing to remove",
+                unit);
+    }
 
     fliplist_remove(unit, NULL);
     ui_display_statustext(buffer, 10);
     return TRUE;
 }
 
+
+/** \brief  Select next image in the fliplist
+ *
+ * \param[in]   widget  unused
+ * \param[in]   data    unit number
+ *
+ * \return  TRUE (make sure GLib 'consumes' the key event so it doesn't end up
+ *          in the emulated machine
+ */
 gboolean ui_fliplist_next_cb(GtkWidget *widget, gpointer data)
 {
     int unit = GPOINTER_TO_INT(data);
     char buffer[MSGBUF_SIZE];
 
-    fliplist_attach_head(unit, 1);
-    g_snprintf(buffer, MSGBUF_SIZE, "Fliplist (#%d): attached next image: '%s'",
-            unit, fliplist_get_head((unsigned int)unit));
+    if (fliplist_attach_head(unit, 1)) {
+        g_snprintf(buffer, MSGBUF_SIZE,
+                "Fliplist (#%d): attached next image: '%s'",
+                unit, fliplist_get_head((unsigned int)unit));
+    } else {
+        g_snprintf(buffer, MSGBUF_SIZE,
+                "Fliplist (#%d): failed to attach next image",
+                unit);
+    }
     ui_display_statustext(buffer, 10);
     return TRUE;
 }
 
+
+/** \brief  Select next previous in the fliplist
+ *
+ * \param[in]   widget  unused
+ * \param[in]   data    unit number
+ *
+ * \return  TRUE (make sure GLib 'consumes' the key event so it doesn't end up
+ *          in the emulated machine
+ */
 gboolean ui_fliplist_prev_cb(GtkWidget *widget, gpointer data)
 {
     int unit = GPOINTER_TO_INT(data);
     char buffer[MSGBUF_SIZE];
 
-    fliplist_attach_head(unit, 0);
-    g_snprintf(buffer, MSGBUF_SIZE, "Fliplist (#%d): attached previous image: '%s'",
-            unit, fliplist_get_head((unsigned int)unit));
+    if (fliplist_attach_head(unit, 0)) {
+        g_snprintf(buffer, MSGBUF_SIZE,
+                "Fliplist (#%d): attached previous image: '%s'",
+                unit, fliplist_get_head((unsigned int)unit));
+    } else {
+        g_snprintf(buffer, MSGBUF_SIZE,
+                "Fliplist (#%d): failed to attach previous image",
+                unit);
+    }
     ui_display_statustext(buffer, 10);
     return TRUE;
 }
+
 
 static void ui_fliplist_select_cb(GtkWidget *widget, gpointer data)
 {

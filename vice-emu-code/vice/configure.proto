@@ -273,6 +273,15 @@ AC_CHECK_TOOL(objdump, objdump, no)
 AC_CHECK_TOOL(sdl2_config, sdl2-config, no)
 AC_CHECK_TOOL(sdl_config, sdl-config, no)
 
+dnl echo "Checking host_os for Windows: host_os = $host_os"
+dnl Check for windres, required to link icons into windows binaries
+if test x"$host_os" = "xmingw32"; then
+    AC_CHECK_TOOL([WINDRES], [windres], [no])
+    AS_IF([test x"$WINDRES" = "xno"],
+           [AC_MSG_ERROR([Could not find required windres binary!])])
+fi
+
+
 AM_PROG_AS
 
 dnl Other build environment checks
@@ -366,7 +375,6 @@ HAVE_RS232NET_SUPPORT="no "
 HAVE_IPV6_SUPPORT="no "
 HAVE_RAWNET_SUPPORT="no "
 
-HAVE_RAWDRIVE_SUPPORT="no "
 HAVE_REALDEVICE_SUPPORT="no "
 
 HAVE_DYNLIB_SUPPORT_TOO="no "
@@ -619,8 +627,6 @@ if test x"$host_os" = "xamigaos" -o x"$host_os" = "xamigaos4" -o x"$host_os" = "
   dnl
   dnl The VICE_*CFLAGS stuff will ignore and thus break this
   dnl
-  AM_CONDITIONAL(HAVE_RAWDRIVE, true)
-
   AC_DEFINE(AMIGA_SUPPORT,,[Should we enable Amigaos support.])
 
   is_amigaos4=yes
@@ -811,8 +817,6 @@ elif test x"$host_os" = "xcygwin32" -o x"$host_os" = "xcygwin" -o x"$host_os" = 
     HAVE_RS232DEV_SUPPORT="yes"
   fi
 
-  AM_CONDITIONAL(HAVE_RAWDRIVE, false)
-
   dinput_header_no_lib="no"
 
   AC_CHECK_HEADER(dinput.h,
@@ -849,8 +853,6 @@ elif test x"$host_os" = "xbeos" -o x"$host_os" = "xhaiku"; then
 
   is_beos=yes
   AC_DEFINE(BEOS_COMPILE,,[Are we compiling for either BeOS or Haiku?])
-
-  AM_CONDITIONAL(HAVE_RAWDRIVE, false)
 
   if test x"$enable_catweasel" != "xno"; then
     AC_DEFINE(HAVE_CATWEASELMKIII,,[Support for Catweasel MKIII.])
@@ -964,14 +966,11 @@ darwin*)
     VICE_CXXFLAGS="$VICE_CXXFLAGS -mdynamic-no-pic"
   fi
 
-  AM_CONDITIONAL(HAVE_RAWDRIVE, true)
   if test x"$enable_rs232" != "xno"; then
     AC_DEFINE(HAVE_RS232DEV,,[Enable RS232 device emulation.])
     HAVE_RS232DEV_SUPPORT="yes"
   fi
 
-  AC_DEFINE(HAVE_RAWDRIVE,,[Support for block device disk image access.])
-  HAVE_RAWDRIVE_SUPPORT="yes"
   AC_DEFINE(HAVE_MOUSE,,[Enable 1351 mouse support])
   HAVE_MOUSE_SUPPORT="yes"
   AC_DEFINE(HAVE_LIGHTPEN,,[Enable lightpen support])
@@ -990,10 +989,6 @@ dnl All other UN*X systems
   is_unix=yes
   is_unix_x11=yes
 
-  AM_CONDITIONAL(HAVE_RAWDRIVE, true)
-
-  AC_DEFINE(HAVE_RAWDRIVE,,[Support for block device disk image access.])
-  HAVE_RAWDRIVE_SUPPORT="yes"
   AC_DEFINE(HAVE_MOUSE,,[Enable 1351 mouse support])
   HAVE_MOUSE_SUPPORT="yes"
   AC_DEFINE(HAVE_LIGHTPEN,,[Enable lightpen support])
@@ -1040,6 +1035,14 @@ else
   dnl Disable asserts
   VICE_CPPFLAGS="$VICE_CPPFLAGS -DNDEBUG"
   DEBUGBUILD=0
+  dnl Remove super annoying horrible terminal window on Windows
+  dnl I have a feeling this should be in LDFLAGS, but I haven't got around to
+  dnl proper supporting VICE_LDFLAGS
+  if test x"$is_win32" = "xyes"; then
+     VICE_CPPFLAGS="$VICE_CPPFLAGS -mwindows"
+     VICE_CFLAGS="$VICE_CFLAGS -mwindows"
+     VICE_CXXFLAGS="$VICE_CXXFLAGS -mwindows"
+  fi
 fi
 
 AC_SUBST(DEBUGBUILD)
@@ -3409,6 +3412,17 @@ SDL_EXTRA_LIBS=""
 AM_CONDITIONAL(MAKE_INSTALL, true)
 AM_CONDITIONAL(MAKE_BINDIST, false)
 
+if test x"is_win32" = "xyes"; then
+  if test x"$enable_native_gtk3ui" = "xyes"; then
+    WINDRES_LIB="$ARCH_DIR/data/icon.res"
+  else
+    dnl SDL
+    WINDRES_LIB="$ARCH_DIR/icon.res"
+  fi
+else
+  WINDRES_LIB=""
+fi
+
 if test x"$enable_native_gtk3ui" = "xyes"; then
   dnl Use C++ compiler/linker since novte uses C++
   LINKCC='$(CXX)'
@@ -3536,6 +3550,7 @@ AC_SUBST(SDL_EXTRA_LIBS)
 AC_SUBST(SOUND_USS_OBJ)
 AC_SUBST(SOUND_MIDAS_OBJ)
 AC_SUBST(SOUND_SDL_OBJ)
+AC_SUBST(WINDRES_LIB)
 
 PLATFORM_DOX_FLAGS=""
 if test x"$enable_platformdox" = "xyes"; then
@@ -3611,7 +3626,7 @@ AC_OUTPUT([Makefile
            data/SCPU64/Makefile
            data/PRINTER/Makefile
            data/VIC20/Makefile
-           data/fonts/Makefile
+           data/common/Makefile
            doc/Makefile
            doc/building/Makefile
            doc/html/Makefile
@@ -3984,8 +3999,6 @@ echo "Network capture/injection support: $HAVE_RAWNET_SUPPORT (--enable/disable-
 echo ""
 echo "DRIVE"
 echo "-----"
-
-echo "Raw drive support: $HAVE_RAWDRIVE_SUPPORT"
 
 if test x"$real_arch" = "xUnix" -o x"$real_arch" = "xWin32"; then
     echo "Real device (OpenCBM support): $HAVE_REALDEVICE_SUPPORT (--enable/disable-realdevice)"
