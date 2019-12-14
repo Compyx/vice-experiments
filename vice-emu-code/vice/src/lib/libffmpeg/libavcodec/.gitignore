@@ -1,8 +1,0 @@
-libavcodec.pc
-*.d
-libavcodec.ver
-*.def
-*.dll
-*.lib
-lib*.a
-

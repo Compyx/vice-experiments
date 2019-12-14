@@ -5,10 +5,10 @@ GRESOURCE_TARGET = $(builddir)/vice.gresource
 GRESOURCE_PROTO = $(srcdir)//vice.gresource.xml.proto
 GRESOURCE_XML = $(builddir)/vice.gresource.xml
 
-if WIN32_COMPILE
 # FIXME: final target of gresource is called _TARGET, but here the final target
 #        is _COFF
 WINDRES_RC_PROTO = $(top_srcdir)/src/arch/gtk3/data/icon.rc.proto
+if WIN32_COMPILE
 WINDRES_RC_TARGET = $(top_builddir)/src/arch/gtk3/data/icon.rc
 WINDRES_COFF = $(top_builddir)/src/arch/gtk3/data/icon.res
 endif

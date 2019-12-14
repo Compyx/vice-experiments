@@ -1,8 +1,0 @@
-.deps
-Makefile
-Makefile.in
-libmonitor.a
-mon_lex.c
-mon_parse.c
-mon_parse.h
-

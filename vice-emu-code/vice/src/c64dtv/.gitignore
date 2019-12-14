@@ -1,6 +1,0 @@
-Makefile.in
-libc64dtvstubs.a
-.deps
-Makefile
-libc64dtv.a
-

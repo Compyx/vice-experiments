@@ -1,8 +1,0 @@
-libavdevice.pc
-*.d
-libavdevice.ver
-*.def
-*.dll
-*.lib
-lib*.a
-

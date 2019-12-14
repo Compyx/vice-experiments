@@ -32,6 +32,7 @@ VICE_ARG_WITH_LIST(readline,      [  --without-readline      do not try to use t
 VICE_ARG_WITH_LIST(pulse,         [  --without-pulse         do not use PulseAudio sound system])
 VICE_ARG_WITH_LIST(alsa,          [  --without-alsa          do not use the ALSA sound system])
 VICE_ARG_WITH_LIST(oss,           [  --without-oss           do not use the OSS sound system])
+VICE_ARG_WITH_LIST(sun,           [  --without-sun           do not use the sun/netbsd sound system])
 VICE_ARG_WITH_LIST(sdlsound,      [  --with-sdlsound         use SDL sound system])
 VICE_ARG_WITH_LIST(resid,         [  --without-resid         do not use the reSID engine])
 VICE_ARG_WITH_LIST(jpeg,          [  --without-jpeg          do not use the JPEG screenshot system])
@@ -40,8 +41,9 @@ VICE_ARG_WITH_LIST(gif,           [  --without-gif           do not use the GIF 
 VICE_ARG_WITH_LIST(zlib,          [  --without-zlib          do not use the zlib support])
 VICE_ARG_ENABLE_LIST(sdlui,       [  --enable-sdlui          enables SDL UI support])
 VICE_ARG_ENABLE_LIST(sdlui2,      [  --enable-sdlui2         enables SDL2 UI support])
-VICE_ARG_ENABLE_LIST(native-gtk3ui,[  --enable-native-gtk3ui  enables native GTK3 UI support])
+VICE_ARG_ENABLE_LIST(native-gtk3ui, [  --enable-native-gtk3ui  enables native GTK3 UI support])
 VICE_ARG_ENABLE_LIST(debug-gtk3ui, [  --enable-debug-gtk3ui   enables debugging for the GTK3 UI])
+VICE_ARG_ENABLE_LIST(headlessui,  [  --enable-headlessui     enables building without a UI])
 VICE_ARG_ENABLE_LIST(hwscale,     [  --disable-hwscale       disables GPU scaling of emulated screen])
 VICE_ARG_ENABLE_LIST(realdevice,  [  --disable-realdevice    disables access to real peripheral devices (CBM4Linux/OpenCBM)])
 VICE_ARG_ENABLE_LIST(shared-ffmpeg, [  --enable-shared-ffmpeg  enable included shared FFmpeg support])
@@ -92,9 +94,9 @@ echo "option checking is $enable_option_checking"
 AS_IF([test x"$enable_option_checking" = "xyes"], [VICE_ARG_LIST_CHECK()])
 
 dnl check for conflicting options
-VICE_ARG_LIST_AT_MOST_ONE([--enable-sdlui --enable-sdlui2 --enable-native-gtk3ui], [UI])
+VICE_ARG_LIST_AT_MOST_ONE([--enable-sdlui --enable-sdlui2 --enable-native-gtk3ui --enable-headlessui], [UI])
 VICE_ARG_LIST_AT_MOST_ONE([--enable-static-ffmpeg --enable-shared-ffmpeg --enable-external-ffmpeg], [FFMPEG])
-AS_IF([test x"$enable_native_gtk3ui" = "xno" -a x"$enable_sdlui" = "xno" -a x"$enable_sdlui2" = "xno"],
+AS_IF([test x"$enable_native_gtk3ui" = "xno" -a x"$enable_sdlui" = "xno" -a x"$enable_sdlui2" = "xno" -a x"$enable_headlessui" = "xno"],
       [AC_MSG_ERROR([You cannot disable all GUIs])])
 
 dnl Try to find out which system we are on...
@@ -199,7 +201,7 @@ AC_SUBST(VTE_CXXFLAGS)
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_LEX
-AS_IF([x"$LEX" = "x:"], [AC_MSG_ERROR([Could not find either flex or lex!])])
+AS_IF([test x"$LEX" = "x:"], [AC_MSG_ERROR([Could not find either flex or lex!])])
 
 AC_LIB_PROG_LD
 
@@ -230,7 +232,7 @@ AS_IF([test x"$enable_static_ffmpeg" = "xyes" -o x"$enable_shared_ffmpeg" = "xye
     AS_IF([test $yasm_maj -gt $YASM_VERSION_MAJOR], [yasm_ok=true])
     AS_IF([test $yasm_maj -eq $YASM_VERSION_MAJOR -a $yasm_min -gt $YASM_VERSION_MINOR], [yasm_ok=true])
     AS_IF([test $yasm_maj -eq $YASM_VERSION_MAJOR -a $yasm_min -eq $YASM_VERSION_MINOR -a $yasm_rev -ge $YASM_VERSION_BUILD], [yasm_ok=true])
-    AS_IF([x"$yasm_ok" != x"true"],
+    AS_IF([test x"$yasm_ok" != "xtrue"],
           [AC_MSG_ERROR([yasm $YASM_VERSION_MAJOR.$YASM_VERSION_MINOR.$YASM_VERSION_BUILD or higher required])])
   ], [])
   make_cmd=""
@@ -411,7 +413,7 @@ PKG_PROG_PKG_CONFIG
 SOUND_DRIVERS=""
 
 dnl Check if a GUI order check needs to be done
-AS_IF([test x"$enable_native_gtk3ui" != "xyes" -a x"$enable_sdlui" != "xyes" -a x"$enable_sdlui2" != "xyes"],
+AS_IF([test x"$enable_native_gtk3ui" != "xyes" -a x"$enable_sdlui" != "xyes" -a x"$enable_sdlui2" != "xyes" -a x"$enable_headlessui" != "xyes"],
       [check_guis=yes])
 
 dnl Check if gtk3 ui should be checked
@@ -1193,6 +1195,7 @@ if test x"$check_gtk3" = "xyes"; then
     enable_native_gtk3ui=yes
     enable_sdlui=no
     enable_sdlui2=no
+    enable_headlessui=no
     found_gui=gtk3
 
 
@@ -1357,6 +1360,7 @@ if test x"$check_sdl2" = "xyes"; then
       enable_native_gtk3ui=no
       enable_sdlui=no
       enable_sdlui2=yes
+      enable_headlessui=no
       found_gui=sdl2
 
       case "$host_os" in
@@ -1664,11 +1668,19 @@ if test x"$check_sdl1" = "xyes"; then
           enable_native_gtk3ui=no
           enable_sdlui=yes
           enable_sdlui2=no
+          enable_headlessui=no
           found_gui=sdl1
         fi
       fi
     fi
   fi
+fi
+
+if test x"$enable_headlessui" = "xyes"; then
+  enable_native_gtk3ui=no
+  enable_sdlui=no
+  enable_sdlui2=no
+  found_gui=headless
 fi
 
 dnl check if any gui support was found
@@ -2688,6 +2700,12 @@ if test x"$is_unix" = "xyes"; then
     fi
   fi
 
+  dnl <sys/audioio.h> for sun / netbsd audio
+  if test x"$with_sun" != "xno" -a x"$host_os" != "openbsd"; then
+    AC_CHECK_HEADERS(sys/audioio.h,
+                    [SOUND_DRIVERS="$SOUND_DRIVERS soundsun.o"; break])
+  fi
+
 fi
 
 if test x"$is_amiga" = "xyes"; then
@@ -3397,11 +3415,14 @@ if test x"$enable_sdlui" = "xyes" -o x"$enable_sdlui2" = "xyes"; then
   if test x"$enable_sdlui2" = "xyes"; then
     AM_CONDITIONAL(SDL2_COMPILE, true)
     SDL_VERSION=2
+    SDLCONFIG="$sdl2_config"
   else
     AM_CONDITIONAL(SDL2_COMPILE, false)
     SDL_VERSION=1
+    SDLCONFIG="$sdl_config"
   fi
   AC_SUBST(SDL_VERSION)
+  AC_SUBST(SDLCONFIG)
 else
   AM_CONDITIONAL(SDL_COMPILE, false)
   AM_CONDITIONAL(SDL2_COMPILE, false)
@@ -3411,17 +3432,6 @@ SDL_EXTRA_LIBS=""
 
 AM_CONDITIONAL(MAKE_INSTALL, true)
 AM_CONDITIONAL(MAKE_BINDIST, false)
-
-if test x"is_win32" = "xyes"; then
-  if test x"$enable_native_gtk3ui" = "xyes"; then
-    WINDRES_LIB="$ARCH_DIR/data/icon.res"
-  else
-    dnl SDL
-    WINDRES_LIB="$ARCH_DIR/icon.res"
-  fi
-else
-  WINDRES_LIB=""
-fi
 
 if test x"$enable_native_gtk3ui" = "xyes"; then
   dnl Use C++ compiler/linker since novte uses C++
@@ -3448,6 +3458,42 @@ if test x"$enable_native_gtk3ui" = "xyes"; then
 
 else
   AM_CONDITIONAL(NATIVE_GTK3_COMPILE, false)
+fi
+
+if test x"$is_win32" = "xyes"; then
+  if test x"$enable_native_gtk3ui" = "xyes"; then
+    WINDRES_LIB="$ARCH_DIR/data/icon.res"
+  else
+    dnl SDL
+    WINDRES_LIB="$ARCH_DIR/icon.res"
+  fi
+else
+  WINDRES_LIB=""
+fi
+
+
+if test x"$enable_headlessui" = "xyes"; then
+  ARCH_DIR="\$(top_builddir)/src/arch/headless"
+  ARCH_SRC_DIR="\$(top_srcdir)/src/arch/headless"
+  ARCH_LIBS="$ARCH_DIR/libarch.a"
+  if test x"$is_win32" = "xyes"; then
+    ARCH_INCLUDES="-I$ARCH_SRC_DIR -I\$(top_srcdir)/src/arch/mingw32-pcap/wpcap"
+    AM_CONDITIONAL(MAKE_INSTALL, false)
+    AM_CONDITIONAL(MAKE_BINDIST, true)
+  else
+    ARCH_INCLUDES="-I$ARCH_SRC_DIR -I\$(top_srcdir)/src/arch"
+  fi
+  if test x"$ac_cv_lib_readline_readline" = "xyes"; then
+    AC_DEFINE(HAVE_READLINE,,[Enable the readline library])
+  fi
+  AC_DEFINE(HAVE_MOUSE,,[Enable 1351 mouse support])
+  HAVE_MOUSE_SUPPORT="yes"
+  AC_DEFINE(HAVE_LIGHTPEN,,[Enable lightpen support])
+  HAVE_LIGHTPEN_SUPPORT="yes"
+
+  AM_CONDITIONAL(HEADLESS_COMPILE, true)
+else
+  AM_CONDITIONAL(HEADLESS_COMPILE, false)
 fi
 
 if test x"$is_unix" = "xyes"; then
@@ -3600,6 +3646,7 @@ esac
 AC_SUBST(VICEDIR)
 AC_DEFINE_UNQUOTED(VICEDIR, "$VICEDIR", [Where should we lookup for data files?])
 
+
 dnl I think this is supposed to handle --enable-internal-ffmpeg
 dnl It does not check for that situation and internal-ffmpeg on Unix (the only
 dnl system supported,I think) requires running `make` as root, which sucks.
@@ -3710,6 +3757,7 @@ AC_OUTPUT([Makefile
            src/arch/mingw32-pcap/wpcap/Makefile
            src/arch/mingw32-pcap/wpcap/net/Makefile
            src/arch/sdl/Makefile
+           src/arch/headless/Makefile
            src/arch/shared/Makefile
            src/buildtools/Makefile
            src/c128/Makefile
@@ -3806,6 +3854,8 @@ else
     fi
 fi
 
+
+
 dnl construct show_gui
 show_gui="Unknown"
 if test x"$enable_sdlui" = "xyes"; then
@@ -3822,6 +3872,10 @@ if test x"$enable_native_gtk3ui" = "xyes"; then
     else
         show_gui="NATIVE GTK3"
     fi
+fi
+
+if test x"$enable_headlessui" = "xyes"; then
+    show_gui="Headless"
 fi
 
 if test "x$ac_cv_header_sys_audio_h" = xyes; then
