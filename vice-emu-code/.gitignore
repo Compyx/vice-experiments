@@ -1,3 +1,4 @@
 .svn
 .DS_Store
 *.nosync
+vice/src/svnversion.h
