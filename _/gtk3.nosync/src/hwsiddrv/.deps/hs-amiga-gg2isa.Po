@@ -1,7 +1,0 @@
-hs-amiga-gg2isa.o: \
-  ../../../vice-emu-code/vice/src/hwsiddrv/hs-amiga-gg2isa.c \
-  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
-
-../../../vice-emu-code/vice/src/vice.h:
-
-../../src/config.h:

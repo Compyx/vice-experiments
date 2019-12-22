@@ -1,6 +1,0 @@
-c64embedded.o: ../../../vice-emu-code/vice/src/c64/c64embedded.c \
-  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
-
-../../../vice-emu-code/vice/src/vice.h:
-
-../../src/config.h:

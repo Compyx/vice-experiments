@@ -1,7 +1,0 @@
-clockport-rrnet.o: \
-  ../../../../vice-emu-code/vice/src/c64/cart/clockport-rrnet.c \
-  ../../../../vice-emu-code/vice/src/vice.h ../../../src/config.h
-
-../../../../vice-emu-code/vice/src/vice.h:
-
-../../../src/config.h:

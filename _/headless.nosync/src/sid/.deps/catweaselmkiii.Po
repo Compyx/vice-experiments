@@ -1,6 +1,0 @@
-catweaselmkiii.o: ../../../vice-emu-code/vice/src/sid/catweaselmkiii.c \
-  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
-
-../../../vice-emu-code/vice/src/vice.h:
-
-../../src/config.h:

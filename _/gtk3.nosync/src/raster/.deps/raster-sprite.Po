@@ -1,9 +1,0 @@
-raster-sprite.o: ../../../vice-emu-code/vice/src/raster/raster-sprite.c \
-  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h \
-  ../../../vice-emu-code/vice/src/raster/raster-sprite.h
-
-../../../vice-emu-code/vice/src/vice.h:
-
-../../src/config.h:
-
-../../../vice-emu-code/vice/src/raster/raster-sprite.h:

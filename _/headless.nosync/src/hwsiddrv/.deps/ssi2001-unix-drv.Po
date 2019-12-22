@@ -1,7 +1,0 @@
-ssi2001-unix-drv.o: \
-  ../../../vice-emu-code/vice/src/hwsiddrv/ssi2001-unix-drv.c \
-  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
-
-../../../vice-emu-code/vice/src/vice.h:
-
-../../src/config.h:

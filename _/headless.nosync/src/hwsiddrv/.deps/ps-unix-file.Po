@@ -1,6 +1,0 @@
-ps-unix-file.o: ../../../vice-emu-code/vice/src/hwsiddrv/ps-unix-file.c \
-  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
-
-../../../vice-emu-code/vice/src/vice.h:
-
-../../src/config.h:

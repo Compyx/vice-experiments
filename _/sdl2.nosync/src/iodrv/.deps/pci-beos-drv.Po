@@ -1,6 +1,0 @@
-pci-beos-drv.o: ../../../vice-emu-code/vice/src/iodrv/pci-beos-drv.c \
-  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
-
-../../../vice-emu-code/vice/src/vice.h:
-
-../../src/config.h:

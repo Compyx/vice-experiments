@@ -1,7 +1,0 @@
-hs-amiga-openpci.o: \
-  ../../../vice-emu-code/vice/src/hwsiddrv/hs-amiga-openpci.c \
-  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
-
-../../../vice-emu-code/vice/src/vice.h:
-
-../../src/config.h:

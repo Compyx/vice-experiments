@@ -1,7 +1,0 @@
-menu_ethernetcart.o: \
-  ../../../../vice-emu-code/vice/src/arch/sdl/menu_ethernetcart.c \
-  ../../../../vice-emu-code/vice/src/vice.h ../../../src/config.h
-
-../../../../vice-emu-code/vice/src/vice.h:
-
-../../../src/config.h:

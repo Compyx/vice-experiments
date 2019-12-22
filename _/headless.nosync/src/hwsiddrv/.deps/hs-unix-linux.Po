@@ -1,6 +1,0 @@
-hs-unix-linux.o: ../../../vice-emu-code/vice/src/hwsiddrv/hs-unix-linux.c \
-  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
-
-../../../vice-emu-code/vice/src/vice.h:
-
-../../src/config.h:

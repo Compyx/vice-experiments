@@ -1,6 +1,0 @@
-cw-unix-pci.o: ../../../vice-emu-code/vice/src/hwsiddrv/cw-unix-pci.c \
-  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
-
-../../../vice-emu-code/vice/src/vice.h:
-
-../../src/config.h:

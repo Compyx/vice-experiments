@@ -1,6 +1,0 @@
-rawnetarch.o: ../../../../vice-emu-code/vice/src/arch/shared/rawnetarch.c \
-  ../../../../vice-emu-code/vice/src/vice.h ../../../src/config.h
-
-../../../../vice-emu-code/vice/src/vice.h:
-
-../../../src/config.h:

@@ -1,6 +1,0 @@
-joy-win32.o: ../../../../vice-emu-code/vice/src/arch/gtk3/joy-win32.c \
-  ../../../../vice-emu-code/vice/src/vice.h ../../../src/config.h
-
-../../../../vice-emu-code/vice/src/vice.h:
-
-../../../src/config.h:

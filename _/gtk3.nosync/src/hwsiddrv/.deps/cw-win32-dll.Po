@@ -1,6 +1,0 @@
-cw-win32-dll.o: ../../../vice-emu-code/vice/src/hwsiddrv/cw-win32-dll.c \
-  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
-
-../../../vice-emu-code/vice/src/vice.h:
-
-../../src/config.h:

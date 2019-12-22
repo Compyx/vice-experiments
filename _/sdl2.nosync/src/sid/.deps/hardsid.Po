@@ -1,9 +1,0 @@
-hardsid.o: ../../../vice-emu-code/vice/src/sid/hardsid.c \
-  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h \
-  ../../../vice-emu-code/vice/src/hardsid.h
-
-../../../vice-emu-code/vice/src/vice.h:
-
-../../src/config.h:
-
-../../../vice-emu-code/vice/src/hardsid.h:

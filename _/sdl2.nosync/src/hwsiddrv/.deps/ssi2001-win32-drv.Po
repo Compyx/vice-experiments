@@ -1,7 +1,0 @@
-ssi2001-win32-drv.o: \
-  ../../../vice-emu-code/vice/src/hwsiddrv/ssi2001-win32-drv.c \
-  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
-
-../../../vice-emu-code/vice/src/vice.h:
-
-../../src/config.h:

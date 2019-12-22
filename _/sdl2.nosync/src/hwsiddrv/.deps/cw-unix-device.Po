@@ -1,7 +1,0 @@
-cw-unix-device.o: \
-  ../../../vice-emu-code/vice/src/hwsiddrv/cw-unix-device.c \
-  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
-
-../../../vice-emu-code/vice/src/vice.h:
-
-../../src/config.h:

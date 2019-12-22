@@ -1,9 +1,0 @@
-pot.o: ../../../vice-emu-code/vice/src/resid/pot.cc \
-  ../../../vice-emu-code/vice/src/resid/pot.h \
-  ../../../vice-emu-code/vice/src/resid/resid-config.h siddefs.h
-
-../../../vice-emu-code/vice/src/resid/pot.h:
-
-../../../vice-emu-code/vice/src/resid/resid-config.h:
-
-siddefs.h:

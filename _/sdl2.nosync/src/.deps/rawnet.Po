@@ -1,6 +1,0 @@
-rawnet.o: ../../vice-emu-code/vice/src/rawnet.c \
-  ../../vice-emu-code/vice/src/vice.h config.h
-
-../../vice-emu-code/vice/src/vice.h:
-
-config.h:
