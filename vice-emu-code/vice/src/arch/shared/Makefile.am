@@ -123,6 +123,7 @@ EXTRA_DIST = \
 	archdep_stat.h \
 	archdep_tmpnam.h \
 	archdep_user_config_path.h \
+	archdep_unix.h \
 	archdep_usleep.h \
 	archdep_xdg.h \
 	archdep_amiga.h \
@@ -139,4 +140,11 @@ EXTRA_DIST = \
 	rawnetarch_unix.c \
 	rawnetarch_win32.c \
 	rs232-unix-dev.c \
-	rs232-win32-dev.c
+	rs232-win32-dev.c \
+	\
+	macOS-redirect-launcher.sh \
+	macOS-wrap-ar.sh \
+	macOS-wrap-ranlib.sh \
+	make-bindist_osx.sh
+
+# FIXME: the Extra MacOS script stuff should live elsewhere

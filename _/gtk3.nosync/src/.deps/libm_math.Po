@@ -1,0 +1,6 @@
+libm_math.o: ../../vice-emu-code/vice/src/libm_math.c \
+  ../../vice-emu-code/vice/src/vice.h config.h
+
+../../vice-emu-code/vice/src/vice.h:
+
+config.h:

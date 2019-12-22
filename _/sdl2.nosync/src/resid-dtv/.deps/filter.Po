@@ -1,0 +1,10 @@
+filter.o: ../../../vice-emu-code/vice/src/resid-dtv/filter.cc \
+  ../../../vice-emu-code/vice/src/resid-dtv/filter.h \
+  ../../../vice-emu-code/vice/src/resid-dtv/residdtv-config.h \
+  siddtvdefs.h
+
+../../../vice-emu-code/vice/src/resid-dtv/filter.h:
+
+../../../vice-emu-code/vice/src/resid-dtv/residdtv-config.h:
+
+siddtvdefs.h:

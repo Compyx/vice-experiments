@@ -1,0 +1,6 @@
+vic20embedded.o: ../../../vice-emu-code/vice/src/vic20/vic20embedded.c \
+  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
+
+../../../vice-emu-code/vice/src/vice.h:
+
+../../src/config.h:

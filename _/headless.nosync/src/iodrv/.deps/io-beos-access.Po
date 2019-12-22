@@ -1,0 +1,6 @@
+io-beos-access.o: ../../../vice-emu-code/vice/src/iodrv/io-beos-access.c \
+  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
+
+../../../vice-emu-code/vice/src/vice.h:
+
+../../src/config.h:

@@ -1,0 +1,558 @@
+c64carthooks.o: \
+  ../../../../vice-emu-code/vice/src/c64/cart/c64carthooks.c \
+  ../../../../vice-emu-code/vice/src/vice.h ../../../src/config.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/stdio.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_stdio.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/cdefs.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_symbol_aliasing.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_posix_availability.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/Availability.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/AvailabilityInternal.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_types.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/machine/_types.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/i386/_types.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_pthread/_pthread_types.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_va_list.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/machine/types.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/i386/types.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_int8_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_int16_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_int32_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_int64_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_u_int8_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_u_int16_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_u_int32_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_u_int64_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_intptr_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_uintptr_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_size_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_null.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/stdio.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_ctermid.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_off_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_ssize_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/secure/_stdio.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/secure/_common.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/stdlib.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/wait.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_pid_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_id_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/signal.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/appleapiopts.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/machine/signal.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/i386/signal.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/machine/_mcontext.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/i386/_mcontext.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/mach/machine/_structs.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/mach/i386/_structs.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_pthread/_pthread_attr_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_sigaltstack.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_ucontext.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_sigset_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_uid_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/resource.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_types/_uint8_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_types/_uint16_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_types/_uint32_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_types/_uint64_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_types/_intmax_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_types/_uintmax_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_timeval.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/machine/endian.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/i386/endian.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_endian.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/libkern/_OSByteOrder.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/libkern/i386/_OSByteOrder.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/alloca.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_ct_rune_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_rune_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_wchar_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/malloc/_malloc.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_dev_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_mode_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/string.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_rsize_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_errno_t.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/strings.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/secure/_strings.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/secure/_string.h \
+  ../../../../vice-emu-code/vice/src/alarm.h \
+  ../../../../vice-emu-code/vice/src/types.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include/inttypes.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/inttypes.h \
+  ../../../../vice-emu-code/vice/src/arch/gtk3/archdep.h \
+  ../../../../vice-emu-code/vice/src/sound.h \
+  ../../../../vice-emu-code/vice/src/arch/shared/archdep_unix.h \
+  ../../../../vice-emu-code/vice/src/archapi.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include/stdarg.h \
+  ../../../../vice-emu-code/vice/src/c64/c64.h \
+  ../../../../vice-emu-code/vice/src/c64/c64cart.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/expert.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/c64cartsystem.h \
+  ../../../../vice-emu-code/vice/src/c64/c64mem.h \
+  ../../../../vice-emu-code/vice/src/mem.h \
+  ../../../../vice-emu-code/vice/src/cartio.h \
+  ../../../../vice-emu-code/vice/src/cartridge.h \
+  ../../../../vice-emu-code/vice/src/cmdline.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/cpmcart.h \
+  ../../../../vice-emu-code/vice/src/snapshot.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/crt.h \
+  ../../../../vice-emu-code/vice/src/export.h \
+  ../../../../vice-emu-code/vice/src/interrupt.h ../../../src/debug.h \
+  ../../../../vice-emu-code/vice/src/log.h \
+  ../../../../vice-emu-code/vice/src/lib.h \
+  ../../../../vice-emu-code/vice/src/machine.h \
+  ../../../../vice-emu-code/vice/src/maincpu.h \
+  ../../../../vice-emu-code/vice/src/monitor.h \
+  ../../../../vice-emu-code/vice/src/monitor/asm.h \
+  ../../../../vice-emu-code/vice/src/resources.h \
+  ../../../../vice-emu-code/vice/src/util.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/actionreplay2.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/actionreplay3.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/actionreplay4.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/actionreplay.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/atomicpower.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/c64acia.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/c64-generic.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/c64-midi.h \
+  ../../../../vice-emu-code/vice/src/midi.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/c64tpi.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/comal80.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/capture.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/debugcart.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/delaep256.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/delaep64.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/delaep7x8.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/diashowmaker.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/digimax.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/dinamic.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/dqbb.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/ds12c887rtc.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/easycalc.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/easyflash.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/epyxfastload.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/exos.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/final.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/finalplus.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/final3.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/formel64.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/freezeframe.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/freezemachine.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/funplay.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/gamekiller.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/georam.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/gs.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/gmod2.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/ide64.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/isepic.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/kcs.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/kingsoft.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/mach5.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/magicdesk.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/magicformel.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/magicvoice.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/maxbasic.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/mikroass.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/mmc64.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/mmcreplay.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/sfx_soundexpander.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/sfx_soundsampler.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/ocean.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/pagefox.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/prophet64.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/ramcart.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/retroreplay.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/reu.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/rexep256.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/rexutility.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/rgcd.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/rrnetmk3.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/ross.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/shortbus_digimax.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/silverrock128.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/simonsbasic.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/snapshot64.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/stardos.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/stb.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/supergames.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/superexplode5.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/supersnapshot.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/supersnapshot4.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/warpspeed.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/westermann.h \
+  ../../../../vice-emu-code/vice/src/c64/cart/zaxxon.h
+
+../../../../vice-emu-code/vice/src/vice.h:
+
+../../../src/config.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/stdio.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_stdio.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/cdefs.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_symbol_aliasing.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_posix_availability.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/Availability.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/AvailabilityInternal.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_types.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/machine/_types.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/i386/_types.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_pthread/_pthread_types.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_va_list.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/machine/types.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/i386/types.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_int8_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_int16_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_int32_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_int64_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_u_int8_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_u_int16_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_u_int32_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_u_int64_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_intptr_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_uintptr_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_size_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_null.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/stdio.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_ctermid.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_off_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_ssize_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/secure/_stdio.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/secure/_common.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/stdlib.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/wait.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_pid_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_id_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/signal.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/appleapiopts.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/machine/signal.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/i386/signal.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/machine/_mcontext.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/i386/_mcontext.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/mach/machine/_structs.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/mach/i386/_structs.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_pthread/_pthread_attr_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_sigaltstack.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_ucontext.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_sigset_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_uid_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/resource.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include/stdint.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/stdint.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_types/_uint8_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_types/_uint16_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_types/_uint32_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_types/_uint64_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_types/_intmax_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/_types/_uintmax_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_timeval.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/machine/endian.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/i386/endian.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_endian.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/libkern/_OSByteOrder.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/libkern/i386/_OSByteOrder.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/alloca.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_ct_rune_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_rune_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_wchar_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/malloc/_malloc.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_dev_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_mode_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/string.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_rsize_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/sys/_types/_errno_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/strings.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/secure/_strings.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/secure/_string.h:
+
+../../../../vice-emu-code/vice/src/alarm.h:
+
+../../../../vice-emu-code/vice/src/types.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include/inttypes.h:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include/inttypes.h:
+
+../../../../vice-emu-code/vice/src/arch/gtk3/archdep.h:
+
+../../../../vice-emu-code/vice/src/sound.h:
+
+../../../../vice-emu-code/vice/src/arch/shared/archdep_unix.h:
+
+../../../../vice-emu-code/vice/src/archapi.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include/stdarg.h:
+
+../../../../vice-emu-code/vice/src/c64/c64.h:
+
+../../../../vice-emu-code/vice/src/c64/c64cart.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/expert.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/c64cartsystem.h:
+
+../../../../vice-emu-code/vice/src/c64/c64mem.h:
+
+../../../../vice-emu-code/vice/src/mem.h:
+
+../../../../vice-emu-code/vice/src/cartio.h:
+
+../../../../vice-emu-code/vice/src/cartridge.h:
+
+../../../../vice-emu-code/vice/src/cmdline.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/cpmcart.h:
+
+../../../../vice-emu-code/vice/src/snapshot.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/crt.h:
+
+../../../../vice-emu-code/vice/src/export.h:
+
+../../../../vice-emu-code/vice/src/interrupt.h:
+
+../../../src/debug.h:
+
+../../../../vice-emu-code/vice/src/log.h:
+
+../../../../vice-emu-code/vice/src/lib.h:
+
+../../../../vice-emu-code/vice/src/machine.h:
+
+../../../../vice-emu-code/vice/src/maincpu.h:
+
+../../../../vice-emu-code/vice/src/monitor.h:
+
+../../../../vice-emu-code/vice/src/monitor/asm.h:
+
+../../../../vice-emu-code/vice/src/resources.h:
+
+../../../../vice-emu-code/vice/src/util.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/actionreplay2.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/actionreplay3.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/actionreplay4.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/actionreplay.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/atomicpower.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/c64acia.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/c64-generic.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/c64-midi.h:
+
+../../../../vice-emu-code/vice/src/midi.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/c64tpi.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/comal80.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/capture.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/debugcart.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/delaep256.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/delaep64.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/delaep7x8.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/diashowmaker.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/digimax.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/dinamic.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/dqbb.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/ds12c887rtc.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/easycalc.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/easyflash.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/epyxfastload.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/exos.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/final.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/finalplus.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/final3.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/formel64.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/freezeframe.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/freezemachine.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/funplay.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/gamekiller.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/georam.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/gs.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/gmod2.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/ide64.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/isepic.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/kcs.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/kingsoft.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/mach5.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/magicdesk.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/magicformel.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/magicvoice.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/maxbasic.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/mikroass.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/mmc64.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/mmcreplay.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/sfx_soundexpander.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/sfx_soundsampler.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/ocean.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/pagefox.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/prophet64.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/ramcart.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/retroreplay.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/reu.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/rexep256.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/rexutility.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/rgcd.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/rrnetmk3.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/ross.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/shortbus_digimax.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/silverrock128.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/simonsbasic.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/snapshot64.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/stardos.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/stb.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/supergames.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/superexplode5.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/supersnapshot.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/supersnapshot4.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/warpspeed.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/westermann.h:
+
+../../../../vice-emu-code/vice/src/c64/cart/zaxxon.h:

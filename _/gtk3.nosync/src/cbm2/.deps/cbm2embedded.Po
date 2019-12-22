@@ -1,0 +1,6 @@
+cbm2embedded.o: ../../../vice-emu-code/vice/src/cbm2/cbm2embedded.c \
+  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
+
+../../../vice-emu-code/vice/src/vice.h:
+
+../../src/config.h:

@@ -1,0 +1,7 @@
+hardsid-amiga-drv.o: \
+  ../../../vice-emu-code/vice/src/hwsiddrv/hardsid-amiga-drv.c \
+  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
+
+../../../vice-emu-code/vice/src/vice.h:
+
+../../src/config.h:

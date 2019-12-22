@@ -1,0 +1,9 @@
+joy-unix.o: ../../../../vice-emu-code/vice/src/arch/gtk3/joy-unix.c \
+  ../../../../vice-emu-code/vice/src/vice.h ../../../src/config.h \
+  ../../../../vice-emu-code/vice/src/arch/shared/archdep_defs.h
+
+../../../../vice-emu-code/vice/src/vice.h:
+
+../../../src/config.h:
+
+../../../../vice-emu-code/vice/src/arch/shared/archdep_defs.h:

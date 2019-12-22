@@ -1,0 +1,7 @@
+joy-unix-usb.o: \
+  ../../../../vice-emu-code/vice/src/arch/gtk3/joy-unix-usb.c \
+  ../../../../vice-emu-code/vice/src/vice.h ../../../src/config.h
+
+../../../../vice-emu-code/vice/src/vice.h:
+
+../../../src/config.h:

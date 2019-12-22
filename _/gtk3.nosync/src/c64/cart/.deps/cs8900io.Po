@@ -1,0 +1,6 @@
+cs8900io.o: ../../../../vice-emu-code/vice/src/c64/cart/cs8900io.c \
+  ../../../../vice-emu-code/vice/src/vice.h ../../../src/config.h
+
+../../../../vice-emu-code/vice/src/vice.h:
+
+../../../src/config.h:

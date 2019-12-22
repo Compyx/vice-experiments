@@ -1,0 +1,6 @@
+cw-win32-pci.o: ../../../vice-emu-code/vice/src/hwsiddrv/cw-win32-pci.c \
+  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
+
+../../../vice-emu-code/vice/src/vice.h:
+
+../../src/config.h:

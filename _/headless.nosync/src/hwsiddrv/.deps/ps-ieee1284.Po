@@ -1,0 +1,6 @@
+ps-ieee1284.o: ../../../vice-emu-code/vice/src/hwsiddrv/ps-ieee1284.c \
+  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
+
+../../../vice-emu-code/vice/src/vice.h:
+
+../../src/config.h:

@@ -1,0 +1,12 @@
+envelope.o: ../../../vice-emu-code/vice/src/resid-dtv/envelope.cc \
+  ../../../vice-emu-code/vice/src/resid-dtv/envelope.h \
+  ../../../vice-emu-code/vice/src/resid-dtv/residdtv-config.h \
+  siddtvdefs.h ../../../vice-emu-code/vice/src/resid-dtv/bittrain.h
+
+../../../vice-emu-code/vice/src/resid-dtv/envelope.h:
+
+../../../vice-emu-code/vice/src/resid-dtv/residdtv-config.h:
+
+siddtvdefs.h:
+
+../../../vice-emu-code/vice/src/resid-dtv/bittrain.h:

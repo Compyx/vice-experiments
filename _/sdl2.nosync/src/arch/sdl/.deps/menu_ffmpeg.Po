@@ -1,0 +1,6 @@
+menu_ffmpeg.o: ../../../../vice-emu-code/vice/src/arch/sdl/menu_ffmpeg.c \
+  ../../../../vice-emu-code/vice/src/vice.h ../../../src/config.h
+
+../../../../vice-emu-code/vice/src/vice.h:
+
+../../../src/config.h:

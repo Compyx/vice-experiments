@@ -1,0 +1,6 @@
+rrnetmk3.o: ../../../../vice-emu-code/vice/src/c64/cart/rrnetmk3.c \
+  ../../../../vice-emu-code/vice/src/vice.h ../../../src/config.h
+
+../../../../vice-emu-code/vice/src/vice.h:
+
+../../../src/config.h:

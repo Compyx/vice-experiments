@@ -1,0 +1,7 @@
+shortbus_etfe.o: \
+  ../../../../vice-emu-code/vice/src/c64/cart/shortbus_etfe.c \
+  ../../../../vice-emu-code/vice/src/vice.h ../../../src/config.h
+
+../../../../vice-emu-code/vice/src/vice.h:
+
+../../../src/config.h:

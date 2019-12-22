@@ -1,0 +1,7 @@
+version.o: ../../../vice-emu-code/vice/src/resid-dtv/version.cc \
+  ../../../vice-emu-code/vice/src/resid-dtv/residdtv-config.h \
+  siddtvdefs.h
+
+../../../vice-emu-code/vice/src/resid-dtv/residdtv-config.h:
+
+siddtvdefs.h:

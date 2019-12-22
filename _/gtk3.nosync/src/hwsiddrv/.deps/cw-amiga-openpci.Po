@@ -1,0 +1,7 @@
+cw-amiga-openpci.o: \
+  ../../../vice-emu-code/vice/src/hwsiddrv/cw-amiga-openpci.c \
+  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
+
+../../../vice-emu-code/vice/src/vice.h:
+
+../../src/config.h:

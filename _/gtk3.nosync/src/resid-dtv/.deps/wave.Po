@@ -1,0 +1,12 @@
+wave.o: ../../../vice-emu-code/vice/src/resid-dtv/wave.cc \
+  ../../../vice-emu-code/vice/src/resid-dtv/wave.h \
+  ../../../vice-emu-code/vice/src/resid-dtv/residdtv-config.h \
+  siddtvdefs.h ../../../vice-emu-code/vice/src/resid-dtv/bittrain.h
+
+../../../vice-emu-code/vice/src/resid-dtv/wave.h:
+
+../../../vice-emu-code/vice/src/resid-dtv/residdtv-config.h:
+
+siddtvdefs.h:
+
+../../../vice-emu-code/vice/src/resid-dtv/bittrain.h:

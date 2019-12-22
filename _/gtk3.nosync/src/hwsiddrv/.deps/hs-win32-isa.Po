@@ -1,0 +1,6 @@
+hs-win32-isa.o: ../../../vice-emu-code/vice/src/hwsiddrv/hs-win32-isa.c \
+  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
+
+../../../vice-emu-code/vice/src/vice.h:
+
+../../src/config.h:

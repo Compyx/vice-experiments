@@ -1,0 +1,6 @@
+plus4embedded.o: ../../../vice-emu-code/vice/src/plus4/plus4embedded.c \
+  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h
+
+../../../vice-emu-code/vice/src/vice.h:
+
+../../src/config.h:

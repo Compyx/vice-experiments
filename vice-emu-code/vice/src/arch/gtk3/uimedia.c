@@ -328,8 +328,10 @@ static void on_response(GtkDialog *dialog, gint response_id, gpointer data)
                     save_audio_recording_handler();
                     ui_display_recording(1);
                 } else if (strcmp(child_name, CHILD_VIDEO) == 0) {
+#ifdef HAVE_FFMPEG
                     debug_gtk3("Video recording requested, driver %d.",
                             video_driver_index);
+#endif
                     save_video_recording_handler();
                     ui_display_recording(1);
                 }
@@ -551,8 +553,9 @@ static void save_video_recording_handler(void)
     gchar *filename;
     char *title;
     char *proposed;
-
+#ifdef HAVE_FFMPEG
     debug_gtk3("video driver index = %d.", video_driver_index);
+#endif
 
 #if 0
     display = video_driver_list[video_driver_index].display;
@@ -981,7 +984,7 @@ static GtkWidget *create_video_widget(void)
     gtk_grid_attach(GTK_GRID(grid), options_grid, 0, 1, 1, 1);
 #else
     label = gtk_label_new(NULL);
-    gtk_label_set_line_wrap_mode(GTK_LABEL(label), GTK_WRAP_WORD);
+    gtk_label_set_line_wrap_mode(GTK_LABEL(label), PANGO_WRAP_WORD);
     g_object_set(G_OBJECT(label),
             "margin-left", 16,
             "margin-right", 16,

@@ -1,0 +1,554 @@
+vic20.o: ../../../vice-emu-code/vice/src/vic20/vic20.c \
+  ../../../vice-emu-code/vice/src/vice.h ../../src/config.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/stdio.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_stdio.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/cdefs.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_symbol_aliasing.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_posix_availability.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternal.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/machine/_types.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/i386/_types.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_pthread/_pthread_types.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_va_list.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/machine/types.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/i386/types.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_int8_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_int16_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_int32_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_int64_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_u_int8_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_u_int16_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_u_int32_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_u_int64_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_intptr_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_uintptr_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_size_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_null.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/stdio.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_off_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_ssize_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_stdio.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_common.h \
+  ../../../vice-emu-code/vice/src/attach.h \
+  ../../../vice-emu-code/vice/src/types.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include/inttypes.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/inttypes.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_wchar_t.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include/stdint.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/stdint.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_uint8_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_uint16_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_uint32_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_uint64_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_intmax_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_uintmax_t.h \
+  ../../../vice-emu-code/vice/src/autostart.h \
+  ../../../vice-emu-code/vice/src/joyport/bbrtc.h \
+  ../../../vice-emu-code/vice/src/joyport/cardkey.h \
+  ../../../vice-emu-code/vice/src/cartridge.h \
+  ../../../vice-emu-code/vice/src/sound.h \
+  ../../../vice-emu-code/vice/src/cartio.h \
+  ../../../vice-emu-code/vice/src/clkguard.h \
+  ../../../vice-emu-code/vice/src/joyport/coplin_keypad.h \
+  ../../../vice-emu-code/vice/src/joyport/cx21.h \
+  ../../../vice-emu-code/vice/src/joyport/cx85.h \
+  ../../../vice-emu-code/vice/src/datasette.h ../../src/debug.h \
+  ../../../vice-emu-code/vice/src/diskimage.h \
+  ../../../vice-emu-code/vice/src/drive/drive-cmdline-options.h \
+  ../../../vice-emu-code/vice/src/drive/drive-resources.h \
+  ../../../vice-emu-code/vice/src/drive/drive-sound.h \
+  ../../../vice-emu-code/vice/src/drive/drive.h \
+  ../../../vice-emu-code/vice/src/rtc/ds1216e.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/time.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_clock_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_time_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_timespec.h \
+  ../../../vice-emu-code/vice/src/snapshot.h \
+  ../../../vice-emu-code/vice/src/lib/p64/p64.h \
+  ../../../vice-emu-code/vice/src/lib/p64/p64config.h \
+  ../../../vice-emu-code/vice/src/lib.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include/stdarg.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/stdlib.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/wait.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_pid_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_id_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/signal.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/appleapiopts.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/machine/signal.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/i386/signal.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/machine/_mcontext.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/i386/_mcontext.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/mach/machine/_structs.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/mach/i386/_structs.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_pthread/_pthread_attr_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_sigaltstack.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_ucontext.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_sigset_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_uid_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/resource.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_timeval.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/machine/endian.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/i386/endian.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_endian.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/_OSByteOrder.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/i386/_OSByteOrder.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/alloca.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_ct_rune_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_rune_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/malloc/_malloc.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_dev_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_mode_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/string.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_rsize_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_errno_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/strings.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_strings.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_string.h \
+  ../../../vice-emu-code/vice/src/drive/drivetypes.h \
+  ../../../vice-emu-code/vice/src/mos6510.h \
+  ../../../vice-emu-code/vice/src/r65c02.h \
+  ../../../vice-emu-code/vice/src/fliplist.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include/stdbool.h \
+  ../../../vice-emu-code/vice/src/core/fmopl.h \
+  ../../../vice-emu-code/vice/src/alarm.h \
+  ../../../vice-emu-code/vice/src/fsdevice.h \
+  ../../../vice-emu-code/vice/src/gfxoutput.h \
+  ../../../vice-emu-code/vice/src/iecdrive.h \
+  ../../../vice-emu-code/vice/src/imagecontents.h \
+  ../../../vice-emu-code/vice/src/init.h \
+  ../../../vice-emu-code/vice/src/joyport/joyport.h \
+  ../../../vice-emu-code/vice/src/joyport/joystick.h \
+  ../../../vice-emu-code/vice/src/kbdbuf.h \
+  ../../../vice-emu-code/vice/src/keyboard.h \
+  ../../../vice-emu-code/vice/src/log.h \
+  ../../../vice-emu-code/vice/src/resources.h \
+  ../../../vice-emu-code/vice/src/machine-drive.h \
+  ../../../vice-emu-code/vice/src/machine-printer.h \
+  ../../../vice-emu-code/vice/src/machine-video.h \
+  ../../../vice-emu-code/vice/src/machine.h \
+  ../../../vice-emu-code/vice/src/maincpu.h \
+  ../../../vice-emu-code/vice/src/mem.h \
+  ../../../vice-emu-code/vice/src/monitor.h \
+  ../../../vice-emu-code/vice/src/monitor/asm.h \
+  ../../../vice-emu-code/vice/src/network.h \
+  ../../../vice-emu-code/vice/src/joyport/paperclip64.h \
+  ../../../vice-emu-code/vice/src/parallel.h \
+  ../../../vice-emu-code/vice/src/printer.h \
+  ../../../vice-emu-code/vice/src/rs232drv/rs232drv.h \
+  ../../../vice-emu-code/vice/src/rs232drv/rsuser.h \
+  ../../../vice-emu-code/vice/src/joyport/rushware_keypad.h \
+  ../../../vice-emu-code/vice/src/samplerdrv/sampler.h \
+  ../../../vice-emu-code/vice/src/joyport/sampler2bit.h \
+  ../../../vice-emu-code/vice/src/joyport/sampler4bit.h \
+  ../../../vice-emu-code/vice/src/screenshot.h \
+  ../../../vice-emu-code/vice/src/serial.h \
+  ../../../vice-emu-code/vice/src/sid/sid.h \
+  ../../../vice-emu-code/vice/src/sidcart.h \
+  ../../../vice-emu-code/vice/src/sid/sid-cmdline-options.h \
+  ../../../vice-emu-code/vice/src/sid/sid-resources.h \
+  ../../../vice-emu-code/vice/src/tape.h \
+  ../../../vice-emu-code/vice/src/tapeport/tapeport.h \
+  ../../../vice-emu-code/vice/src/traps.h \
+  ../../../vice-emu-code/vice/src/userport/userport.h \
+  ../../../vice-emu-code/vice/src/userport/userport_dac.h \
+  ../../../vice-emu-code/vice/src/userport/userport_joystick.h \
+  ../../../vice-emu-code/vice/src/userport/userport_rtc_58321a.h \
+  ../../../vice-emu-code/vice/src/userport/userport_rtc_ds1307.h \
+  ../../../vice-emu-code/vice/src/via.h \
+  ../../../vice-emu-code/vice/src/vic20/vic.h \
+  ../../../vice-emu-code/vice/src/vic20/vic-mem.h \
+  ../../../vice-emu-code/vice/src/vic20/vic20-cmdline-options.h \
+  ../../../vice-emu-code/vice/src/vic20/cart/vic20-ieee488.h \
+  ../../../vice-emu-code/vice/src/vic20/cart/vic20-midi.h \
+  ../../../vice-emu-code/vice/src/midi.h \
+  ../../../vice-emu-code/vice/src/vic20/vic20-resources.h \
+  ../../../vice-emu-code/vice/src/vic20/vic20-snapshot.h \
+  ../../../vice-emu-code/vice/src/vic20/vic20.h \
+  ../../../vice-emu-code/vice/src/vic20/vic20iec.h \
+  ../../../vice-emu-code/vice/src/vic20/vic20ieeevia.h \
+  ../../../vice-emu-code/vice/src/vic20/vic20mem.h \
+  ../../../vice-emu-code/vice/src/vic20/vic20memrom.h \
+  ../../../vice-emu-code/vice/src/vic20/vic20sound.h \
+  ../../../vice-emu-code/vice/src/vic20/vic20rsuser.h \
+  ../../../vice-emu-code/vice/src/vic20ui.h \
+  ../../../vice-emu-code/vice/src/vic20/vic20via.h \
+  ../../../vice-emu-code/vice/src/vice-event.h \
+  ../../../vice-emu-code/vice/src/video.h \
+  ../../../vice-emu-code/vice/src/video/video-sound.h \
+  ../../../vice-emu-code/vice/src/viewport.h \
+  ../../../vice-emu-code/vice/src/vsync.h \
+  ../../../vice-emu-code/vice/src/joyport/lightpen.h \
+  ../../../vice-emu-code/vice/src/joyport/mouse.h
+
+../../../vice-emu-code/vice/src/vice.h:
+
+../../src/config.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/stdio.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_stdio.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/cdefs.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_symbol_aliasing.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_posix_availability.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternal.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/machine/_types.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/i386/_types.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_pthread/_pthread_types.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_va_list.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/machine/types.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/i386/types.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_int8_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_int16_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_int32_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_int64_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_u_int8_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_u_int16_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_u_int32_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_u_int64_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_intptr_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_uintptr_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_size_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_null.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/stdio.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_off_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_ssize_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_stdio.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_common.h:
+
+../../../vice-emu-code/vice/src/attach.h:
+
+../../../vice-emu-code/vice/src/types.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include/inttypes.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/inttypes.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_wchar_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include/stdint.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/stdint.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_uint8_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_uint16_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_uint32_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_uint64_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_intmax_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_uintmax_t.h:
+
+../../../vice-emu-code/vice/src/autostart.h:
+
+../../../vice-emu-code/vice/src/joyport/bbrtc.h:
+
+../../../vice-emu-code/vice/src/joyport/cardkey.h:
+
+../../../vice-emu-code/vice/src/cartridge.h:
+
+../../../vice-emu-code/vice/src/sound.h:
+
+../../../vice-emu-code/vice/src/cartio.h:
+
+../../../vice-emu-code/vice/src/clkguard.h:
+
+../../../vice-emu-code/vice/src/joyport/coplin_keypad.h:
+
+../../../vice-emu-code/vice/src/joyport/cx21.h:
+
+../../../vice-emu-code/vice/src/joyport/cx85.h:
+
+../../../vice-emu-code/vice/src/datasette.h:
+
+../../src/debug.h:
+
+../../../vice-emu-code/vice/src/diskimage.h:
+
+../../../vice-emu-code/vice/src/drive/drive-cmdline-options.h:
+
+../../../vice-emu-code/vice/src/drive/drive-resources.h:
+
+../../../vice-emu-code/vice/src/drive/drive-sound.h:
+
+../../../vice-emu-code/vice/src/drive/drive.h:
+
+../../../vice-emu-code/vice/src/rtc/ds1216e.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/time.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_clock_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_time_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_timespec.h:
+
+../../../vice-emu-code/vice/src/snapshot.h:
+
+../../../vice-emu-code/vice/src/lib/p64/p64.h:
+
+../../../vice-emu-code/vice/src/lib/p64/p64config.h:
+
+../../../vice-emu-code/vice/src/lib.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include/stdarg.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/stdlib.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/wait.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_pid_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_id_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/signal.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/appleapiopts.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/machine/signal.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/i386/signal.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/machine/_mcontext.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/i386/_mcontext.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/mach/machine/_structs.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/mach/i386/_structs.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_pthread/_pthread_attr_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_sigaltstack.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_ucontext.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_sigset_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_uid_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/resource.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_timeval.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/machine/endian.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/i386/endian.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_endian.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/_OSByteOrder.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libkern/i386/_OSByteOrder.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/alloca.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_ct_rune_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_rune_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/malloc/_malloc.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_dev_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_mode_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/string.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_rsize_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_errno_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/strings.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_strings.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_string.h:
+
+../../../vice-emu-code/vice/src/drive/drivetypes.h:
+
+../../../vice-emu-code/vice/src/mos6510.h:
+
+../../../vice-emu-code/vice/src/r65c02.h:
+
+../../../vice-emu-code/vice/src/fliplist.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include/stdbool.h:
+
+../../../vice-emu-code/vice/src/core/fmopl.h:
+
+../../../vice-emu-code/vice/src/alarm.h:
+
+../../../vice-emu-code/vice/src/fsdevice.h:
+
+../../../vice-emu-code/vice/src/gfxoutput.h:
+
+../../../vice-emu-code/vice/src/iecdrive.h:
+
+../../../vice-emu-code/vice/src/imagecontents.h:
+
+../../../vice-emu-code/vice/src/init.h:
+
+../../../vice-emu-code/vice/src/joyport/joyport.h:
+
+../../../vice-emu-code/vice/src/joyport/joystick.h:
+
+../../../vice-emu-code/vice/src/kbdbuf.h:
+
+../../../vice-emu-code/vice/src/keyboard.h:
+
+../../../vice-emu-code/vice/src/log.h:
+
+../../../vice-emu-code/vice/src/resources.h:
+
+../../../vice-emu-code/vice/src/machine-drive.h:
+
+../../../vice-emu-code/vice/src/machine-printer.h:
+
+../../../vice-emu-code/vice/src/machine-video.h:
+
+../../../vice-emu-code/vice/src/machine.h:
+
+../../../vice-emu-code/vice/src/maincpu.h:
+
+../../../vice-emu-code/vice/src/mem.h:
+
+../../../vice-emu-code/vice/src/monitor.h:
+
+../../../vice-emu-code/vice/src/monitor/asm.h:
+
+../../../vice-emu-code/vice/src/network.h:
+
+../../../vice-emu-code/vice/src/joyport/paperclip64.h:
+
+../../../vice-emu-code/vice/src/parallel.h:
+
+../../../vice-emu-code/vice/src/printer.h:
+
+../../../vice-emu-code/vice/src/rs232drv/rs232drv.h:
+
+../../../vice-emu-code/vice/src/rs232drv/rsuser.h:
+
+../../../vice-emu-code/vice/src/joyport/rushware_keypad.h:
+
+../../../vice-emu-code/vice/src/samplerdrv/sampler.h:
+
+../../../vice-emu-code/vice/src/joyport/sampler2bit.h:
+
+../../../vice-emu-code/vice/src/joyport/sampler4bit.h:
+
+../../../vice-emu-code/vice/src/screenshot.h:
+
+../../../vice-emu-code/vice/src/serial.h:
+
+../../../vice-emu-code/vice/src/sid/sid.h:
+
+../../../vice-emu-code/vice/src/sidcart.h:
+
+../../../vice-emu-code/vice/src/sid/sid-cmdline-options.h:
+
+../../../vice-emu-code/vice/src/sid/sid-resources.h:
+
+../../../vice-emu-code/vice/src/tape.h:
+
+../../../vice-emu-code/vice/src/tapeport/tapeport.h:
+
+../../../vice-emu-code/vice/src/traps.h:
+
+../../../vice-emu-code/vice/src/userport/userport.h:
+
+../../../vice-emu-code/vice/src/userport/userport_dac.h:
+
+../../../vice-emu-code/vice/src/userport/userport_joystick.h:
+
+../../../vice-emu-code/vice/src/userport/userport_rtc_58321a.h:
+
+../../../vice-emu-code/vice/src/userport/userport_rtc_ds1307.h:
+
+../../../vice-emu-code/vice/src/via.h:
+
+../../../vice-emu-code/vice/src/vic20/vic.h:
+
+../../../vice-emu-code/vice/src/vic20/vic-mem.h:
+
+../../../vice-emu-code/vice/src/vic20/vic20-cmdline-options.h:
+
+../../../vice-emu-code/vice/src/vic20/cart/vic20-ieee488.h:
+
+../../../vice-emu-code/vice/src/vic20/cart/vic20-midi.h:
+
+../../../vice-emu-code/vice/src/midi.h:
+
+../../../vice-emu-code/vice/src/vic20/vic20-resources.h:
+
+../../../vice-emu-code/vice/src/vic20/vic20-snapshot.h:
+
+../../../vice-emu-code/vice/src/vic20/vic20.h:
+
+../../../vice-emu-code/vice/src/vic20/vic20iec.h:
+
+../../../vice-emu-code/vice/src/vic20/vic20ieeevia.h:
+
+../../../vice-emu-code/vice/src/vic20/vic20mem.h:
+
+../../../vice-emu-code/vice/src/vic20/vic20memrom.h:
+
+../../../vice-emu-code/vice/src/vic20/vic20sound.h:
+
+../../../vice-emu-code/vice/src/vic20/vic20rsuser.h:
+
+../../../vice-emu-code/vice/src/vic20ui.h:
+
+../../../vice-emu-code/vice/src/vic20/vic20via.h:
+
+../../../vice-emu-code/vice/src/vice-event.h:
+
+../../../vice-emu-code/vice/src/video.h:
+
+../../../vice-emu-code/vice/src/video/video-sound.h:
+
+../../../vice-emu-code/vice/src/viewport.h:
+
+../../../vice-emu-code/vice/src/vsync.h:
+
+../../../vice-emu-code/vice/src/joyport/lightpen.h:
+
+../../../vice-emu-code/vice/src/joyport/mouse.h:
