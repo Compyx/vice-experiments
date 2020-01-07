@@ -2889,7 +2889,7 @@ vice_arg_with_list="x"
 
 
 VICE_VERSION_MAJOR=3
-VICE_VERSION_MINOR=3
+VICE_VERSION_MINOR=4
 VICE_VERSION_BUILD=0
 
 
@@ -11104,8 +11104,6 @@ darwin*)
 
     toolchain_check=no
 
-      enable_hwscale=no
-
                             
   RANLIB="\$(top_srcdir)/src/arch/shared/macOS-wrap-ranlib.sh"
   AR="\$(top_srcdir)/src/arch/shared/macOS-wrap-ar.sh"
@@ -11150,9 +11148,9 @@ $as_echo "@%:@define HAVE_LIGHTPEN /**/" >>confdefs.h
   
 $as_echo "@%:@define MACOSX_SUPPORT /**/" >>confdefs.h
 
-  VICE_CFLAGS="$VICE_CFLAGS -DGL_SILENCE_DEPRECATION -I/usr/local/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers"
-  VICE_CXXFLAGS="$VICE_CXXFLAGS -DGL_SILENCE_DEPRECATION -I/usr/local/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers"
-  LDFLAGS="$LDFLAGS -L/usr/local/lib"
+  VICE_CFLAGS="$VICE_CFLAGS -DGL_SILENCE_DEPRECATION -I/opt/local/include -I/usr/local/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers"
+  VICE_CXXFLAGS="$VICE_CXXFLAGS -DGL_SILENCE_DEPRECATION -I/opt/local/include -I/usr/local/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers"
+  LDFLAGS="$LDFLAGS -L/opt/local/lib -L/usr/local/lib -headerpad_max_install_names"
   LIBS="$LIBS -framework CoreText -framework CoreServices -framework OpenGL"
 
   ;;
@@ -11942,7 +11940,9 @@ if ac_fn_c_try_link "$LINENO"; then :
 $as_echo "yes" >&6; };
                    use_sdl_prefix=no;
                    use_sdl2_prefix=yes;
-                   found_sdl2=yes
+                   found_sdl2=yes;
+                   VICE_CFLAGS="$CFLAGS";
+                   VICE_CXXFLAGS="$CXXFLAGS"
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
@@ -11969,7 +11969,9 @@ if ac_fn_c_try_link "$LINENO"; then :
 $as_echo "yes" >&6; };
                      use_sdl_prefix=no;
                      use_sdl2_prefix=no;
-                     found_sdl2=yes
+                     found_sdl2=yes;
+                     VICE_CFLAGS="$CFLAGS";
+                     VICE_CXXFLAGS="$CXXFLAGS"
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
@@ -12008,6 +12010,11 @@ $as_echo "@%:@define USE_SDL2_PREFIX /**/" >>confdefs.h
     else
         check_sdl2audio=yes
     fi
+
+	user_CFLAGS="$CFLAGS"
+	user_CXXFLAGS="$CXXFLAGS"
+	CFLAGS="$VICE_CFLAGS"
+	CXXFLAGS="$VICE_CXXFLAGS"
 
         if test x"$check_sdl2audio" = "xyes"; then
       { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SDL audio support" >&5
@@ -12111,6 +12118,9 @@ done
           ;;
       esac
     fi
+
+	CFLAGS="$user_CFLAGS"
+	CXXFLAGS="$user_CXXFLAGS"
   fi
 fi
 
@@ -17752,6 +17762,9 @@ fi
 
 if test x"$enable_lame" != "xno" ; then
 
+  old_CFLAGS="$CFLAGS"
+  CFLAGS="$VICE_CFLAGS"
+
   ac_fn_c_check_header_mongrel "$LINENO" "lame/lame.h" "ac_cv_header_lame_lame_h" "$ac_includes_default"
 if test "x$ac_cv_header_lame_lame_h" = xyes; then :
   
@@ -17875,6 +17888,8 @@ $as_echo "@%:@define HAVE_STATIC_LAME /**/" >>confdefs.h
       fi
     fi
   fi
+
+  CFLAGS="$old_CFLAGS"
 fi
 
 for ac_prog in fc-cache

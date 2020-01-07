@@ -25,7 +25,7 @@ dnl Command-line options
 VICE_ARG_INIT()
 
 VICE_VERSION_MAJOR=3
-VICE_VERSION_MINOR=3
+VICE_VERSION_MINOR=4
 VICE_VERSION_BUILD=0
 
 VICE_ARG_WITH_LIST(readline,      [  --without-readline      do not try to use the system readline library])
@@ -929,10 +929,6 @@ darwin*)
   dnl disable toolchain checking for macosx
   toolchain_check=no
 
-  dnl disable hwscale for macosx, for now .. around Gtk 3.24 it introduced slow
-  dnl emulation while leaving the host cpu idle.
-  enable_hwscale=no
-
   dnl The vice build system builds empty libs for things that are configured out,
   dnl then links all of them together. This causes ranlib to complain like:
   dnl
@@ -983,9 +979,9 @@ darwin*)
   HAVE_LIGHTPEN_SUPPORT="yes"
 
   AC_DEFINE(MACOSX_SUPPORT,,[Enable Mac OS X specific code.])
-  VICE_CFLAGS="$VICE_CFLAGS -DGL_SILENCE_DEPRECATION -I/usr/local/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers"
-  VICE_CXXFLAGS="$VICE_CXXFLAGS -DGL_SILENCE_DEPRECATION -I/usr/local/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers"
-  LDFLAGS="$LDFLAGS -L/usr/local/lib"
+  VICE_CFLAGS="$VICE_CFLAGS -DGL_SILENCE_DEPRECATION -I/opt/local/include -I/usr/local/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers"
+  VICE_CXXFLAGS="$VICE_CXXFLAGS -DGL_SILENCE_DEPRECATION -I/opt/local/include -I/usr/local/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers"
+  LDFLAGS="$LDFLAGS -L/opt/local/lib -L/usr/local/lib -headerpad_max_install_names"
   LIBS="$LIBS -framework CoreText -framework CoreServices -framework OpenGL"
 
   ;;
@@ -1268,7 +1264,9 @@ if test x"$check_sdl2" = "xyes"; then
                   [AC_MSG_RESULT(yes);
                    use_sdl_prefix=no;
                    use_sdl2_prefix=yes;
-                   found_sdl2=yes],
+                   found_sdl2=yes;
+                   VICE_CFLAGS="$CFLAGS";
+                   VICE_CXXFLAGS="$CXXFLAGS"],
                   [AC_MSG_RESULT(no)])
 
       if test x"$found_sdl2" != "xyes"; then
@@ -1278,7 +1276,9 @@ if test x"$check_sdl2" = "xyes"; then
                     [AC_MSG_RESULT(yes);
                      use_sdl_prefix=no;
                      use_sdl2_prefix=no;
-                     found_sdl2=yes],
+                     found_sdl2=yes;
+                     VICE_CFLAGS="$CFLAGS";
+                     VICE_CXXFLAGS="$CXXFLAGS"],
                     [AC_MSG_RESULT(no)])
       fi
 
@@ -1313,6 +1313,11 @@ if test x"$check_sdl2" = "xyes"; then
     else
         check_sdl2audio=yes
     fi
+
+	user_CFLAGS="$CFLAGS"
+	user_CXXFLAGS="$CXXFLAGS"
+	CFLAGS="$VICE_CFLAGS"
+	CXXFLAGS="$VICE_CXXFLAGS"
 
     dnl only do if audio needs to be checked
     if test x"$check_sdl2audio" = "xyes"; then
@@ -1374,6 +1379,9 @@ if test x"$check_sdl2" = "xyes"; then
           ;;
       esac
     fi
+
+	CFLAGS="$user_CFLAGS"
+	CXXFLAGS="$user_CXXFLAGS"
   fi
 fi
 
@@ -2730,6 +2738,9 @@ fi
 dnl --- Lame ---
 if test x"$enable_lame" != "xno" ; then
 
+  old_CFLAGS="$CFLAGS"
+  CFLAGS="$VICE_CFLAGS"
+
   AC_CHECK_HEADER(lame/lame.h,,)
 
   dnl the header is available!
@@ -2764,6 +2775,8 @@ if test x"$enable_lame" != "xno" ; then
       fi
     fi
   fi
+
+  CFLAGS="$old_CFLAGS"
 fi
 
 AC_PATH_PROGS(FCCACHE, fc-cache, false)

@@ -113,7 +113,6 @@ libarch_a_SOURCES = \
 	vsyncarch.c
 
 EXTRA_DIST = \
-	Info.plist \
 	Resources/VICE.icns \
 	archdep.h \
 	cairo_renderer.h \
@@ -127,7 +126,7 @@ EXTRA_DIST = \
 	joy.h \
 	kbd.h \
 	linenoise.h \
-	macOS-launcher.sh \
+	macOS-ui-runtime.sh \
 	make-bindist_osx.sh \
 	make-bindist_win32.sh \
 	mousedrv.h \
