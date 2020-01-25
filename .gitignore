@@ -1,4 +1,10 @@
 **/.*/
+**/*.o
+**/*.a
+**/*.swp
+**/*.cmake
+**/CMakeFiles/
+**/CMakeLists.txt
+**/CMakeCache.txt
 *.nosync
 vice-dev.log
-.vice-dev.log.swp
