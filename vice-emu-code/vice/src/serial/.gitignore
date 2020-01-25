@@ -1,0 +1,5 @@
+.deps
+libserial.a
+Makefile
+Makefile.in
+

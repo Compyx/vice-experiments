@@ -5,13 +5,15 @@ do
 	cd $dir
 	echo $dir
 	
-	svn propget svn:ignore . 2>/dev/null > .gitignore
-
-	if [ $? != 1 ]
+	if svn propget svn:ignore . >/dev/null 2>&1
 	then
-		rm .gitignore
-	else
+		svn propget svn:ignore . > .gitignore
 		git add .gitignore
+	else
+		if [ -e .gitignore ]
+		then
+			rm .gitignore
+		fi
 	fi
 
 	cd - >/dev/null

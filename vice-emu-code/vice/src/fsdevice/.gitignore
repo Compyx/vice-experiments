@@ -1,0 +1,5 @@
+.deps
+libfsdevice.a
+Makefile
+Makefile.in
+

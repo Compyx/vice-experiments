@@ -1,0 +1,5 @@
+.deps
+libvdc.a
+Makefile
+Makefile.in
+

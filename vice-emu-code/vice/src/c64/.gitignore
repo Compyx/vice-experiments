@@ -1,0 +1,12 @@
+psiddrv.o65
+.deps
+libc64.a
+libc64c128.a
+libc64c64dtv.a
+libc64sc.a
+libc64scpu64.a
+libvsid.a
+Makefile
+Makefile.in
+psiddrv.h
+

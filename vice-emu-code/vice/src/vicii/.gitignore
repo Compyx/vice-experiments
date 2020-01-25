@@ -1,0 +1,6 @@
+.deps
+libvicii.a
+libviciidtv.a
+Makefile
+Makefile.in
+

@@ -1,0 +1,14 @@
+bin
+config.fate
+share
+lib
+config.mak
+.aclocal.out
+include
+.config
+config.asm
+config.log
+config.h
+.version
+tests
+

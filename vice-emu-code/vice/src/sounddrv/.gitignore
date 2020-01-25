@@ -1,0 +1,5 @@
+.deps
+libsounddrv.a
+Makefile
+Makefile.in
+

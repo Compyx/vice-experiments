@@ -1,0 +1,5 @@
+.deps
+libiecbus.a
+Makefile
+Makefile.in
+

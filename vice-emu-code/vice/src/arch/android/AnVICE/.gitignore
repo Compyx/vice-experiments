@@ -1,0 +1,12 @@
+bin
+gen
+libs
+obj
+Makefile.in
+Makefile
+ant.properties
+vice-dev.keystore
+local.properties
+assets
+config.android.h
+

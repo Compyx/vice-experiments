@@ -1,0 +1,5 @@
+.deps
+librs232drv.a
+Makefile
+Makefile.in
+

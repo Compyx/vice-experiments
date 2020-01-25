@@ -1,0 +1,6 @@
+.deps
+libsid.a
+Makefile
+Makefile.in
+resid.cpp
+

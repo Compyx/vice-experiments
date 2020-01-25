@@ -1,0 +1,10 @@
+libavutil.pc
+*.d
+ffversion.h
+libavutil.ver
+*.dll
+*.def
+*.lib
+lib*.a
+avconfig.h
+

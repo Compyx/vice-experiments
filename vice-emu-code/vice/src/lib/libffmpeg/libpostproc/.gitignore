@@ -1,0 +1,8 @@
+libpostproc.pc
+*.d
+libpostproc.ver
+*.def
+*.dll
+*.lib
+lib*.a
+
