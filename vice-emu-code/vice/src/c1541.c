@@ -3200,13 +3200,13 @@ int internal_read_geos_file(int unit, FILE* outf, char* src_name_ascii)
         while (aktTrk != 0 && vlirIdx <= 254) {
             if (aktTrk != 0) { /* Record exists and is not empty */
 #ifdef DEBUG_DRIVE
-                log_debug("DEBUG: VLIR IDX %d", vlirIdx);
+                log_debug("DEBUG: VLIR IDX %u", vlirIdx);
 #endif
                 NoOfChains++;
                 while (aktTrk != 0) {
                     /* Read the chain and collect No Of Blocks */
 #ifdef DEBUG_DRIVE
-                    log_debug("DEBUG: VLIR BLOCK (%d:%d)", aktTrk, aktSec);
+                    log_debug("DEBUG: VLIR BLOCK (%u:%u)", aktTrk, aktSec);
 #endif
 
                     if (vdrive_read_sector(drives[unit], block, aktTrk, aktSec) != 0) {
@@ -3265,13 +3265,13 @@ int internal_read_geos_file(int unit, FILE* outf, char* src_name_ascii)
         while (aktTrk != 0 && vlirIdx <= 254) {
             if (aktTrk != 0) {
 #ifdef DEBUG_DRIVE
-                log_debug("DEBUG: VLIR IDX %d", vlirIdx);
+                log_debug("DEBUG: VLIR IDX %u", vlirIdx);
 #endif
                 NoOfChains--;
                 /* Record exists */
                 while (aktTrk != 0) {
 #ifdef DEBUG_DRIVE
-                    log_debug("DEBUG: VLIR BLOCK (%d:%d)", aktTrk, aktSec);
+                    log_debug("DEBUG: VLIR BLOCK (%u:%u)", aktTrk, aktSec);
 #endif
                     if (vdrive_read_sector(drives[unit], block, aktTrk, aktSec) != 0) {
                         fprintf(stderr,
@@ -3557,7 +3557,7 @@ static int internal_write_geos_file(int unit, FILE* f)
 
     if (geosFileStruc == GEOS_FILE_STRUC_SEQ) {
 #ifdef DEBUG_DRIVE
-        log_debug("DEBUG: GEOS_FILE_STRUC_SEQ (%d:%d)", vlirTrk, vlirSec);
+        log_debug("DEBUG: GEOS_FILE_STRUC_SEQ (%u:%u)", vlirTrk, vlirSec);
 #endif
         /* normal seq file (rest like standard files) */
         lastTrk = vlirTrk;
@@ -3610,7 +3610,7 @@ static int internal_write_geos_file(int unit, FILE* f)
         }
     } else if (geosFileStruc == GEOS_FILE_STRUC_VLIR) {
 #ifdef DEBUG_DRIVE
-        log_debug("DEBUG: GEOS_FILE_STRUC_VLIR (%d:%d)", vlirTrk, vlirSec);
+        log_debug("DEBUG: GEOS_FILE_STRUC_VLIR (%u:%u)", vlirTrk, vlirSec);
 #endif
         /* in a cvt file containing a vlir file the vlir block contains
          * a pair (NoOfBlocksForChain, BytesInLastBlock + 2) for every vlir
@@ -3623,7 +3623,7 @@ static int internal_write_geos_file(int unit, FILE* f)
         while (vlirIdx <= 254) {
             if (vlirBlock[vlirIdx] != 0) {
 #ifdef DEBUG_DRIVE
-                log_debug("DEBUG: VLIR IDX %d (%d:%d)", vlirIdx, vlirTrk, vlirSec);
+                log_debug("DEBUG: VLIR IDX %d (%u:%u)", vlirIdx, vlirTrk, vlirSec);
 #endif
                 lastTrk = vlirTrk;
                 lastSec = vlirSec;
@@ -3667,7 +3667,7 @@ static int internal_write_geos_file(int unit, FILE* f)
 
                     /* write it to disk */
 #ifdef DEBUG_DRIVE
-                    log_debug("DEBUG: VLIR BLOCK (%d:%d)", aktTrk, aktSec);
+                    log_debug("DEBUG: VLIR BLOCK (%u:%u)", aktTrk, aktSec);
 #endif
 
                     if (vdrive_write_sector(drives[unit], block, aktTrk, aktSec) != 0) {
@@ -3785,7 +3785,7 @@ static int write_geos_cmd(int nargs, char **args)
            30);
 
 #ifdef DEBUG_DRIVE
-    log_debug("DEBUG: closing, write DIR slot (%d %d) and BAM.",
+    log_debug("DEBUG: closing, write DIR slot (%u %u) and BAM.",
             dir.track, dir.sector);
 #endif
     vdrive_write_sector(drives[dev], dir.buffer, dir.track, dir.sector);
@@ -4743,7 +4743,7 @@ int main(int argc, char **argv)
         /* TODO: Add completions on Windows, somehow, or perhaps not */
 
         version_cmd(0, NULL);
-        printf("Copyright 1995-2018 The VICE Development Team.\n"
+        printf("Copyright 1995-2020 The VICE Development Team.\n"
                "C1541 is free software, covered by the GNU General Public License,"
                " and you are\n"
                "welcome to change it and/or distribute copies of it under certain"

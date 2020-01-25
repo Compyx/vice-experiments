@@ -254,19 +254,23 @@ AS_IF([test x"$enable_static_ffmpeg" = "xyes" -o x"$enable_shared_ffmpeg" = "xye
 ])
 AC_CHECK_PROGS(YACC, byacc yacc 'bison -y', [no])
 AS_IF([test x"$YACC" = "xno"], [AC_MSG_ERROR([Could not find byacc, yacc or bison!])])
-AC_CHECK_PROGS(MAKEINFO, makeinfo, no)
-AC_CHECK_PROGS(TEXI2DVI, texi2dvi, no)
-AC_CHECK_PROGS(PDFTEX, pdftex, no)
+AC_CHECK_PROGS(MAKEINFO, makeinfo, :)
+AC_CHECK_PROGS(TEXI2DVI, texi2dvi, :)
+AC_CHECK_PROGS(PDFTEX, pdftex, :)
 AC_CHECK_PROGS(DOS2UNIX, dos2unix, dos2unix)
 AC_CHECK_PROGS(XA, [xa xa65], no)
 AS_IF([test x"$XA" = "xno"], [AC_MSG_ERROR([xa is missing])])
+
+dnl Seems to be used for AmigaOS:
 AC_CHECK_PROGS(MAKEGUIDE, makeguide, no)
-AC_CHECK_PROGS(HHC, hhc, no)
-AC_CHECK_PROGS(MAKERTF, makertf, no)
-AC_CHECK_PROGS(HCRTF, hcrtf, no)
-AC_CHECK_PROGS(TEXI2IPF, texi2ipf, no)
-AC_CHECK_PROGS(IPFC, wipfc, no)
-AC_CHECK_PROGS(IPFC, ipfc, no)
+dnl Can't find any mention of these in the buildsystem, except here:
+dnl AC_CHECK_PROGS(HHC, hhc, no)
+dnl AC_CHECK_PROGS(MAKERTF, makertf, no)
+dnl AC_CHECK_PROGS(HCRTF, hcrtf, no)
+dnl AC_CHECK_PROGS(TEXI2IPF, texi2ipf, no)
+dnl AC_CHECK_PROGS(IPFC, wipfc, no)
+dnl AC_CHECK_PROGS(IPFC, ipfc, no)
+
 AC_CHECK_PROGS(ICONV, iconv, no)
 AS_IF([test x"$ICONV" = x"no"], [AC_MSG_ERROR([iconv is missing])])
 AC_CHECK_TOOL(RANLIB, ranlib, :)
@@ -303,6 +307,12 @@ AC_SUBST(VICE_VERSION)
 AC_SUBST(VERSION_RC)
 
 AM_INIT_AUTOMAKE(vice, $VICE_VERSION)
+
+dnl The silent mode of automake silent rules is not nearly silent enough for vice normal method
+AM_SILENT_RULES([yes])
+m4_include([m4/quiet_cc.m4])
+VICE_QUIET_CC()
+
 AM_CONFIG_HEADER(src/config.h)
 
 VERSION_COMBINED=`expr $VICE_VERSION_MAJOR \* 65536 + $VICE_VERSION_MINOR \* 256 + $VICE_VERSION_BUILD`
@@ -312,7 +322,6 @@ is_unix=no
 is_unix_x11=no
 is_unix_macosx=no
 is_win32=no
-is_win32_x11=no
 is_win32_gtk3=no
 is_os2=no
 is_beos=no
@@ -403,8 +412,6 @@ AS_IF([test x"$enable_cpuhistory" = "xyes"],
 AS_IF([test x"$enable_new8580filter" = "xyes"],
   [AC_DEFINE(HAVE_NEW_8580_FILTER,,[Use the experimental new 8580 filter])
   ])
-
-AM_CONDITIONAL(VICE_QUIET, test x"$verbose" != "xyes")
 
 user_cflags=$CFLAGS
 
@@ -604,7 +611,7 @@ if test x"$ar_check" != "xno"; then
   rm -f libvicetest.a vicetest.o
 fi
 
-if test x"$TEXI2DVI" = "xno" -o x"$PDFTEX" = "xno"; then
+if test x"$TEXI2DVI" = "x:" -o x"$PDFTEX" = "x:"; then
   AM_CONDITIONAL(BUILD_PDF, false)
 else
   AM_CONDITIONAL(BUILD_PDF, true)
@@ -1185,11 +1192,15 @@ if test x"$check_gtk3" = "xyes"; then
 
     esac
 
-    dnl check for fontconfig
-    PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.0.0],
-        [HAVE_FONTCONFIG_SUPPORT=yes; LIBS="$LIBS -lfontconfig"],
-        AC_MSG_ERROR([failed to find fontconfig]))
-    AC_DEFINE(HAVE_FONTCONFIG,,[Use fontconfig for custom fonts.])
+    dnl Don't check for fontconfig on MacOS or Windows, we don't use fontconfig
+    dnl directly on those platforms
+    if test x"$is_unix_macosx" != "xyes" -a x"$is_win32" != "xyes"; then
+      dnl check for fontconfig
+      PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.0.0],
+          [HAVE_FONTCONFIG_SUPPORT=yes; LIBS="$LIBS -lfontconfig"],
+          AC_MSG_ERROR([failed to find fontconfig]))
+      AC_DEFINE(HAVE_FONTCONFIG,,[Use fontconfig for custom fonts.])
+    fi
 
     dnl now that the GTK3 UI support has been detected, define enable_native_gtk3ui and undefine the others to prevent checks
     enable_native_gtk3ui=yes
@@ -3647,13 +3658,9 @@ case "$host_os" in
     AM_CONDITIONAL(ALTERNATE_DOCDIR, true)
     ;;
   linux*)
-    if test x"$host_cpu" = "xx86_64"; then
-      VICEDIR="$PREFIX/lib64/vice"
-      AM_CONDITIONAL(ALTERNATE_DOCDIR, false)
-    else
-      VICEDIR="$PREFIX/lib/vice"
-      AM_CONDITIONAL(ALTERNATE_DOCDIR, false)
-    fi
+    VICEDIR="$PREFIX/share/vice"
+    dnl TODO: change to true and handle share/doc/vice vs share/vice/doc
+    AM_CONDITIONAL(ALTERNATE_DOCDIR, false)
     ;;
   *)
     VICEDIR="$PREFIX/lib/vice"
@@ -3677,7 +3684,6 @@ AC_OUTPUT([Makefile
            build/Makefile
            build/android/Makefile
            build/beos/Makefile
-           build/macosx/Makefile
            build/mingw/Makefile
            data/Makefile
            data/C128/Makefile
@@ -4096,6 +4102,22 @@ fi
 
 if test x"$real_arch" = "xAmiga"; then
     echo "OpenPCI support        : $HAVE_PROTO_OPENPCI_H_SUPPORT"
+fi
+
+echo ""
+echo "DOCUMENTATION"
+echo "-------------"
+echo -n "Generate Info/text: "
+if test x"$MAKEINFO" = "x:"; then
+    echo "no (install texinfo)"
+else
+    echo "yes"
+fi
+echo -n "Generate PDF      : "
+if test x"$TEXI2DVI" = "x:" -a x"$PDFTEX" = "x:"; then
+    echo "no (install texinfo)"
+else
+    echo "yes"
 fi
 
 echo ""

@@ -49,6 +49,8 @@
 #include "vdrive-command.h"
 #include "vdrive.h"
 
+/* #define DEBUG_DRIVE */
+
 /*
     return Maximum distance from dir track to start/end of disk.
 
@@ -93,7 +95,7 @@ int vdrive_bam_alloc_first_free_sector(vdrive_t *vdrive,
         int max_sector;
         t = vdrive->Bam_Track - d;
 #ifdef DEBUG_DRIVE
-        log_error(LOG_ERR, "Allocate first free sector on track %d.", t);
+        log_message(LOG_DEFAULT, "Allocate first free sector on track %d.", t);
 #endif
         if (d && t >= 1) {
             max_sector = vdrive_get_max_sectors(vdrive, t);
@@ -102,16 +104,16 @@ int vdrive_bam_alloc_first_free_sector(vdrive_t *vdrive,
                     *track = t;
                     *sector = s;
 #ifdef DEBUG_DRIVE
-                    log_error(LOG_ERR,
-                              "Allocate first free sector: %d,%d.", t, s);
+                    log_message(LOG_DEFAULT,
+                              "Allocate first free sector: %d,%u.", t, s);
 #endif
                     return 0;
                 }
             }
         }
-        t = vdrive->Bam_Track + d;
+        t = vdrive->Dir_Track + d;
 #ifdef DEBUG_DRIVE
-        log_error(LOG_ERR, "Allocate first free sector on track %d.", t);
+        log_message(LOG_DEFAULT, "Allocate first free sector on track %d.", t);
 #endif
         if (t <= (int)(vdrive->num_tracks)) {
             max_sector = vdrive_get_max_sectors(vdrive, t);
@@ -127,8 +129,8 @@ int vdrive_bam_alloc_first_free_sector(vdrive_t *vdrive,
                     *track = t;
                     *sector = s;
 #ifdef DEBUG_DRIVE
-                    log_error(LOG_ERR,
-                              "Allocate first free sector: %d,%d.", t, s);
+                    log_message(LOG_DEFAULT,
+                              "Allocate first free sector: %d,%u.", t, s);
 #endif
                     return 0;
                 }
@@ -224,7 +226,7 @@ int vdrive_bam_alloc_next_free_sector(vdrive_t *vdrive,
         if (vdrive_bam_alloc_down(vdrive, track, sector) == 0) {
             return 0;
         }
-        *track = vdrive->Dir_Track - 1;
+        *track = vdrive->Bam_Track - 1;
         if (vdrive_bam_alloc_down(vdrive, track, sector) == 0) {
             return 0;
         }
@@ -240,7 +242,7 @@ int vdrive_bam_alloc_next_free_sector(vdrive_t *vdrive,
         if (vdrive_bam_alloc_up(vdrive, track, sector) == 0) {
             return 0;
         }
-        *track = vdrive->Dir_Track - 1;
+        *track = vdrive->Bam_Track - 1;
         if (vdrive_bam_alloc_down(vdrive, track, sector) == 0) {
             return 0;
         }
@@ -722,15 +724,15 @@ int vdrive_bam_read_bam(vdrive_t *vdrive)
             break;
         case VDRIVE_IMAGE_FORMAT_8050:
         case VDRIVE_IMAGE_FORMAT_8250:
-            err = vdrive_read_sector(vdrive, vdrive->bam, BAM_TRACK_8050, BAM_SECTOR_8050);
+            err = vdrive_read_sector(vdrive, vdrive->bam, DIR_TRACK_8050, BAM_SECTOR_8050);
             if (err != 0) {
                 break;
             }
-            err = vdrive_read_sector(vdrive, vdrive->bam + 256, BAM_TRACK_8050 - 1, BAM_SECTOR_8050);
+            err = vdrive_read_sector(vdrive, vdrive->bam + 256, BAM_TRACK_8050, BAM_SECTOR_8050);
             if (err != 0) {
                 break;
             }
-            err = vdrive_read_sector(vdrive, vdrive->bam + 512, BAM_TRACK_8050 - 1, BAM_SECTOR_8050 + 3);
+            err = vdrive_read_sector(vdrive, vdrive->bam + 512, BAM_TRACK_8050, BAM_SECTOR_8050 + 3);
             if (err != 0) {
                 break;
             }
@@ -739,11 +741,11 @@ int vdrive_bam_read_bam(vdrive_t *vdrive)
                 break;
             }
 
-            err = vdrive_read_sector(vdrive, vdrive->bam + 768, BAM_TRACK_8050 - 1, BAM_SECTOR_8050 + 6);
+            err = vdrive_read_sector(vdrive, vdrive->bam + 768, BAM_TRACK_8050, BAM_SECTOR_8050 + 6);
             if (err != 0) {
                 break;
             }
-            err = vdrive_read_sector(vdrive, vdrive->bam + 1024, BAM_TRACK_8050 - 1, BAM_SECTOR_8050 + 9);
+            err = vdrive_read_sector(vdrive, vdrive->bam + 1024, BAM_TRACK_8050, BAM_SECTOR_8050 + 9);
             break;
         case VDRIVE_IMAGE_FORMAT_4000:
             for (i = 0; i < 33; i++) {
@@ -794,16 +796,16 @@ int vdrive_bam_write_bam(vdrive_t *vdrive)
             break;
         case VDRIVE_IMAGE_FORMAT_8050:
         case VDRIVE_IMAGE_FORMAT_8250:
-            err = vdrive_write_sector(vdrive, vdrive->bam, BAM_TRACK_8050, BAM_SECTOR_8050);
-            err |= vdrive_write_sector(vdrive, vdrive->bam + 256, BAM_TRACK_8050 - 1, BAM_SECTOR_8050);
-            err |= vdrive_write_sector(vdrive, vdrive->bam + 512, BAM_TRACK_8050 - 1, BAM_SECTOR_8050 + 3);
+            err = vdrive_write_sector(vdrive, vdrive->bam, DIR_TRACK_8050, BAM_SECTOR_8050);
+            err |= vdrive_write_sector(vdrive, vdrive->bam + 256, BAM_TRACK_8050, BAM_SECTOR_8050);
+            err |= vdrive_write_sector(vdrive, vdrive->bam + 512, BAM_TRACK_8050, BAM_SECTOR_8050 + 3);
 
-            if (vdrive->image_format == 8050) {
+            if (vdrive->image_format == VDRIVE_IMAGE_FORMAT_8050) {
                 break;
             }
 
-            err |= vdrive_write_sector(vdrive, vdrive->bam + 768, BAM_TRACK_8050 - 1, BAM_SECTOR_8050 + 6);
-            err |= vdrive_write_sector(vdrive, vdrive->bam + 1024, BAM_TRACK_8050 - 1, BAM_SECTOR_8050 + 9);
+            err |= vdrive_write_sector(vdrive, vdrive->bam + 768, BAM_TRACK_8050, BAM_SECTOR_8050 + 6);
+            err |= vdrive_write_sector(vdrive, vdrive->bam + 1024, BAM_TRACK_8050, BAM_SECTOR_8050 + 9);
             break;
         case VDRIVE_IMAGE_FORMAT_4000:
             err = 0;

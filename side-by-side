@@ -1,0 +1,21 @@
+#!/bin/bash
+
+trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
+
+#false &&
+./gtk3.nosync/vice-gtk3-3.4-r37346-uncommitted-changes/bin/x64sc \
+	+autostart-delay-random \
+	+warp \
+	+autostart-warp \
+	~/Downloads/EdgeOfDisgrace/EdgeOfDisgrace_1a.d64 &
+
+sleep $1
+
+#false &&
+./sdl2.nosync/vice-sdl2-3.4-r37346-uncommitted-changes/bin/x64sc \
+	+autostart-delay-random \
+	+warp \
+	+autostart-warp \
+	~/Downloads/EdgeOfDisgrace/EdgeOfDisgrace_1a.d64 &
+
+wait

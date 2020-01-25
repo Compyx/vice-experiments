@@ -1,5 +1,5 @@
-configure.ac:305: warning: AM_INIT_AUTOMAKE: two- and three-arguments forms are deprecated.  For more info, see:
-configure.ac:305: https://www.gnu.org/software/automake/manual/automake.html#Modernize-AM_005fINIT_005fAUTOMAKE-invocation
+configure.ac:309: warning: AM_INIT_AUTOMAKE: two- and three-arguments forms are deprecated.  For more info, see:
+configure.ac:309: https://www.gnu.org/software/automake/manual/automake.html#Modernize-AM_005fINIT_005fAUTOMAKE-invocation
 Makefile.am: installing './INSTALL'
 src/arch/gtk3/novte/Makefile.am:101: warning: filter %.h,$^: non-POSIX variable name
 src/arch/gtk3/novte/Makefile.am:101: (probably a GNU make extension)
