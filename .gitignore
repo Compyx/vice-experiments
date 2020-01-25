@@ -1,2 +1,4 @@
 **/.*/
 *.nosync
+vice-dev.log
+.vice-dev.log.swp
