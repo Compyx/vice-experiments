@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for dir in $(find . -type d | grep -v '/\.')
+for dir in $(find . -type d | grep -v autom4te.cache | grep -v '/\.')
 do
 	cd $dir
 	echo $dir
