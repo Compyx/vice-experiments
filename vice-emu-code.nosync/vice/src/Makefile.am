@@ -1289,6 +1289,7 @@ socketdrv_lib = $(top_builddir)/src/socketdrv/libsocketdrv.a
 sounddrv_lib = $(top_builddir)/src/sounddrv/libsounddrv.a
 tape_lib = $(top_builddir)/src/tape/libtape.a
 tapeport_lib = $(top_builddir)/src/tapeport/libtapeport.a
+toolarch_lib = $(ARCH_DIR)/libtoolarch.a
 userport_lib = $(top_builddir)/src/userport/libuserport.a
 vdc_lib = $(top_builddir)/src/vdc/libvdc.a
 vdrive_lib = $(top_builddir)/src/vdrive/libvdrive.a
@@ -1312,20 +1313,6 @@ ffmpeg_libs = @FFMPEG_LIBS@
 emu_extlibs = @UI_LIBS@ @SDL_EXTRA_LIBS@ @SOUND_LIBS@ @QUICKTIME_LIBS@ @JOY_LIBS@ @GFXOUTPUT_LIBS@ @ZLIB_LIBS@ @DYNLIB_LIBS@ @ARCH_LIBS@ $(archdep_lib)
 
 driver_libs = $(joyport_lib) $(samplerdrv_lib) $(sounddrv_lib) $(mididrv_lib) $(socketdrv_lib) $(hwsiddrv_lib) $(iodrv_lib) $(gfxoutputdrv_lib) $(printerdrv_lib) $(rs232drv_lib) $(diskimage_lib) $(fsdevice_lib) $(tape_lib) $(fileio_lib) $(serial_lib) $(core_lib)
-
-# Bit of a hack to make both Linux and BSD link agains dynlib
-# Someone with a better understand of the differences between Linux and BSD
-# should have a proper look at this issue.
-# -- compyx
-if HAVE_REALDEVICE
-if HAVE_BSD_FREE
-realdevice_lib = opencbmlib.o
-else
-realdevice_lib = opencbmlib.o $(top_builddir)/src/arch/shared/dynlib.o
-endif
-else
-realdevice_lib =
-endif
 
 if SUPPORT_X64
 x64_bin = x64
@@ -2231,23 +2218,18 @@ c1541_SOURCES = \
 	ioutil.c \
 	lib.c \
 	log.c \
+	opencbmlib.c \
 	rawfile.c \
 	resources.c \
 	util.c \
 	zfile.c \
 	zipcode.c
 
-ARCH_EXTRA_OBJECTS = 	@ARCH_DIR@/archdep.o
-
-# FIXME: I don't like linking `archdep.o' this way, but we cannot use
-# the generic `ARCH_LIBS', because we would have to link against X11
-# libs too then.
 c1541_LDADD = \
-	$(ARCH_EXTRA_OBJECTS) \
+	$(toolarch_lib) \
 	$(archdep_lib) \
 	$(p64_lib) \
 	$(blockdev_lib) \
-	$(realdevice_lib) \
 	$(vdrive_lib) \
 	$(imagecontents_lib) \
 	$(fileio_lib) \
@@ -2268,7 +2250,7 @@ endif
 .PHONY: c1541-all
 c1541-all: \
 	$(BUILT_SOURCES) \
-	libarch \
+	libtoolarch \
 	libp64 \
 	libvdrive \
 	libdiskimage \
@@ -2294,7 +2276,7 @@ petcat_SOURCES = \
 	zipcode.c
 
 petcat_LDADD = \
-	$(ARCH_EXTRA_OBJECTS) \
+	$(toolarch_lib) \
 	$(archdep_lib) \
 	$(fileio_lib) \
 	$(socketdrv_lib) \
@@ -2308,7 +2290,7 @@ endif
 .PHONY: petcat-all
 petcat-all: \
 	$(BUILT_SOURCES) \
-	libarch \
+	libtoolarch \
 	libfileio \
 	libsocketdrv \
 	petcat$(EXEEXT)
@@ -2330,13 +2312,15 @@ DISTCLEANFILES = $(BUILT_SOURCES) $(GENFILES)
 	libpet libplus4 libcbm2 libcbm5x0 libdrive libvdrive libprinterdrv \
 	librs232drv libgfxoutputdrv libsamplerdrv libjoyport libsounddrv \
 	libmididrv libsocketdrv libhwsiddrv libiodrv libdiskimage libfsdevice \
-	libtape libarch libarchdep libvicii libviciisc libviciidtv \
+	libtape libarch libtoolarch libarchdep libvicii libviciisc libviciidtv \
 	libviciivsid libvdc libsid libcrtc libvideo libserial libparallel \
 	libcore libiecbus libfileio librtc libuserport libtapeport libp64 \
 	libscpu64 libdiag \
 	@RESID_DEP@ @RESID_DTV_DEP@ @FFMPEG_DEP@
 
 libarch:
+	@(cd arch && $(MAKE))
+libtoolarch:
 	@(cd arch && $(MAKE))
 libarchdep:
 	@(echo "making libarchdep.a")
