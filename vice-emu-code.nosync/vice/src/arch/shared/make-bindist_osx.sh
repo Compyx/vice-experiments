@@ -56,9 +56,7 @@ mkdir $BUILD_DIR
 
 # define emulators and command line tools
 EMULATORS="xscpu64 x64dtv x64sc x128 xcbm2 xcbm5x0 xpet xplus4 xvic vsid"
-EMULATORS="x64sc"
 TOOLS="c1541 petcat cartconv"
-TOOLS="c1541"
 
 # define data files for emulators
 ROM_COMMON="DRIVES PRINTER"
@@ -263,6 +261,11 @@ for emu in $BINARIES ; do
       # relink the emu binary to the relative lib copy
       install_name_tool -change $lib @executable_path/../lib/$(basename $lib) $APP_BIN/$emu
   done
+
+  # dlopen'd libs need to be loaded from bundle, not /(opt|usr)/local/lib
+  install_name_tool -delete_rpath /opt/local/lib          $APP_BIN/$emu
+  install_name_tool -delete_rpath /usr/local/lib          $APP_BIN/$emu
+  install_name_tool -add_rpath    @executable_path/../lib $APP_BIN/$emu
 
   # copy emulator ROM
   eval "ROM=\${ROM_$emu}"
