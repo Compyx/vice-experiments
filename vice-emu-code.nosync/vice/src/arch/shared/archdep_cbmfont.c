@@ -60,7 +60,7 @@ int archdep_register_cbmfont(void)
     unsigned int isdir;
 
     datadir = archdep_get_vice_datadir();
-    fontPath = archdep_join_paths(datadir, "CBM.ttf", NULL);
+    fontPath = archdep_join_paths(datadir, "common", "CBM.ttf", NULL);
     lib_free(datadir);
 
     if (-1 == archdep_stat(fontPath, &len, &isdir)) {
@@ -109,11 +109,11 @@ int archdep_register_cbmfont(void)
 
     fc_config = FcConfigGetCurrent();
     datadir = archdep_get_vice_datadir();
-    path = archdep_join_paths(datadir, "CBM.ttf", NULL);
+    path = archdep_join_paths(datadir, "common", "CBM.ttf", NULL);
+    lib_free(datadir);
 #if 0
     printf("Path = '%s'\n", path);
 #endif
-    lib_free(datadir);
 
     if (!FcConfigAppFontAddFile(fc_config, (FcChar8 *)path)) {
         lib_free(path);
@@ -162,7 +162,7 @@ int archdep_register_cbmfont(void)
     int result;
 
     datadir = archdep_get_vice_datadir();
-    path = archdep_join_paths(datadir, "CBM.ttf", NULL);
+    path = archdep_join_paths(datadir, "common", "CBM.ttf", NULL);
     lib_free(datadir);
 
     result = AddFontResourceEx(path, 0, 0);
@@ -198,7 +198,7 @@ void archdep_unregister_cbmfont(void)
     char *path;
 
     datadir = archdep_get_vice_datadir();
-    path = archdep_join_paths(datadir, "CBM.ttf", NULL);
+    path = archdep_join_paths(datadir, "common", "CBM.ttf", NULL);
     lib_free(datadir);
 
     RemoveFontResourceEx(path, 0, 0);

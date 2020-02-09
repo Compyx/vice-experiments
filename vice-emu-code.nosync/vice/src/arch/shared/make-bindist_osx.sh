@@ -56,7 +56,9 @@ mkdir $BUILD_DIR
 
 # define emulators and command line tools
 EMULATORS="xscpu64 x64dtv x64sc x128 xcbm2 xcbm5x0 xpet xplus4 xvic vsid"
+EMULATORS="x64sc"
 TOOLS="c1541 petcat cartconv"
+TOOLS="c1541"
 
 # define data files for emulators
 ROM_COMMON="DRIVES PRINTER"
@@ -131,10 +133,10 @@ APP_MACOS=$APP_CONTENTS/MacOS
 APP_RESOURCES=$APP_CONTENTS/Resources
 APP_ETC=$APP_RESOURCES/etc
 APP_SHARE=$APP_RESOURCES/share
-APP_COMMON=$APP_RESOURCES/lib/vice/common
-APP_ICONS=$APP_RESOURCES/lib/vice/icons
-APP_ROMS=$APP_RESOURCES/lib/vice
-APP_DOCS=$APP_RESOURCES/lib/vice/doc
+APP_COMMON=$APP_SHARE/vice/common
+APP_ICONS=$APP_SHARE/vice/icons
+APP_ROMS=$APP_SHARE/vice
+APP_DOCS=$APP_SHARE/vice/doc
 APP_BIN=$APP_RESOURCES/bin
 APP_LIB=$APP_RESOURCES/lib
 
