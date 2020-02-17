@@ -1,5 +1,5 @@
-/** \file   basewidgets.h
- * \brief   Header file for the base widgets
+/** \file   archdep_get_runtime_info.h
+ * \brief   Get runtime information - header
  *
  * \author  Bas Wassink <b.wassink@ziggo.nl>
  */
@@ -25,26 +25,21 @@
  *
  */
 
-#ifndef VICE_BASEWIDGETS_H
-#define VICE_BASEWIDGETS_H
+#ifndef ARCHDEP_GET_RUNTIME_INFO_H
+#define ARCHDEP_GET_RUNTIME_INFO_H
 
-#include "vice.h"
-#include <gtk/gtk.h>
+#include <stdbool.h>
 
-#include "vice_gtk3_settings.h"
-#include "basewidget_types.h"
+#define ARCHDEP_RUNTIME_STRMAX  1024
 
-#include "cartimagewidget.h"
-#include "carthelpers.h"
-#include "clockportdevicewidget.h"
-#include "csshelpers.h"
-#include "resourcecheckbutton.h"
-#include "resourcecombobox.h"
-#include "resourceentry.h"
-#include "resourceradiogroup.h"
-#include "resourcescale.h"
-#include "resourcespinbutton.h"
-#include "resourcebrowser.h"
-#include "resourceswitch.h"
+typedef struct archdep_runtime_info_s {
+    char os_name[ARCHDEP_RUNTIME_STRMAX];
+    char os_version[ARCHDEP_RUNTIME_STRMAX];
+    char os_release[ARCHDEP_RUNTIME_STRMAX];
+    char machine[ARCHDEP_RUNTIME_STRMAX];
+} archdep_runtime_info_t;
+
+bool archdep_get_runtime_info(archdep_runtime_info_t *info);
 
 #endif
+

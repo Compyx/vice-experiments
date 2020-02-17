@@ -285,5 +285,80 @@ GtkWidget *vice_gtk3_grid_new_spaced_with_label(int column_spacing,
     return grid;
 }
 
+/** \brief  Convert petscii encoded string to utf8 string we can show using the CBM font
+ * 
+ * this function handles all characters that may appear in a directory listing,
+ * including "non printable" control characters, which appear as inverted characters
+ * in so called "quote mode".
+ */
+unsigned char *vice_gtk3_petscii_to_utf8(unsigned char *s, int inverted)
+{
+    unsigned char *d, *r;
+    unsigned int codepoint;
+
+    r = d = lib_malloc((size_t)(strlen((char *)s) * 3 + 1));
+    
+    while (*s) {
+        
+        /* 0xe000-0xe0ff codepoints cover the regular, uppercase, petscii codes
+                         in ranges 0x20-0x7f and 0xa0-0xff
+           0xe200-0xe2ff codepoints cover the same characters, but contain the
+                         respective inverted glyphs.
+                         
+           regular valid petscii codes are converted as is, petscii control 
+           codes will produce the glyph that the petscii code would produce
+           in so called "quote mode".
+        */
+
+        /* first convert petscii to utf8 codepoint */
+        if (*s < 0x20) {
+            /* petscii 0x00-0x1f  control codes (inverted @ABC..etc) */
+            codepoint  = *s + 0xe240;           /* 0xe240-0xe25f */
+        } else if (*s < 0x80) {
+            /* petscii 0x20-0x7f  printable petscii codes */
+            codepoint = *s + 0xe000;            /* 0xe020-0xe07f */
+        } else if (*s < 0xa0) {
+            /* petscii 0x80-0x9f  control codes (inverted SHIFT+@ABC..etc) */
+            codepoint = (*s - 0x80) + 0xe260;   /* 0xe260-0xe27f */
+        } else {
+            /* petscii 0xa0-0xff  printable petscii codes */
+            codepoint = *s + 0xe000;            /* 0xe0a0-0xe0ff */
+        }
+        if (inverted) {
+            codepoint ^= 0x0200;                /* 0xe0XX <-> 0xe2XX */
+        }
+        s++;
+
+        /* now copy to the destination string and convert to utf8 */
+#if 0        
+        if (codepoint < 0x80) {
+            /* one byte form - 0xxxxxxx */
+            *d = codepoint;
+        } else if (codepoint < 0x800) {
+            /* two byte form - 110xxxxx 10xxxxxx */
+
+            /* for some reason 0xad will not result in output in the popup
+             * menu, so we remap it to 0xed, which works */
+            if (codepoint == 0xad) { /* Unicode U+00AD SOFT HYPHEN */
+                codepoint = 0xed;
+            }
+                
+            *d++ = 0xc0 | (codepoint >> 6);
+            *d = (codepoint & ~0xc0) | 0x80;
+        } else 
+#endif
+        /* we can get away with just this, because all codepoints are > 4095 */
+        {
+            /* three byte form - 1110xxxx 10xxxxxx 10xxxxxx */
+            *d++ = 0xe0 | ((codepoint >> 12) & 0x0f);
+            *d++ = 0x80 | ((codepoint >> (6)) & 0x3f);
+            *d   = 0x80 | ((codepoint >> (0)) & 0x3f);
+        }
+        d++;
+    }
+    *d = '\0';
+    return r;
+}
+
 
 

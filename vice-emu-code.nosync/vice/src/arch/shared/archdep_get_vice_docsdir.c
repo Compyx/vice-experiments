@@ -45,6 +45,7 @@
 char *archdep_get_vice_docsdir(void)
 {
     char *path;
+    printf("VICE_DOCDIR = '%s'\n", VICE_DOCDIR);
 
 #ifdef ARCHDEP_OS_WINDOWS
     /* Cannot use VICE_DOCDIR here since Windows installs assume any file to

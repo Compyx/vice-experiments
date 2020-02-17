@@ -7,6 +7,7 @@
  *
  *
  *  \author Bas Wassink <b.wassink@ziggo.nl>
+ *  \author Groepaz (groepaz@gmx.de>
  */
 
 /*
@@ -34,6 +35,7 @@
 
 #include <gtk/gtk.h>
 #include "debug_gtk3.h"
+#include "csshelpers.h"
 #include "lib.h"
 #include "log.h"
 #include "imagecontents/diskcontents.h"
@@ -45,10 +47,10 @@
 #include "attach.h"
 #include "autostart.h"
 #include "util.h"
-
 #include "tape.h"
 
 #include "dirmenupopup.h"
+#include "widgethelpers.h"
 
 
 /** \brief  Function to read the contents of an image
@@ -67,66 +69,36 @@ static void (*response_func)(const char *, int);
  */
 static const char *autostart_diskimage;
 
-/** \brief  CSS style string to set the CBM font
+/** \brief  CSS style string to set the CBM font and remove padding
  */
-static const char *DIRENT_CSS = \
-    "label {" \
-    "font-family: \"CBM\";" \
-    "font-size: 16px;" \
-    "letter-spacing: 0;" \
-    "margin: 0;" \
-    "border: 0;" \
-    "}";
+#define MENULABEL_CSS \
+    "label {\n" \
+    "  font-family: \"C64 Pro Mono\";\n" \
+    "  font-size: 16px;\n" \
+    "  letter-spacing: 0;\n" \
+    "  margin: -2px;\n" \
+    "  border: 0;\n" \
+    "  padding: 0;\n" \
+    "}"
 
-/** \brief  Reference to the CSS provider used for directory entries
+
+/** \brief  CSS style string to remove padding from menu items
  */
-static GtkCssProvider *css_provider;
+#define MENUITEM_CSS \
+    "menuitem {\n" \
+    "  margin: 0;\n" \
+    "  border: 0;\n" \
+    "  padding: 0;\n" \
+    "}"
 
-/** \brief  Convert petscii encoded string to utf8 string we can show using cbm.ttf
+
+/** \brief  CSS provider used for directory entry GtkMenuItem labels
  */
-static unsigned char *convert_petscii_to_utf8(unsigned char *s)
-{
-    unsigned char *d, *r;
+static GtkCssProvider *menulabel_css_provider;
 
-    r = d = lib_malloc((size_t)(strlen((char *)s) * 2 + 1));
-    while (*s) {
-        /* first fixup non printable petscii */
-        if (*s < 0x20) {
-            /* control chars, we dont have the right inverted glyphs for them yet,
-               so convert to the non inverted counterparts for the time being */
-            *s  = *s + 0x40; /* inverted @ABC..etc */
-        } else if (*s < 0x80) {
-            /* printable petscii codes */
-        } else if (*s < 0xa0) {
-            /* control chars, we dont have the right inverted glyphs for them yet,
-               so convert to the non inverted counterparts for the time being */
-            *s = *s - 0x20; /* inverted SHIFT+@ABC..etc */
-        } else {
-            /* printable petscii codes */
-        }
-
-        /* now copy to the destination string and convert to utf8 */
-        if (*s < 0x80) {
-            *d = *s;
-        } else {
-            /* special latin1 character handling */
-            if (*s == 0xa0) {
-                *d = 0x20;
-            } else {
-                if (*s == 0xad) {
-                    *s = 0xed;
-                }
-                *d++ = 0xc0 | (*s >> 6);
-                *d = (*s & ~0xc0) | 0x80;
-            }
-        }
-
-        s++;
-        d++;
-    }
-    *d = '\0';
-    return r;
-}
+/** \brief  CSS provider used for directory entry GtkMenuItem's
+ */
+static GtkCssProvider *menuitem_css_provider;
 
 
 /** \brief  Handler for the "activate" event of a menu item
@@ -143,48 +115,20 @@ static void on_item_activate(GtkWidget *item, gpointer data)
 }
 
 
-
-/** \brief  Create CSS style provider for the directory entries
+/** \brief  Create reusable CSS providers
  *
- * This way we won't be (re)creating 144 or even 296 style provider
- *
- * \return  bool
+ * \return bool
  */
-static gboolean create_css_provider(void)
+static gboolean create_css_providers(void)
 {
-    GError *err = NULL;
-
-    /* instanciate CSS provider */
-    css_provider = gtk_css_provider_new();
-    gtk_css_provider_load_from_data(css_provider, DIRENT_CSS, -1, &err);
-    if (err != NULL) {
-        log_error(LOG_ERR, "CSS error: %s", err->message);
-        g_error_free(err);
+    menulabel_css_provider = vice_gtk3_css_provider_new(MENULABEL_CSS);
+    if (menulabel_css_provider == NULL) {
         return FALSE;
     }
-    return TRUE;
-}
-
-
-/** \brief  Apply CSS provider to \a widget to set the CBM font
- *
- * \param[in,out]   widget  label in a GtkMenuItem
- *
- * \return  bool
- */
-static gboolean apply_css_provider(GtkWidget *widget, GtkCssProvider *provider)
-{
-    GtkStyleContext *css_context;
-
-    css_context = gtk_widget_get_style_context(widget);
-    if (css_context == NULL) {
-        log_error(LOG_ERR, "Couldn't get style context of widget");
+    menuitem_css_provider = vice_gtk3_css_provider_new(MENUITEM_CSS);
+    if (menuitem_css_provider == NULL) {
         return FALSE;
     }
-
-    gtk_style_context_add_provider(css_context,
-            GTK_STYLE_PROVIDER(provider),
-            GTK_STYLE_PROVIDER_PRIORITY_USER);
     return TRUE;
 }
 
@@ -216,9 +160,9 @@ GtkWidget *dir_menu_popup_create(
 
     debug_gtk3("DEVICE = %d.", dev);
 
-    /* create style provider */
-    if (!create_css_provider()) {
-        debug_gtk3("failed to create CSS provider, borking");
+    /* create style providers */
+    if (!create_css_providers()) {
+        debug_gtk3("failed to create CSS providers, borking");
         return NULL;
     }
 
@@ -276,7 +220,7 @@ GtkWidget *dir_menu_popup_create(
 
     tmp = NULL;
     if (autostart_diskimage) {
-        util_fname_split(autostart_diskimage, NULL, &tmp);        
+        util_fname_split(autostart_diskimage, NULL, &tmp);
     }
     if (dev >= 0) {
         g_snprintf(buffer, 1024, "Directory of unit %d: (%s)", 
@@ -290,7 +234,7 @@ GtkWidget *dir_menu_popup_create(
     if (tmp) {
         lib_free(tmp);
     }
-    
+
     debug_gtk3("Did we get some image?");
     if (autostart_diskimage != NULL) {
         /* read dir and add them as menu items */
@@ -303,13 +247,15 @@ GtkWidget *dir_menu_popup_create(
         } else {
             debug_gtk3("Getting disk name & ID:");
             /* DISK name & ID */
-            
-            /* FIXME: we want to show the header inverted */
+
             tmp = image_contents_to_string(contents, 0);
-            utf8 = (char *)convert_petscii_to_utf8((unsigned char *)tmp);
+            utf8 = (char *)vice_gtk3_petscii_to_utf8((unsigned char *)tmp, 1);
             item = gtk_menu_item_new_with_label(utf8);
+            g_object_set(item, "margin-top", 0,
+                    "margin-bottom", 0, NULL);
             label = gtk_bin_get_child(GTK_BIN(item));
-            apply_css_provider(label, css_provider);
+            vice_gtk3_css_provider_add(label, menulabel_css_provider);
+            vice_gtk3_css_provider_add(item, menuitem_css_provider);
 
             gtk_container_add(GTK_CONTAINER(menu), item);
             lib_free(tmp);
@@ -325,24 +271,26 @@ GtkWidget *dir_menu_popup_create(
                     entry = entry->next) {
 
                 tmp = image_contents_file_to_string(entry, 0);
-                utf8 = (char *)convert_petscii_to_utf8((unsigned char *)tmp);
+                utf8 = (char *)vice_gtk3_petscii_to_utf8((unsigned char *)tmp, 0);
                 item = gtk_menu_item_new_with_label(utf8);
+
+                g_object_set(item, "margin-top", 0, "margin-bottom", 0, NULL);
                 label = gtk_bin_get_child(GTK_BIN(item));
-                apply_css_provider(label, css_provider);
+                vice_gtk3_css_provider_add(label, menulabel_css_provider);
+                vice_gtk3_css_provider_add(item, menuitem_css_provider);
 
                 gtk_container_add(GTK_CONTAINER(menu), item);
-                /* try to remove the blank space between lines in the directory
-                   listing... none of these seems to have any effect though :/ */
-                gtk_container_set_border_width(GTK_CONTAINER(menu), 0);
-                gtk_widget_set_margin_top(GTK_WIDGET(menu),0);
-                gtk_widget_set_margin_bottom(GTK_WIDGET(menu),0);
-
                 g_signal_connect(item, "activate",
                         G_CALLBACK(on_item_activate), GINT_TO_POINTER(index));
                 index++;
                 lib_free(tmp);
                 lib_free(utf8);
             }
+            /*
+            gtk_container_set_border_width(GTK_CONTAINER(menu), 0);
+            gtk_widget_set_margin_top(GTK_WIDGET(menu),0);
+            gtk_widget_set_margin_bottom(GTK_WIDGET(menu),0);
+            */
         }
         if (contents != NULL) {
             image_contents_destroy(contents);
@@ -353,7 +301,6 @@ GtkWidget *dir_menu_popup_create(
         gtk_container_add(GTK_CONTAINER(menu), item);
     }
     gtk_widget_show_all(GTK_WIDGET(menu));
-
 
     return menu;
 }
