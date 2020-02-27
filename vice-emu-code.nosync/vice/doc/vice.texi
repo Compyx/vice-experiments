@@ -139,20 +139,20 @@ notice identical to this one.
 @vskip 0pt plus 1filll
 @c section used in file generation, keep to the format used.
 @c ---vice-core-team---
-Copyright @copyright{} 1999-2019 Martin Pottendorfer
-Copyright @copyright{} 2005-2019 Marco van den Heuvel
-Copyright @copyright{} 2007-2019 Fabrizio Gennari
-Copyright @copyright{} 2009-2019 Groepaz
-Copyright @copyright{} 2009-2019 Errol Smith
-Copyright @copyright{} 2009-2019 Ingo Korb
-Copyright @copyright{} 2010-2019 Olaf Seibert
-Copyright @copyright{} 2011-2019 Marcus Sutton
-Copyright @copyright{} 2011-2019 Kajtar Zsolt
-Copyright @copyright{} 2016-2019 AreaScout
-Copyright @copyright{} 2016-2019 Bas Wassink
-Copyright @copyright{} 2017-2019 Michael C. Martin
-Copyright @copyright{} 2018-2019 Christopher Phillips
-Copyright @copyright{} 2019-2019 David Hogan
+Copyright @copyright{} 1999-2020 Martin Pottendorfer
+Copyright @copyright{} 2005-2020 Marco van den Heuvel
+Copyright @copyright{} 2007-2020 Fabrizio Gennari
+Copyright @copyright{} 2009-2020 Groepaz
+Copyright @copyright{} 2009-2020 Errol Smith
+Copyright @copyright{} 2009-2020 Ingo Korb
+Copyright @copyright{} 2010-2020 Olaf Seibert
+Copyright @copyright{} 2011-2020 Marcus Sutton
+Copyright @copyright{} 2011-2020 Kajtar Zsolt
+Copyright @copyright{} 2016-2020 AreaScout
+Copyright @copyright{} 2016-2020 Bas Wassink
+Copyright @copyright{} 2017-2020 Michael C. Martin
+Copyright @copyright{} 2018-2020 Christopher Phillips
+Copyright @copyright{} 2019-2020 David Hogan
 @c ---vice-core-team-end---
 
 @c ---ex-team---
@@ -532,16 +532,16 @@ Software Foundation, write to the Free Software Foundation; we sometimes
 make exceptions for this.  Our decision will be guided by the two goals
 of preserving the free status of all derivatives of our free software and
 of promoting the sharing and reuse of software generally.
+@end enumerate
 
 @iftex
-@vskip -@baselineskip
-@vskip -@baselineskip
 @heading NO WARRANTY
 @end iftex
 @ifinfo
 @center NO WARRANTY
 @end ifinfo
 
+@enumerate 11
 @item
 BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
 FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN
@@ -1135,10 +1135,10 @@ VICE supports the most popular Commodore file formats:
 
 @end itemize
 
-An utility (@code{c1541}, @pxref{c1541}) is provided to allow transfers
+A utility (@code{c1541}, @pxref{c1541}) is provided to allow transfers
 and conversions between these formats.
 
-Notice that the use of the @code{X64} file format is depreciated now.
+Notice that the use of the @code{X64} file format is deprecated now.
 
 @cindex Converting X64 files into D64
 You can convert an @code{X64} file back into a @code{D64} file with the
@@ -2247,13 +2247,13 @@ the PATH variable).
 
 Since version 0.15, the VICE emulators have been able to attach disks
 packed with Zipcode or Lynx directly, removing the need to manually
-convert them into @code{D64} or @code{X64} files with @code{c1541}.
+convert them into @code{D64} files with @code{c1541}.
 This is achieved by automatically invoking @code{c1541}, letting it
 decode the file into a temporary image and attaching the resulting
 temporary image read-only.  For this to work, the directory containing
 @code{c1541} must be in your @code{PATH}.
 
-This uses the @code{-unlynx} and @code{-zcreate} options of @code{c1541}
+This uses the @code{-unlynx} and @code{-unzip} options of @code{c1541}
 (@pxref{c1541 commands and options}); these commands are not very
 reliable yet, and could fail with certain kinds of Lynx and Zipcode
 images (for example, they cannot deal with @code{DEL} files properly).
@@ -13692,6 +13692,13 @@ complete emulator state into one file for later use.
 You can therefore save the emulator state - including the state of
 the game you are playing for example - in a single file.
 
+Important note: In the past the idea was that snapshots with the same major
+version can be exchanged with later versions of the emulator. However, this 
+proved to be too difficult to maintain, and insanely hard to test for
+correctness, which is why now the emulator will reject the snapshot when it
+finds a module that is too old. @b{Because of this you should not use snapshots
+for permanent/long term storage.}
+
 @menu
 * Snapshot usage::
 * Snapshot format::
@@ -15933,6 +15940,13 @@ monitor breaks. If not specified, the monitor breaks on "load" and
 A conditional expression can also be specified for the watchpoint.
 For more information on conditions, see the CONDITION command.
 
+@item dummy [on|off|toggle]
+Control whether the checkpoints will trigger on dummy accesses.
+If the argument is 'on' then dummy accesses will cause checkpoints
+to trigger. If the argument is 'off' then dummy accesses will not
+trigger any checkpoints. If the argument is 'toggle' then the current
+mode is switched.  No argument displays the current state.
+
 @end table
 
 
@@ -16426,8 +16440,8 @@ Show C1541 version string
 Write @code{source} from the file system into @code{destination} on a
 disk image.
 
-@item zcreate <x64name> <zipname> [<label,id>]
-Create an X64 disk image out of a set of four Zipcoded files named
+@item unzip <d64name> <zipname> [<label,id>]
+Create a D64 disk image out of a set of four Zipcoded files named
 @code{1!zipname}, @code{2!zipname}, @code{3!zipname} and
 @code{4!zipname}.
 

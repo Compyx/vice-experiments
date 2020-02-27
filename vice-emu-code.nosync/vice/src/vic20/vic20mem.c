@@ -90,10 +90,16 @@ static read_func_ptr_t _mem_peek_tab[0x101];
 
 read_func_ptr_t *_mem_read_tab_ptr;
 store_func_ptr_t *_mem_write_tab_ptr;
+read_func_ptr_t *_mem_read_tab_ptr_dummy;
+store_func_ptr_t *_mem_write_tab_ptr_dummy;
 static uint8_t **_mem_read_base_tab_ptr;
 static int *mem_read_limit_tab_ptr;
 
-/* Current watchpoint state. 1 = watchpoints active, 0 = no watchpoints */
+/* Current watchpoint state. 
+          0 = no watchpoints
+    bit0; 1 = watchpoints active
+    bit1; 2 = watchpoints trigger on dummy accesses
+*/
 static int watchpoints_active = 0;
 
 /* ------------------------------------------------------------------------- */
@@ -516,13 +522,23 @@ void mem_toggle_watchpoints(int flag, void *context)
     if (flag) {
         _mem_read_tab_ptr = _mem_read_tab_watch;
         _mem_write_tab_ptr = _mem_write_tab_watch;
+        if (flag > 1) {
+            /* enable watchpoints on dummy accesses */
+            _mem_read_tab_ptr_dummy = _mem_read_tab_watch;
+            _mem_write_tab_ptr_dummy = _mem_write_tab_watch;
+        } else {
+            _mem_read_tab_ptr_dummy = _mem_read_tab_nowatch;
+            _mem_write_tab_ptr_dummy = _mem_write_tab_nowatch;
+        }
     } else {
+        /* all watchpoints disabled */
         _mem_read_tab_ptr = _mem_read_tab_nowatch;
         _mem_write_tab_ptr = _mem_write_tab_nowatch;
+        _mem_read_tab_ptr_dummy = _mem_read_tab_nowatch;
+        _mem_write_tab_ptr_dummy = _mem_write_tab_nowatch;
     }
     watchpoints_active = flag;
 }
-
 /* ------------------------------------------------------------------------- */
 
 /* Initialize RAM for power-up.  */

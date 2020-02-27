@@ -226,6 +226,7 @@ struct monitor_cpu_type_s;
 
 extern struct console_s *console_log;
 extern int sidefx;
+extern int break_on_dummy_access;
 extern int exit_mon;
 
 extern RADIXTYPE default_radix;
@@ -286,6 +287,10 @@ extern bool mon_is_in_range(MON_ADDR start_addr, MON_ADDR end_addr,
 extern void mon_print_bin(int val, char on, char off);
 extern uint8_t mon_get_mem_val(MEMSPACE mem, uint16_t mem_addr);
 extern uint8_t mon_get_mem_val_ex(MEMSPACE mem, int bank, uint16_t mem_addr);
+/* the _nosfx variants must be used when the monitor must absolutely not cause
+   any sideeffect, be it emulated I/O or (re)triggering checkpoints */
+extern uint8_t mon_get_mem_val_ex_nosfx(MEMSPACE mem, int bank, uint16_t mem_addr);
+extern uint8_t mon_get_mem_val_nosfx(MEMSPACE mem, uint16_t mem_addr);
 extern void mon_get_mem_block(MEMSPACE mem, uint16_t mem_start, uint16_t mem_end, uint8_t *data);
 extern void mon_get_mem_block_ex(MEMSPACE mem, int bank, uint16_t mem_start, uint16_t mem_end, uint8_t *data);
 extern void mon_jump(MON_ADDR addr);
@@ -314,4 +319,5 @@ extern void mon_stopwatch_show(const char* prefix, const char* suffix);
 extern void mon_stopwatch_reset(void);
 extern void mon_maincpu_toggle_trace(int state);
 
+extern void mon_breakpoint_set_dummy_state(MEMSPACE mem, int state);
 #endif
