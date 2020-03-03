@@ -38,5 +38,6 @@
 #include "basedialogs.h"
 #include "filechooserhelpers.h"
 #include "widgethelpers.h"
+#include "vice_gtk3_locking.h"
 
 #endif

@@ -54,7 +54,8 @@ libbasewidgets_a_SOURCES = \
 	resourcewidgetmanager.c \
 	savefiledialog.c \
 	selectdirectorydialog.c \
-	widgethelpers.c
+	widgethelpers.c \
+	vice_gtk3_locking.c
 
 EXTRA_DIST = \
 	basedialogs.h \
@@ -81,4 +82,5 @@ EXTRA_DIST = \
 	selectdirectorydialog.h \
 	vice_gtk3.h \
 	vice_gtk3_settings.h \
+	vice_gtk3_locking.h \
 	widgethelpers.h

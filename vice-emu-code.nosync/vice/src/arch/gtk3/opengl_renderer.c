@@ -47,6 +47,7 @@
 #include "log.h"
 #include "resources.h"
 #include "ui.h"
+#include "mainlock.h"
 #include "video.h"
 #include "vice_gtk3.h"
 
@@ -271,6 +272,7 @@ static void realize_opengl_cb (GtkGLArea *area, gpointer user_data)
     GError *err = NULL;
     GLenum glErr;
     GdkGLContext *context;
+    GdkFrameClock *frame_clock;
 
     gtk_gl_area_make_current(area);
     err = gtk_gl_area_get_error(area);
@@ -327,6 +329,11 @@ static void realize_opengl_cb (GtkGLArea *area, gpointer user_data)
     /* The legacy renderer has no data unique to it */
     /* Initialize the ancillary data structures all renderers use */
     glGenTextures(1, &ctx->texture);
+    
+    /* Ensure the GtkGLarea is continually repainted. */
+    frame_clock = gdk_window_get_frame_clock(gdk_gl_context_get_window(context));
+    g_signal_connect_swapped(frame_clock, "update", G_CALLBACK(gtk_gl_area_queue_render), area);
+    gdk_frame_clock_begin_updating(frame_clock);
 }
 
 /** \brief OpenGL render callback.
@@ -519,8 +526,9 @@ static GtkWidget *vice_opengl_create_widget(video_canvas_t *canvas)
     canvas->drawing_area = widget;
     canvas->renderer_context = NULL;
     g_signal_connect (widget, "realize", G_CALLBACK (realize_opengl_cb), canvas);
-    g_signal_connect (widget, "render", G_CALLBACK (render_opengl_cb), canvas);
+    g_signal_connect_unlocked (widget, "render", G_CALLBACK(render_opengl_cb), canvas);
     g_signal_connect (widget, "resize", G_CALLBACK (resize_opengl_cb), canvas);
+    
     return widget;
 }
 
@@ -662,21 +670,6 @@ static void vice_opengl_refresh_rect(video_canvas_t *canvas,
         /* Render mode stays DIRTY_RECT */
     }
     /* Render mode NEW_TEXTURE has no effect; it stays just as new */
-
-    gtk_widget_queue_draw(canvas->drawing_area);
-    {
-        /* This block of code is a workaround for an issue we started
-         * seeing with Mesa 18.2 on Intel integrated GPUs on
-         * Debianoids, but, weirdly, nowhere else. The emulated screen
-         * would simply stop updating, even though we were queuing
-         * draw requests on it. This tries to force a redraw by
-         * invalidating the canvas's top level widget, in case
-         * something isn't propagating properly. */
-        GtkWidget *toplevel = gtk_widget_get_toplevel(canvas->drawing_area);
-        if (GTK_IS_WINDOW(toplevel)) {
-            gtk_widget_queue_draw(toplevel);
-        }
-    }
 }
 
 /** \brief OpenGL implementation of set_palette.

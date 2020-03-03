@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pthread.h>
 
 #include "archdep.h"
 #include "cmdline.h"
@@ -53,12 +54,15 @@
 #include "machine.h"
 #include "maincpu.h"
 #include "main.h"
+#include "mainlock.h"
 #include "resources.h"
 #include "sysfile.h"
 #include "types.h"
 #include "uiapi.h"
 #include "version.h"
 #include "video.h"
+
+void *vice_thread_main(void *);
 
 #ifdef USE_SVN_REVISION
 #include "svnversion.h"
@@ -76,6 +80,7 @@ const
 int console_mode = 0;
 int video_disabled_mode = 0;
 static int init_done = 0;
+static pthread_t vice_thread;
 
 
 /** \brief  Size of buffer used to write core team members' names to log/stdout
@@ -97,7 +102,6 @@ int main_program(int argc, char **argv)
     int loadconfig = 1;
     char term_tmp[TERM_TMP_SIZE];
     size_t name_len;
-
 
     lib_init_rand();
 
@@ -272,20 +276,44 @@ int main_program(int argc, char **argv)
     if (initcmdline_check_psid() < 0) {
         return -1;
     }
-
+    
     if (init_main() < 0) {
         return -1;
     }
 
     initcmdline_check_attach();
 
+    if (pthread_create(&vice_thread, NULL, vice_thread_main, NULL)) {
+        log_error(LOG_DEFAULT, "Fatal: failed to launch main thread");
+        return 1;
+    }
+
     init_done = 1;
 
-    /* Let's go...  */
+    return 0;
+}
+
+void vice_thread_shutdown(void)
+{
+    log_message(LOG_DEFAULT, "\nExiting...");
+    
+    mainlock_obtain();
+    mainlock_initiate_shutdown();
+    mainlock_release();
+    
+    pthread_join(vice_thread, NULL);
+}
+
+void *vice_thread_main(void *unused)
+{
     log_message(LOG_DEFAULT, "Main CPU: starting at ($FFFC).");
+
+    mainlock_init();
+
+    /* This doesn't return. The thread will directly exit when requested. */
     maincpu_mainloop();
 
-    log_error(LOG_DEFAULT, "perkele!");
+    log_error(LOG_DEFAULT, "perkele! (THREAD)");
 
-    return 0;
+    return NULL;
 }

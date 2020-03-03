@@ -211,6 +211,7 @@ noinst_HEADERS = \
 	main65816cpu.h \
 	maincpu.c \
 	maincpu.h \
+	mainlock.h \
 	mainviccpu.c \
 	mem.h \
 	midi.h \
@@ -312,6 +313,7 @@ base_sources = \
 	machine-bus.c \
 	machine.c \
 	main.c \
+	mainlock.c \
 	network.c \
 	opencbmlib.c \
 	palette.c \

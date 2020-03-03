@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <gtk/gtk.h>
 
 #include "log.h"
 #include "machine.h"
@@ -70,9 +71,14 @@ int main(int argc, char **argv)
     _putenv("LANG=C");
 #endif
 
-    return main_program(argc, argv);
-}
+    int init_result = main_program(argc, argv);
+    if (init_result)
+        return init_result;
 
+    gtk_main();
+    
+    return 0;
+}
 
 /** \brief  Exit handler
  */
@@ -81,9 +87,7 @@ void main_exit(void)
     /* Disable SIGINT.  This is done to prevent the user from keeping C-c
        pressed and thus breaking the cleanup process, which might be
        dangerous.  */
-    signal(SIGINT, SIG_IGN);
+    signal (SIGINT, SIG_IGN);
 
-    log_message(LOG_DEFAULT, "\nExiting...");
-
-    machine_shutdown();
+    vice_thread_shutdown();
 }

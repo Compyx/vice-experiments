@@ -55,6 +55,7 @@
 #include "lib.h"
 #include "log.h"
 #include "machine.h"
+#include "mainlock.h"
 #include "lightpen.h"
 #include "resources.h"
 #include "util.h"
@@ -1687,27 +1688,17 @@ void ui_update_menus(void)
 }
 
 
-/** \brief  Dispatch next GLib main context event
- *
- * \warning According to the Gtk3/GLib devs, this will at some point
- *          bite us in the arse.
+/** \brief  not needed with threaded ui.
  */
 void ui_dispatch_next_event(void)
 {
-    g_main_context_iteration(NULL, FALSE);
 }
 
 
-/** \brief  Dispatch events pending in the GLib main context loop
- *
- * \warning According to the Gtk3/GLib devs, this will at some point
- *          bite us in the arse.
+/** \brief  not needed with threaded ui.
  */
 void ui_dispatch_events(void)
 {
-    while (g_main_context_iteration(NULL, FALSE)) {
-        /* NOP */
-    }
 }
 
 /** \brief  Display the "Do you want to extend the disk image to

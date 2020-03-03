@@ -1,9 +1,8 @@
 /*
- * sdlmain.c - SDL startup.
+ * mainlock.h - VICE mutex used to synchronise access to the VICE api
  *
  * Written by
- *  Hannu Nuotio <hannu.nuotio@tut.fi>
- *  Marco van den Heuvel <blackystardust68@yahoo.com>
+ *  David Hogan <david.q.hogan@gmail.com>
  *
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
@@ -25,31 +24,18 @@
  *
  */
 
-#include "vice.h"
+#ifndef VICE_MAIN_LOCK_H
+#define VICE_MAIN_LOCK_H
 
-#include <stdio.h>
+#include <pthread.h>
 
-#include "log.h"
-#include "machine.h"
-#include "main.h"
-#include "uimenu.h"
+void mainlock_init(void);
+void mainlock_initiate_shutdown(void);
+//void mainlock_lock(void);
+//void mainlock_unlock(void);
 
-#include "vice_sdl.h"
+void mainlock_yield(void);
+void mainlock_obtain(void);
+void mainlock_release(void);
 
-int main(int argc, char **argv)
-{
-    return main_program(argc, argv);
-}
-
-void main_exit(void)
-{
-    log_message(LOG_DEFAULT, "\nExiting...");
-
-    /*
-     * Clean up dangling resources due to the 'Quit emu' callback not returning
-     * to the calling menu code.
-     */
-    sdl_ui_menu_shutdown();
-
-    vice_thread_shutdown();
-}
+#endif
