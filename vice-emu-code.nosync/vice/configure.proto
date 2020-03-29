@@ -4,7 +4,8 @@ dnl
 dnl Process this file with GNU autoconf to produce a configure script.
 dnl
 
-AC_INIT([vice], [3.4])
+dnl The major/minor stuff gets replaced in autogen.sh
+AC_INIT([vice], [__VICE_VERSION_MAJOR__.__VICE_VERSION_MINOR__])
 AC_CONFIG_SRCDIR([src/maincpu.c])
 AM_INIT_AUTOMAKE([-Wno-portability])
 
@@ -23,13 +24,14 @@ VICE_LDFLAGS=""
 
 AC_CONFIG_MACRO_DIR([m4])
 
+dnl Again: sed substitutes this
+VICE_VERSION_MAJOR=__VICE_VERSION_MAJOR__
+VICE_VERSION_MINOR=__VICE_VERSION_MINOR__
+VICE_VERSION_BUILD=__VICE_VERSION_REV__
+
+
 dnl Command-line options
 VICE_ARG_INIT()
-
-VICE_VERSION_MAJOR=3
-VICE_VERSION_MINOR=4
-VICE_VERSION_BUILD=0
-
 VICE_ARG_WITH_LIST(readline,      [  --without-readline      do not try to use the system readline library])
 VICE_ARG_WITH_LIST(pulse,         [  --without-pulse         do not use PulseAudio sound system])
 VICE_ARG_WITH_LIST(alsa,          [  --without-alsa          do not use the ALSA sound system])
@@ -81,6 +83,8 @@ VICE_ARG_ENABLE_LIST(new8580filter, [  --enable-new8580filter  enable experiment
 VICE_ARG_ENABLE_LIST(x64,         [  --enable-x64  enable building of the old x64 emulator [[default=no]]])
 VICE_ARG_ENABLE_LIST(pdf-docs,    [  --enable-pdf-docs       generate the PDF documentation [[default=if possible]]])
 VICE_ARG_ENABLE_LIST(html-docs,   [  --enable-html-docs      install the HTML documentation [[default=no]]])
+VICE_ARG_ENABLE_LIST(sandbox-mode,
+                                  [ --enable-sandbox-mode    enable support for sandboxed mode on Linux [[default=no]]])
 
 AC_ARG_VAR(FW_DIR, [Location of support frameworks (macOS only)])
 
@@ -420,6 +424,9 @@ USE_EMBEDDED_SUPPORT="no "
 
 HAVE_FONTCONFIG_SUPPORT="no"
 
+USE_SANDBOX_MODE="no "
+
+
 AM_CONDITIONAL(DUMMY_COMPILE, false)
 
 AS_IF([test x"$enable_cpuhistory" = "xyes"],
@@ -509,30 +516,35 @@ case "$host_os" in
   freebsd*)
     AM_CONDITIONAL([HAVE_BSD], true)
     AM_CONDITIONAL([HAVE_BSD_FREE], true)
-    VICE_CPPFLAGS="$VICE_CPPFLAGS -I/usr/local/include"
-    fbsdrtp=`${CONFIG_SHELL-/bin/sh} "$srcdir/config.rpath" "$CC" "$GCC" "$LDFLAGS" "$LD" "$with_gnu_ld" "$host" "/usr/local/lib"`
-    VICE_LDFLAGS="$VICE_LDFLAGS $fbsdrtp -L/usr/local/lib"
+    dnl VICE_CPPFLAGS="$VICE_CPPFLAGS -I/usr/local/include"
+    dnl fbsdrtp=`${CONFIG_SHELL-/bin/sh} "$srcdir/config.rpath" "$CC" "$GCC" "$VICE_LDFLAGS" "$LD" "$with_gnu_ld" "$host" "/usr/local/lib"`
+    dnl VICE_LDFLAGS="$VICE_LDFLAGS $fbsdrtp -L/usr/local/lib"
     ;;
   netbsd*)
     AM_CONDITIONAL([HAVE_BSD], true)
+    AM_CONDITIONAL([HAVE_BSD_NET], true)
     CPPFLAGS="$CPPFLAGS -I/usr/pkg/include -I/usr/include"
-    nbsdrtp=`${CONFIG_SHELL-/bin/sh} "$srcdir/config.rpath" "$CC" "$GCC" "$LDFLAGS" "$LD" "$with_gnu_ld" "$host" "/usr/pkg/lib"`
-    LDFLAGS="$LDFLAGS $nbsdrtp -L/usr/pkg/lib"
+    nbsdrtp=`${CONFIG_SHELL-/bin/sh} "$srcdir/config.rpath" "$CC" "$GCC" "$VICE_LDFLAGS" "$LD" "$with_gnu_ld" "$host" "/usr/pkg/lib"`
+    VICE_LDFLAGS="$VICE_LDFLAGS $nbsdrtp -L/usr/pkg/lib"
     if test -d "/usr/X11R7/lib"; then
-      rtp=`${CONFIG_SHELL-/bin/sh} "$srcdir/config.rpath" "$CC" "$GCC" "$LDFLAGS" "$LD" "$with_gnu_ld" "$host" "/usr/X11R7/lib"`
-      LDFLAGS="$LDFLAGS $rtp"
+      rtp=`${CONFIG_SHELL-/bin/sh} "$srcdir/config.rpath" "$CC" "$GCC" "$VICE_LDFLAGS" "$LD" "$with_gnu_ld" "$host" "/usr/X11R7/lib"`
+      VICE_LDFLAGS="$VICE_LDFLAGS $rtp"
     else
       if test -d "/usr/X11R6/lib"; then
-        rtp=`${CONFIG_SHELL-/bin/sh} "$srcdir/config.rpath" "$CC" "$GCC" "$LDFLAGS" "$LD" "$with_gnu_ld" "$host" "/usr/X11R6/lib"`
-        LDFLAGS="$LDFLAGS $rtp"
+        rtp=`${CONFIG_SHELL-/bin/sh} "$srcdir/config.rpath" "$CC" "$GCC" "$VICE_LDFLAGS" "$LD" "$with_gnu_ld" "$host" "/usr/X11R6/lib"`
+        VICE_LDFLAGS="$VICE_LDFLAGS $rtp"
       fi
     fi
     ;;
-  dragonfly*)
+  openbsd*)
+    dnl Either OpenBSD doesn't need the rpath stuff, or we never implemented it
     AM_CONDITIONAL([HAVE_BSD], true)
+    AM_CONDITIONAL([HAVE_BSD_OPEN], true)
+    ;;
+  dragonfly*)
     CPPFLAGS="$CPPFLAGS -I/usr/local/include"
-    dfbsdrtp=`${CONFIG_SHELL-/bin/sh} "$srcdir/config.rpath" "$CC" "$GCC" "$LDFLAGS" "$LD" "$with_gnu_ld" "$host" "/usr/local/lib"`
-    LDFLAGS="$LDFLAGS $dfbsdrtp -L/usr/local/lib"
+    dfbsdrtp=`${CONFIG_SHELL-/bin/sh} "$srcdir/config.rpath" "$CC" "$GCC" "$VICE_LDFLAGS" "$LD" "$with_gnu_ld" "$host" "/usr/local/lib"`
+    VICE_LDFLAGS="$VICE_LDFLAGS $dfbsdrtp -L/usr/local/lib"
     ;;
   *)
     ;;
@@ -1003,7 +1015,7 @@ darwin*)
   AC_DEFINE(MACOSX_SUPPORT,,[Enable Mac OS X specific code.])
   VICE_CFLAGS="$VICE_CFLAGS -DGL_SILENCE_DEPRECATION -I/opt/local/include -I/usr/local/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers"
   VICE_CXXFLAGS="$VICE_CXXFLAGS -DGL_SILENCE_DEPRECATION -I/opt/local/include -I/usr/local/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers"
-  LDFLAGS="$LDFLAGS -L/opt/local/lib -Wl,-rpath,/opt/local/lib -L/usr/local/lib -Wl,-rpath,/usr/local/lib -headerpad_max_install_names"
+  VICE_LDFLAGS="$VICE_LDFLAGS -L/opt/local/lib -Wl,-rpath,/opt/local/lib -L/usr/local/lib -Wl,-rpath,/usr/local/lib -headerpad_max_install_names"
   LIBS="$LIBS -framework CoreText -framework CoreServices -framework OpenGL"
 
   ;;
@@ -3370,14 +3382,14 @@ if test x"$is_amiga" = "xyes"; then
       LIBS="$LIBS -lauto"
     fi
   fi
-  AC_SUBST(LDFLAGS)
+  dnl AC_SUBST(LDFLAGS)
 
 elif test x"$is_beos" = "xyes"; then
 
   dnl On BEOS, we already know what we want.
 
   LIBS="$LIBS -lbe -ltracker -ldevice -lmedia -lgame"
-  AC_SUBST(LDFLAGS)
+  dnl AC_SUBST(LDFLAGS)
 fi
 
 dnl CBM4Linux/OpenCBM
@@ -3412,6 +3424,7 @@ fi
 AC_SUBST(VICE_CPPFLAGS)
 AC_SUBST(VICE_CFLAGS)
 AC_SUBST(VICE_CXXFLAGS)
+AC_SUBST(VICE_LDFLAGS)
 
 AC_SUBST(vsid_LDFLAGS)
 AC_SUBST(x64_LDFLAGS)
@@ -3430,6 +3443,15 @@ if test x"$enable_x64" = "xyes"; then
 else
   AM_CONDITIONAL(SUPPORT_X64, false)
   X64_INCLUDED="no"
+fi
+
+dnl Do we use sandbox mode?
+if test x"$enable_sandbox_mode" = "xyes"; then
+  USE_SANDBOX_MODE="yes"
+  AM_CONDITIONAL(SANDBOX_MODE, true)
+  AC_DEFINE(SANDBOX_MODE,,[Use Linux sandbox mode])
+else
+  AM_CONDITIONAL(SANDBOX_MODE, false)
 fi
 
 
@@ -3955,6 +3977,12 @@ if test x"$real_arch" = "xUnix"; then
 #    echo "Pango support                  : $HAVE_PANGO_SUPPORT"
 fi
 
+# Enabling Gtk3 native dialogs should help with Flatpack and other container
+# formats
+if test x"$real_arch" = "xUnix"; then
+    echo "Gtk3 sandbox mode              : $USE_SANDBOX_MODE (--enable/disable-sandbox-mode)"
+fi
+
 echo ""
 echo "SOUND"
 echo "-----"
@@ -4162,5 +4190,4 @@ echo "VICE CXXFLAGS: $VICE_CXXFLAGS"
 echo "VTE_CXXFLAGS:  $VTE_CXXFLAGS"
 echo "User LDFLAGS:  $LDFLAGS"
 echo "VICE LDFLAGS:  $VICE_LDFLAGS"
-echo "(didn't get around to LDFLAGS yet)"
 echo "----------------------------------------------------------------------"

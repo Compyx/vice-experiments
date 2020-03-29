@@ -49,6 +49,8 @@
 #include "archdep_create_user_config_dir.h"
 
 
+/** \brief  Create user config dir if it doesn't exist
+ */
 void archdep_create_user_config_dir(void)
 {
     char *cfg = archdep_user_config_path();

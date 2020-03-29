@@ -25,6 +25,20 @@ Now click 'continue' until done (GRUB on MBR etc)
 **REBOOT**
 
 
+#### Enable sudo
+
+We need sudo for the frankenvice script (I think)
+
+So, we'll install sudo (on Debian 10.3) and add the 'vice' user to the sudoers:
+```sh
+$ su -i
+$ apt install sudo
+$ adduser vice sudo
+```
+
+Now log out completely and log back in to have the 'vice' user recognized as a sudoer.
+
+
 
 
 Make sure you have the basic development tools:
@@ -32,7 +46,7 @@ Make sure you have the basic development tools:
 ```sh
 $ su
 $ apt install autoconf autotools build-essential byacc flex git subversion \
-        vim xa65 alien p7zip-full zip texinfo gawk* zip unzip
+        vim xa65 alien p7zip-full texinfo gawk zip unzip yasm dos2unix
 ```
 (todo: probably a lot more
  Seems glib-compile-schemas and glib-compile-resources live in Debian's
@@ -40,7 +54,7 @@ $ apt install autoconf autotools build-essential byacc flex git subversion \
 
 Do **not** install any native Linux Gtk/GLib packages unless specifically told to do so, this might result in unwanted results.
 
-*) Make bindist uses gawk vs awk, not sure why.
+(Make bindist uses gawk vs awk, not sure why)
 
 
 #### Install Debian's mingw packages
@@ -51,6 +65,19 @@ $ apt install mingw-w64 mingw-w64-tools
 ```
 
 Hint: Debian mingw packages are called 'mingw-w64-\*" while Fedora mingw packages are called 'mingw64-\*'. This will come in handy later to see which packages came from Debian and which were installed via RPM's using 'alien'.
+
+#### Fix pkg-config for Windows cross-building
+
+Currently (2020-03-23), Debian has an issue with running pkg-config for Windows
+cross-builds. Whenever you run into a message like:
+
+    Please install dpkg-dev to use pkg-config when cross-building
+
+Don't bother installing dpkg-dev, it's already installed and reinstalling won't
+fix anything.
+
+Edit `/usr/share/pkg-config-crosswrapper` and comment out the 'if [ "$?" != 0 ]
+branch after the multiarch="...." line (line 13 on my box).
 
 
 #### Install Fedora packages
@@ -67,6 +94,7 @@ mingw64-expat
 mingw64-fontconfig
 mingw64-freeglut
 mingw64-freetype
+mingw64-fribidi
 mingw64-gdk-pixbuf
 mingw64-gettext
 mingw64-giflib
@@ -342,7 +370,7 @@ $ dpkg -i mingw64-cairo_1.14.10-6_all.deb
 
 ### Using vice-rpm-to-deb.sh
 
-In the build/mingw directory in trunk is a script `vice-rpm-to-deb.sh` which can convert Fedora RPMs to Debian DEBs for use with FrankenVice.
+In the build/mingw/frankenvice directory in trunk is a script `vice-rpm-to-deb.sh` which can convert Fedora RPMs to Debian DEBs for use with FrankenVice.
 
 What it basically does is this:
 
@@ -406,7 +434,7 @@ Use the script to convert to deb:
 ```sh
 $ cd ~/temp
 $ su
-$ /home/vice/vice-trunk/vice/build/mingw/vice-rpm-to-deb.sh ../rpm/mingw64-flac-1.3.2-6.fc30.noarch.rpm
+$ /home/vice/vice-trunk/vice/build/mingw/frankenvice/vice-rpm-to-deb.sh ../rpm/mingw64-flac-1.3.2-6.fc30.noarch.rpm
 ```
 
 This should result in:
@@ -453,26 +481,4 @@ $ grep -i 'flac' config.log
 ```
 
 If the grep output has '-lFLAC' and '#define HAVE\_LIBFLAC 1', flac will work.
-
-
-
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

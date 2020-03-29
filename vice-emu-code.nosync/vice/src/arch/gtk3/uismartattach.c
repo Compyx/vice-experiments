@@ -45,6 +45,7 @@
 #include "uismartattach.h"
 
 
+#ifndef SANDBOX_MODE
 /** \brief  File type filters for the dialog
  */
 static ui_file_filter_t filters[] = {
@@ -56,11 +57,14 @@ static ui_file_filter_t filters[] = {
     { "Compressed files", file_chooser_pattern_compressed },
     { NULL, NULL }
 };
+#endif
 
 
+#ifndef SANDBOX_MODE
 /** \brief  Preview widget reference
  */
 static GtkWidget *preview_widget = NULL;
+#endif
 
 
 /** \brief  Last directory used
@@ -70,6 +74,9 @@ static GtkWidget *preview_widget = NULL;
  * ui_smart_attach_shutdown() on emulator shutdown.
  */
 static gchar *last_dir = NULL;
+
+
+static GtkWidget *autostart_button;
 
 
 #if 0
@@ -138,6 +145,23 @@ static void on_file_activated(GtkWidget *chooser, gpointer data)
 
 
 
+void on_selection_changed(GtkFileChooser *chooser, gpointer data)
+{
+    gchar *filename;
+
+    debug_gtk3("Called.");
+
+    filename = gtk_file_chooser_get_filename(chooser);
+    if (filename != NULL) {
+        gtk_widget_set_sensitive(autostart_button, TRUE);
+        g_free(filename);
+    } else {
+        gtk_widget_set_sensitive(autostart_button, FALSE);
+    }
+}
+
+
+#ifndef SANDBOX_MODE
 /** \brief  Handler for the "update-preview" event
  *
  * \param[in]   chooser file chooser dialog
@@ -163,7 +187,10 @@ static void on_update_preview(GtkFileChooser *chooser, gpointer data)
         g_object_unref(file);
     }
 }
+#endif
 
+
+#ifndef SANDBOX_MODE
 /** \brief  Handler for the 'toggled' event of the 'show hidden files' checkbox
  *
  * \param[in]   widget      checkbox triggering the event
@@ -178,9 +205,10 @@ static void on_hidden_toggled(GtkWidget *widget, gpointer user_data)
 
     gtk_file_chooser_set_show_hidden(GTK_FILE_CHOOSER(user_data), state);
 }
+#endif
 
 
-
+#ifndef SANDBOX_MODE
 /** \brief  Handler for the 'toggled' event of the 'show preview' checkbox
  *
  * \param[in]   widget      checkbox triggering the event
@@ -194,6 +222,8 @@ static void on_preview_toggled(GtkWidget *widget, gpointer user_data)
     debug_gtk3("preview %s.", state ? "enabled" : "disabled");
     /* TODO: actually disable the preview widget and resize the dialog */
 }
+#endif
+
 
 
 /** \brief  Handler for 'response' event of the dialog
@@ -218,12 +248,14 @@ static void on_response(GtkWidget *widget, gint response_id, gpointer user_data)
     debug_gtk3("got response ID %d, index %d.", response_id, index);
 #endif
 
+    /* gonna needs this in multiple checks */
+    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
+
     switch (response_id) {
 
         /* 'Open' button, double-click on file */
         case GTK_RESPONSE_ACCEPT:
             lastdir_update(widget, &last_dir);
-            filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
             filename_locale = file_chooser_convert_to_locale(filename);
 
             /* ui_message("Opening file '%s' ...", filename); */
@@ -239,33 +271,17 @@ static void on_response(GtkWidget *widget, gint response_id, gpointer user_data)
                 debug_gtk3("smart attach failed.");
             }
 
-            g_free(filename);
             g_free(filename_locale);
             gtk_widget_destroy(widget);
             break;
 
         /* 'Autostart' button clicked */
         case VICE_RESPONSE_AUTOSTART:
-            do_autostart(widget, user_data);
-#if 0
-            lastdir_update(widget, &last_dir);
-            filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
-            debug_gtk3("Autostarting file '%s'.", filename);
-            /* if this function exists, why is there no attach_autodetect()
-             * or something similar? -- compyx */
-            if (autostart_autodetect(
-                        filename,
-                        NULL,   /* program name */
-                        index,  /* Program number? Probably used when clicking
-                                   in the preview widget to load the proper
-                                   file in an image */
-                        AUTOSTART_MODE_RUN) < 0) {
-                /* oeps */
-                debug_gtk3("autostart-smart-attach failed.");
+            /* do we actually have a file to autostart? */
+            if (filename != NULL) {
+                do_autostart(widget, user_data);
+                gtk_widget_destroy(widget);
             }
-            g_free(filename);
-            gtk_widget_destroy(widget);
-#endif
             break;
 
         /* 'Close'/'X' button */
@@ -276,10 +292,14 @@ static void on_response(GtkWidget *widget, gint response_id, gpointer user_data)
             break;
     }
 
+    if (filename != NULL) {
+        g_free(filename);
+    }
     ui_set_ignore_mouse_hide(FALSE);
 }
 
 
+#ifndef SANDBOX_MODE
 /** \brief  Create the 'extra' widget
  *
  * \return  GtkGrid
@@ -310,8 +330,10 @@ static GtkWidget *create_extra_widget(GtkWidget *parent)
     gtk_widget_show_all(grid);
     return grid;
 }
+#endif
 
 
+#ifndef SANDBOX_MODE
 /** \brief  Wrapper around disk/tape contents readers
  *
  * First treats \a path as disk image file and when that fails it falls back
@@ -333,13 +355,20 @@ static image_contents_t *read_contents_wrapper(const char *path)
     }
     return content;
 }
+#endif
 
 
+
+#ifndef SANDBOX_MODE
 /** \brief  Create the smart-attach dialog
  *
  * \param[in]   parent  parent widget, used to get the top level window
  *
  * \return  GtkFileChooserDialog
+ *
+ * \todo    Figure out how to only enable the 'Autostart' button when an actual
+ *          file/image has been selected. And when I do, make sure it's somehow
+ *          reusable for other 'open file' dialogs'.
  */
 static GtkWidget *create_smart_attach_dialog(GtkWidget *parent)
 {
@@ -355,9 +384,14 @@ static GtkWidget *create_smart_attach_dialog(GtkWidget *parent)
             GTK_FILE_CHOOSER_ACTION_OPEN,
             /* buttons */
             "Open", GTK_RESPONSE_ACCEPT,
-            "Autostart", VICE_RESPONSE_AUTOSTART,
             "Close", GTK_RESPONSE_REJECT,
             NULL, NULL);
+
+    autostart_button = gtk_dialog_add_button(
+            GTK_DIALOG(dialog),
+            "Autostart",
+            VICE_RESPONSE_AUTOSTART);
+    gtk_widget_set_sensitive(autostart_button, FALSE);
 
     /* set modal so mouse-grab doesn't get triggered */
     gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
@@ -385,6 +419,8 @@ static GtkWidget *create_smart_attach_dialog(GtkWidget *parent)
     g_signal_connect(dialog, "response", G_CALLBACK(on_response), NULL);
     g_signal_connect(dialog, "update-preview",
             G_CALLBACK(on_update_preview), NULL);
+    g_signal_connect(dialog, "selection-changed",
+            G_CALLBACK(on_selection_changed), NULL);
 
 #if 0
     /* Autostart on double-click */
@@ -394,6 +430,40 @@ static GtkWidget *create_smart_attach_dialog(GtkWidget *parent)
     return dialog;
 
 }
+
+#else
+
+/** \brief  Create the smart-attach dialog
+ *
+ * \param[in]   parent  parent widget, used to get the top level window
+ *
+ * \return  GtkFileChooserNative
+ *
+ * \todo    Figure out how to only enable the 'Autostart' button when an actual
+ *          file/image has been selected. And when I do, make sure it's somehow
+ *          reusable for other 'open file' dialogs'.
+ */
+static GtkFileChooserNative *create_smart_attach_dialog(void *parent)
+{
+    GtkFileChooserNative *dialog;
+
+    ui_set_ignore_mouse_hide(TRUE);
+
+    /* create new dialog */
+    dialog = gtk_file_chooser_native_new(
+            "Smart-attach a file",
+            ui_get_active_window(),
+            GTK_FILE_CHOOSER_ACTION_OPEN,
+            /* buttons */
+            NULL, NULL);
+
+    /* connect "reponse" handler: the `user_data` argument gets filled in when
+     * the "response" signal is emitted: a response ID */
+    g_signal_connect(dialog, "response", G_CALLBACK(on_response), NULL);
+
+    return dialog;
+}
+#endif
 
 
 /** \brief  Callback for the File menu's "smart-attach" item
@@ -407,10 +477,16 @@ static GtkWidget *create_smart_attach_dialog(GtkWidget *parent)
  */
 gboolean ui_smart_attach_callback(GtkWidget *widget, gpointer user_data)
 {
+#ifndef SANDBOX_MODE
     GtkWidget *dialog;
 
     dialog = create_smart_attach_dialog(widget);
     gtk_widget_show(dialog);
+#else
+    GtkFileChooserNative *dialog;
+    dialog = create_smart_attach_dialog((gpointer)widget);
+    gtk_native_dialog_show(GTK_NATIVE_DIALOG(dialog));
+#endif
     return TRUE;
 
 }

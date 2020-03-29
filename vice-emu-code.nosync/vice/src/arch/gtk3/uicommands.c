@@ -335,32 +335,38 @@ gboolean ui_open_manual_callback(GtkWidget *widget, gpointer user_data)
      */
     res = gtk_show_uri_on_window(NULL, final_uri, GDK_CURRENT_TIME, &error);
     if (!res) {
-        vice_gtk3_message_error(
-                "Failed to load PDF",
-                "Error message: %s",
-                error != NULL ? error->message : "<no message>");
+        /* will contain the args for the archep_spawn() call */
+        char *args[3];
+        char *tmp_name;
+
+        debug_gtk3("gtk_show_uri_on_window Failed!");
+
+        /* fallback to xdg-open */
+        args[0] = lib_strdup("xdg-open");
+        args[1] = lib_strdup(uri);
+        args[2] = NULL;
+
+        debug_gtk3("Calling xgd-open");
+        if (archdep_spawn("xdg-open", args, &tmp_name, NULL) < 0) {
+            debug_gtk3("xdg-open Failed!");
+            vice_gtk3_message_error(
+                    "Failed to load PDF",
+                    "Error message: %s",
+                    error != NULL ? error->message : "<no message>");
+        } else {
+            debug_gtk3("OK");
+            res = TRUE;
+        }
+        /* clean up */
+        lib_free(args[0]);
+        lib_free(args[1]);
     }
+
     lib_free(uri);
     g_free(final_uri);
     g_clear_error(&error);
-    if (res) {
-        /* We succesfully managed to open the PDF application, but there's no
-         * way to determine if actually loading the PDF in that application
-         * worked. So we simply exit here to avoid also opening a HTML browser
-         * which on Windows at least seems to completely ignore the default and
-         * always starts Internet Explorer (or Edge, even better).
-         *
-         * Also how do we close the PDF application if we could determine it
-         * failed to load the PDF? We don't get any reference to the application
-         * to be able to terminate it. Gtk3 is awesome!
-         *
-         * -- compyx
-         */
-        return TRUE;
-    }
 
-    /* No HTML for you! */
-    return FALSE;
+    return res;
 }
 
 
