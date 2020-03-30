@@ -649,6 +649,8 @@ void maincpu_mainloop(void)
     uint8_t *bank_base;
     int bank_start = 0;
     int bank_limit = 0;
+    /* how many times per second should we yield the vice thread to the ui thread */
+    int yield_clk_interval = machine_get_cycles_per_second() / 1000;
 
     o_bank_base = &bank_base;
     o_bank_start = &bank_start;
@@ -711,6 +713,11 @@ void maincpu_mainloop(void)
         if (maincpu_clk_limit && (maincpu_clk > maincpu_clk_limit)) {
             log_error(LOG_DEFAULT, "cycle limit reached.");
             archdep_vice_exit(EXIT_FAILURE);
+        }
+
+        /* Frequently give the ui thread an opportunity to call back into vice */
+        if (0 == (maincpu_clk % yield_clk_interval)) {
+            mainlock_yield();
         }
 #if 0
         if (CLK > 246171754) {

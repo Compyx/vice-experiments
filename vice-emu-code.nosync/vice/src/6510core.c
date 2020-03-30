@@ -2213,9 +2213,6 @@ static const uint8_t rewind_fetch_tab[] = {
         debug_clk = maincpu_clk;
 #endif
 #endif
-        
-        /* Frequently give the ui thread a safe opportunity to call back into vice or otherwise do some housekeeping */
-        mainlock_yield();
 
 #ifdef FEATURE_CPUMEMHISTORY
 #ifndef DRIVE_CPU
