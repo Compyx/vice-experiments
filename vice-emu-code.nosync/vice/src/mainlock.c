@@ -38,8 +38,6 @@
 
 static volatile int vice_thread_keepalive = 1;
 
-static volatile int mainlock_initialised = 0;
-
 static int ui_thread_waiting = 0;
 static int ui_thread_lock_count = 0;
 
@@ -51,21 +49,13 @@ static pthread_cond_t yield_condition = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t return_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t return_condition = PTHREAD_COND_INITIALIZER;
 
-// static pthread_t mainlock_owner = 0;
-
 static unsigned long tick_per_ms;
 static unsigned long start_time;
 
 void mainlock_init()
 {
-    // main_thread = pthread_self();
-
-    printf("*****\n\nmainlock init, thread: %p\n", (void *)pthread_self());
-
     tick_per_ms = vsyncarch_frequency() / 1000;
     start_time = vsyncarch_gettime();
-
-    mainlock_initialised = 1;
 }
 
 void mainlock_initiate_shutdown()
@@ -77,10 +67,6 @@ void mainlock_initiate_shutdown()
  */
 void mainlock_yield()
 {
-    if (!mainlock_initialised) {
-        return;
-    }
-    
     pthread_mutex_lock(&yield_mutex);
     
     /* If the UI thread is not waiting for VICE, we're done here. */
@@ -115,11 +101,6 @@ void mainlock_yield()
 
 void mainlock_obtain()
 {
-    if (!mainlock_initialised) {
-        printf("lock-free obtain\n");
-        return;
-    }
-    
     //printf("obtaining\n");
     
     pthread_mutex_lock(&yield_mutex);
@@ -149,11 +130,6 @@ void mainlock_obtain()
 
 void mainlock_release()
 {
-    if (!mainlock_initialised) {
-        printf("lock-free release\n");
-        return;
-    }
-
     //printf("releasing ...\n");
     
     pthread_mutex_lock(&return_mutex);

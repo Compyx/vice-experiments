@@ -62,6 +62,9 @@
 #include "version.h"
 #include "video.h"
 
+static volatile int lock_pump_keep_alive = 1;
+
+void *vice_init_lock_pump(void *);
 void *vice_thread_main(void *);
 
 #ifdef USE_SVN_REVISION
@@ -277,11 +280,20 @@ int main_program(int argc, char **argv)
         return -1;
     }
     
+    if (pthread_create(&vice_thread, NULL, vice_init_lock_pump, NULL)) {
+        log_error(LOG_DEFAULT, "Fatal: failed to launch init lock pump thread");
+        return 1;
+    }
+    
     if (init_main() < 0) {
         return -1;
     }
 
     initcmdline_check_attach();
+    
+    /* Shut down the init lock pump */
+    lock_pump_keep_alive = 0;
+    pthread_join(&vice_thread, NULL);
 
     if (pthread_create(&vice_thread, NULL, vice_thread_main, NULL)) {
         log_error(LOG_DEFAULT, "Fatal: failed to launch main thread");
@@ -308,12 +320,21 @@ void *vice_thread_main(void *unused)
 {
     log_message(LOG_DEFAULT, "Main CPU: starting at ($FFFC).");
 
-    mainlock_init();
-
     /* This doesn't return. The thread will directly exit when requested. */
     maincpu_mainloop();
 
     log_error(LOG_DEFAULT, "perkele! (THREAD)");
 
+    return NULL;
+}
+
+void *vice_init_lock_pump(void *unused)
+{
+    mainlock_init();
+    
+    while (lock_pump_keep_alive) {
+        mainlock_yield();
+    }
+    
     return NULL;
 }
