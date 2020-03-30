@@ -37,6 +37,7 @@
 void vice_gtk3_lock(gpointer data, GClosure *closure)
 {
     mainlock_obtain();
+    //printf("locked: %s\n", (char*)data);
 }
 
 /*
@@ -44,18 +45,19 @@ void vice_gtk3_lock(gpointer data, GClosure *closure)
  */
 void vice_gtk3_unlock(gpointer data, GClosure *closure)
 {
+    //printf("releasing: %s\n", (char*)data);
     mainlock_release();
 }
 
 /*
  * A replacement for g_signal_connect that wraps the signal handling callback in vice lock/unlock. 
  */
-gulong vice_locking_g_signal_connect(gpointer instance, const gchar *detailed_signal, GCallback signal_handler, gpointer data)
+gulong vice_locking_g_signal_connect(gpointer instance, const gchar *detailed_signal, GCallback signal_handler, gpointer data, char *signal_handler_name)
 {
     GClosure *closure = g_cclosure_new(signal_handler, data, NULL);
 
     /* Wrap invocation of signal_handler with lock & unlock. */
-    g_closure_add_marshal_guards(closure, NULL, vice_gtk3_lock, NULL, vice_gtk3_unlock);
+    g_closure_add_marshal_guards(closure, signal_handler_name, vice_gtk3_lock, signal_handler_name, vice_gtk3_unlock);
 
     return g_signal_connect_closure(instance, detailed_signal, closure, FALSE);
 }

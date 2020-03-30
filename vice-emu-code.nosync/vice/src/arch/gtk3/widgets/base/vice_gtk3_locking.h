@@ -30,14 +30,14 @@
 #include "vice.h"
 #include <gtk/gtk.h>
 
-gulong vice_locking_g_signal_connect(gpointer instance, const gchar *detailed_signal, GCallback c_handler, gpointer data);
+gulong vice_locking_g_signal_connect(gpointer instance, const gchar *detailed_signal, GCallback c_handler, gpointer data, char *signal_handler_name);
 
 /*
  * Replace the standard g_signal_connect macro with one that calls our vice locking version.
  */
 #undef g_signal_connect
 #define g_signal_connect(instance, detailed_signal, callback, data) \
-    vice_locking_g_signal_connect((instance), (detailed_signal), callback, data)
+    vice_locking_g_signal_connect((instance), (detailed_signal), callback, data, #detailed_signal"["#callback"]")
 
 /*
  * g_signal_connect_unlocked is a copy of the original implementation of g_signal_connect (no locking).

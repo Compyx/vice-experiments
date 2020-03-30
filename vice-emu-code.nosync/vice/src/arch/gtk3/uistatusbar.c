@@ -976,7 +976,7 @@ static GtkWidget *ui_drive_widget_create(int unit)
     /* Labels will notice clicks by default, but drawing areas need to
      * be told to. */
     gtk_widget_add_events(led, GDK_BUTTON_PRESS_MASK);
-    g_signal_connect(led, "draw", G_CALLBACK(draw_drive_led_cb),
+    g_signal_connect_unlocked(led, "draw", G_CALLBACK(draw_drive_led_cb),
             GINT_TO_POINTER(unit));
     return grid;
 }
@@ -1052,7 +1052,7 @@ static GtkWidget *ui_tape_widget_create(void)
     gtk_container_add(GTK_CONTAINER(grid), header);
     gtk_container_add(GTK_CONTAINER(grid), counter);
     gtk_container_add(GTK_CONTAINER(grid), state);
-    g_signal_connect(state, "draw", G_CALLBACK(draw_tape_icon_cb),
+    g_signal_connect_unlocked(state, "draw", G_CALLBACK(draw_tape_icon_cb),
             GINT_TO_POINTER(0));
     return grid;
 }
@@ -1205,7 +1205,7 @@ static GtkWidget *ui_joystick_widget_create(void)
                 GDK_ENTER_NOTIFY_MASK|GDK_LEAVE_NOTIFY_MASK);
         gtk_widget_set_size_request(joyport,20,20);
         gtk_container_add(GTK_CONTAINER(grid), joyport);
-        g_signal_connect(joyport, "draw", G_CALLBACK(draw_joyport_cb),
+        g_signal_connect_unlocked(joyport, "draw", G_CALLBACK(draw_joyport_cb),
                 GINT_TO_POINTER(i));
         gtk_widget_set_no_show_all(joyport, TRUE);
         gtk_widget_hide(joyport);
