@@ -61,10 +61,8 @@
 #include "uiapi.h"
 #include "version.h"
 #include "video.h"
+#include "vsyncapi.h"
 
-static volatile int lock_pump_keep_alive = 1;
-
-void *vice_init_lock_pump(void *);
 void *vice_thread_main(void *);
 
 #ifdef USE_SVN_REVISION
@@ -82,7 +80,7 @@ const
 #endif
 int console_mode = 0;
 int video_disabled_mode = 0;
-static int init_done = 0;
+static volatile int init_done = 0;
 static pthread_t vice_thread;
 
 
@@ -279,26 +277,24 @@ int main_program(int argc, char **argv)
     if (initcmdline_check_psid() < 0) {
         return -1;
     }
-    
-    if (pthread_create(&vice_thread, NULL, vice_init_lock_pump, NULL)) {
-        log_error(LOG_DEFAULT, "Fatal: failed to launch init lock pump thread");
-        return 1;
-    }
-    
-    if (init_main() < 0) {
-        return -1;
-    }
 
-    initcmdline_check_attach();
-    
-    /* Shut down the init lock pump */
-    lock_pump_keep_alive = 0;
-    pthread_join(&vice_thread, NULL);
-
+    /*
+     * init_main results in a bunch of UI stuff being created. However ui signal
+     * handlers rely on obtaining the vice lock which is only possible when something
+     * is pumping mainlock_yield(). The vice thread has an initial pumping phase that
+     * runs until init_done is nonzero.
+     */
     if (pthread_create(&vice_thread, NULL, vice_thread_main, NULL)) {
         log_error(LOG_DEFAULT, "Fatal: failed to launch main thread");
         return 1;
     }
+    
+    if (init_main() < 0) {
+        // TODO - shutdown the vice thread
+        return -1;
+    }
+
+    initcmdline_check_attach();
 
     init_done = 1;
 
@@ -318,6 +314,12 @@ void vice_thread_shutdown(void)
 
 void *vice_thread_main(void *unused)
 {
+    /* pump the mainlock system until init is done. */
+    while (!init_done) {
+        mainlock_yield();
+        vsyncarch_sleep(0);
+    }
+
     log_message(LOG_DEFAULT, "Main CPU: starting at ($FFFC).");
 
     /* This doesn't return. The thread will directly exit when requested. */
@@ -325,16 +327,5 @@ void *vice_thread_main(void *unused)
 
     log_error(LOG_DEFAULT, "perkele! (THREAD)");
 
-    return NULL;
-}
-
-void *vice_init_lock_pump(void *unused)
-{
-    mainlock_init();
-    
-    while (lock_pump_keep_alive) {
-        mainlock_yield();
-    }
-    
     return NULL;
 }

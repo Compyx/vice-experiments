@@ -106,9 +106,6 @@ static void maincpu_steal_cycles(void)
     interrupt_cpu_status_t *cs = maincpu_int_status;
     uint8_t opcode;
 
-    /* Frequently give the ui thread a safe opportunity to call back into vice or otherwise do some housekeeping */
-    mainlock_yield();
-
     if (maincpu_ba_low_flags & MAINCPU_BA_LOW_VICII) {
         vicii_steal_cycles();
         maincpu_ba_low_flags &= ~MAINCPU_BA_LOW_VICII;
