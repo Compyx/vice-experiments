@@ -1,8 +1,8 @@
 /*
- * plus4memhacks.h - Plus4 memory expansion hacks control.
+ * spi-flash.h
  *
  * Written by
- *  Marco van den Heuvel <blackystardust68@yahoo.com>
+ *  Groepaz <groepaz@gmx.net>
  *
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
@@ -24,28 +24,20 @@
  *
  */
 
-#ifndef VICE_PLUS4MEMORYHACKS_H
-#define VICE_PLUS4MEMORYHACKS_H
+#ifndef VICE_SPI_FLASH
+#define VICE_SPI_FLASH
 
 #include "types.h"
 
-/** \brief  Different types of memory expansion hack for the Plus4/C16
- */
-typedef enum plus4_memhack_e {
-    MEMORY_HACK_NONE,   /**< no memory hack*/
-    MEMORY_HACK_C256K,  /**< 256KB CSORY */
-    MEMORY_HACK_H256K,  /**< 256KB Hannes */
-    MEMORY_HACK_H1024K, /**< 1024KB Hannes */
-    MEMORY_HACK_H4096K  /**< 4096KB Hannes */
-} plus4_memhack_t;
+extern uint8_t spi_flash_read_data(void);
+extern void spi_flash_write_data(uint8_t value);
+extern void spi_flash_write_select(uint8_t value);
+extern void spi_flash_write_clock(uint8_t value);
 
+extern void spi_flash_set_image(uint8_t *img, uint32_t size);
 
-
-extern int plus4_memory_hacks_ram_inject(uint16_t addr, uint8_t value);
-
-extern int plus4_memory_hacks_resources_init(void);
-extern int plus4_memory_hacks_cmdline_options_init(void);
-
-extern const char *plus4_memory_hacks_desc(int hack);
+struct snapshot_s;
+extern int spi_flash_snapshot_read_module(struct snapshot_s *s);
+extern int spi_flash_snapshot_write_module(struct snapshot_s *s);
 
 #endif

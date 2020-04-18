@@ -148,6 +148,11 @@
 #include "settings_crt.h"
 #include "uimachinewindow.h"
 
+/* TODO: move up and sort headers */
+#include "settings_peripherals_generic.h"
+#include "settings_host_display.h"
+#include "settings_host_machine.h"
+
 /* VSID stuff */
 #include "hvscsettingswidget.h"
 
@@ -751,6 +756,9 @@ static ui_settings_tree_node_t main_nodes_vsid[] = {
 
 /* {{{ machine_nodes_c64 */
 static ui_settings_tree_node_t machine_nodes_c64[] = {
+    { "Host",
+       "host",
+       settings_host_machine_widget_create, NULL },
     { "Model",
       "model",
       settings_model_widget_create, NULL },
@@ -772,6 +780,9 @@ static ui_settings_tree_node_t machine_nodes_c64[] = {
 
 /* {{{ display_nodes_c64 */
 static ui_settings_tree_node_t display_nodes_c64[] = {
+    { "Host display",
+       "host-display",
+       settings_host_display_widget_create, NULL },
     { "VIC-II",
       "vicii",
       settings_video_create, NULL },
@@ -817,6 +828,9 @@ static ui_settings_tree_node_t input_nodes_c64[] = {
 
 /* {{{ peripheral_nodes_c64 */
 static ui_settings_tree_node_t peripheral_nodes_c64[] = {
+    { "Generic",
+      "generic",
+      settings_peripherals_generic_widget_create, NULL },
     /* "Output devices? drive is also input */
     { "Drive",
       "drive",
@@ -879,6 +893,9 @@ static ui_settings_tree_node_t main_nodes_c64[] = {
 
 /* {{{ machine_nodes_c64dtv */
 static ui_settings_tree_node_t machine_nodes_c64dtv[] = {
+    { "Host",
+       "host",
+       settings_host_machine_widget_create, NULL },
     { "Model",
       "model",
       settings_model_widget_create, NULL },
@@ -900,6 +917,9 @@ static ui_settings_tree_node_t machine_nodes_c64dtv[] = {
 
 /* {{{ display_nodes_c64dtv */
 static ui_settings_tree_node_t display_nodes_c64dtv[] = {
+    { "Host display",
+       "host-display",
+       settings_host_display_widget_create, NULL },
     { "VIC-II",
       "vicii",
       settings_video_create, NULL },
@@ -945,6 +965,9 @@ static ui_settings_tree_node_t input_nodes_c64dtv[] = {
 
 /* {{{ peripheral_nodes_c64dtv */
 static ui_settings_tree_node_t peripheral_nodes_c64dtv[] = {
+    { "Generic",
+      "generic",
+      settings_peripherals_generic_widget_create, NULL },
     { "Drive",
       "drive",
       settings_drive_widget_create, NULL },
@@ -991,6 +1014,9 @@ static ui_settings_tree_node_t main_nodes_c64dtv[] = {
 /** \brief  Machine subnodes for c128
  */
 static ui_settings_tree_node_t machine_nodes_c128[] = {
+    { "Host",
+       "host",
+       settings_host_machine_widget_create, NULL },
     { "Model",
       "model",
       settings_model_widget_create, NULL },
@@ -1014,6 +1040,9 @@ static ui_settings_tree_node_t machine_nodes_c128[] = {
 /** \brief  C128 Display sub nodes
  */
 static ui_settings_tree_node_t display_nodes_c128[] = {
+    { "Host display",
+       "host-display",
+       settings_host_display_widget_create, NULL },
     { "VIC-II",
       "vicii",
       settings_video_create, NULL },
@@ -1068,6 +1097,9 @@ static ui_settings_tree_node_t input_nodes_c128[] = {
 /** \brief  C128 Peripheral sub nodes
  */
 static ui_settings_tree_node_t peripheral_nodes_c128[] = {
+    { "Generic",
+      "generic",
+      settings_peripherals_generic_widget_create, NULL },
     /* "Output devices? drive is also input */
     { "Drive",
       "drive",
@@ -1129,6 +1161,9 @@ static ui_settings_tree_node_t main_nodes_c128[] = {
 
 /* {{{ machine_nodes_scpu64 */
 static ui_settings_tree_node_t machine_nodes_scpu64[] = {
+    { "Host",
+       "host",
+       settings_host_machine_widget_create, NULL },
     { "Model",
       "model",
       settings_model_widget_create, NULL }, 
@@ -1153,6 +1188,9 @@ static ui_settings_tree_node_t machine_nodes_scpu64[] = {
 
 /* {{{ display_nodes_scpu64 */
 static ui_settings_tree_node_t display_nodes_scpu64[] = {
+    { "Host display",
+       "host-display",
+       settings_host_display_widget_create, NULL },
     { "VIC-II",
       "vicii",
       settings_video_create, NULL },
@@ -1198,6 +1236,9 @@ static ui_settings_tree_node_t input_nodes_scpu64[] = {
 
 /* {{{ peripheral_nodes_scpu64 */
 static ui_settings_tree_node_t peripheral_nodes_scpu64[] = {
+    { "Generic",
+      "generic",
+      settings_peripherals_generic_widget_create, NULL },
     { "Drive",
       "drive",
       settings_drive_widget_create, NULL },
@@ -1249,6 +1290,9 @@ static ui_settings_tree_node_t main_nodes_scpu64[] = {
 
 /* {{{ machine_nodes_vic20 */
 static ui_settings_tree_node_t machine_nodes_vic20[] = {
+    { "Host",
+       "host",
+       settings_host_machine_widget_create, NULL },
     { "Model",
       "model",
       settings_model_widget_create, NULL },
@@ -1270,6 +1314,9 @@ static ui_settings_tree_node_t machine_nodes_vic20[] = {
 
 /* {{{ display_nodes_vic20 */
 static ui_settings_tree_node_t display_nodes_vic20[] = {
+    { "Host display",
+       "host-display",
+       settings_host_display_widget_create, NULL },
     { "VIC",
       "vic",
       settings_video_create, NULL },
@@ -1315,6 +1362,9 @@ static ui_settings_tree_node_t input_nodes_vic20[] = {
 
 /* {{{ peripheral_nodes_vic20 */
 static ui_settings_tree_node_t peripheral_nodes_vic20[] = {
+    { "Generic",
+      "generic",
+      settings_peripherals_generic_widget_create, NULL },
    { "Drive",
       "drive",
       settings_drive_widget_create, NULL },
@@ -1364,6 +1414,9 @@ static ui_settings_tree_node_t main_nodes_vic20[] = {
 
 /* {{{ machine_nodes_plus4 */
 static ui_settings_tree_node_t machine_nodes_plus4[] = {
+    { "Host",
+       "host",
+       settings_host_machine_widget_create, NULL },
     { "Model",
       "model",
        settings_model_widget_create, NULL },
@@ -1385,6 +1438,9 @@ static ui_settings_tree_node_t machine_nodes_plus4[] = {
 
 /* {{{ display_nodes_plus4 */
 static ui_settings_tree_node_t display_nodes_plus4[] = {
+    { "Host display",
+       "host-display",
+       settings_host_display_widget_create, NULL },
     { "TED",
       "ted",
       settings_video_create, NULL },
@@ -1430,6 +1486,9 @@ static ui_settings_tree_node_t input_nodes_plus4[] = {
 
 /* {{{ peripheral_nodes_plus4 */
 static ui_settings_tree_node_t peripheral_nodes_plus4[] = {
+    { "Generic",
+      "generic",
+      settings_peripherals_generic_widget_create, NULL },
     { "Drive",
       "drive",
       settings_drive_widget_create, NULL },
@@ -1455,6 +1514,9 @@ static ui_settings_tree_node_t peripheral_nodes_plus4[] = {
 /** \brief  Main tree nodes for xplus4
  */
 static ui_settings_tree_node_t main_nodes_plus4[] = {
+    { "Host",
+       "host",
+       settings_host_machine_widget_create, NULL },
     { "Machine", "machine", NULL, machine_nodes_plus4 },
     { "Display", "display", NULL, display_nodes_plus4 },
     { "Audio", "audio", NULL, audio_nodes_plus4 },
@@ -1502,6 +1564,9 @@ static ui_settings_tree_node_t machine_nodes_pet[] = {
 
 /* {{{ display_nodes_pet */
 static ui_settings_tree_node_t display_nodes_pet[] = {
+    { "Host display",
+       "host-display",
+       settings_host_display_widget_create, NULL },
     { "CRTC",
       "crtc",
       settings_video_create, NULL },
@@ -1547,6 +1612,9 @@ static ui_settings_tree_node_t input_nodes_pet[] = {
 
 /* {{{ peripheral_nodes_pet */
 static ui_settings_tree_node_t peripheral_nodes_pet[] = {
+    { "Generic",
+      "generic",
+      settings_peripherals_generic_widget_create, NULL },
     { "Drive",
       "drive",
       settings_drive_widget_create, NULL },
@@ -1598,6 +1666,9 @@ static ui_settings_tree_node_t main_nodes_pet[] = {
 
 /* {{{ machine_nodes_cbm5x0 */
 static ui_settings_tree_node_t machine_nodes_cbm5x0[] = {
+    { "Host",
+       "host",
+       settings_host_machine_widget_create, NULL },
     { "Model",
       "model",
       settings_model_widget_create, NULL },
@@ -1619,6 +1690,9 @@ static ui_settings_tree_node_t machine_nodes_cbm5x0[] = {
 
 /* {{{ display_nodes_cbm5x0 */
 static ui_settings_tree_node_t display_nodes_cbm5x0[] = {
+    { "Host display",
+       "host-display",
+       settings_host_display_widget_create, NULL },
     { "VIC-II",
       "vicii",
       settings_video_create, NULL },
@@ -1665,6 +1739,9 @@ static ui_settings_tree_node_t input_nodes_cbm5x0[] = {
 
 /* {{{ peripheral_nodes_cbm5x0 */
 static ui_settings_tree_node_t peripheral_nodes_cbm5x0[] = {
+    { "Generic",
+      "generic",
+      settings_peripherals_generic_widget_create, NULL },
    { "Drive",
       "drive",
       settings_drive_widget_create, NULL },
@@ -1708,6 +1785,9 @@ static ui_settings_tree_node_t main_nodes_cbm5x0[] = {
 
 /* {{{ machine_nodes_cbm6x0 */
 static ui_settings_tree_node_t machine_nodes_cbm6x0[] = {
+    { "Host",
+       "host",
+       settings_host_machine_widget_create, NULL },
     { "Model",
       "model",
       settings_model_widget_create, NULL },
@@ -1729,6 +1809,9 @@ static ui_settings_tree_node_t machine_nodes_cbm6x0[] = {
 
 /* {{{ display_nodes_cbm6x0 (*/
 static ui_settings_tree_node_t display_nodes_cbm6x0[]= {
+    { "Host display",
+       "host-display",
+       settings_host_display_widget_create, NULL },
     { "CRTC",
       "crtc",
       settings_video_create, NULL },
@@ -1775,6 +1858,9 @@ static ui_settings_tree_node_t input_nodes_cbm6x0[] = {
 
 /* {{{ peripheral nodes_cbm6x0 */
 static ui_settings_tree_node_t peripheral_nodes_cbm6x0[] = {
+    { "Generic",
+      "generic",
+      settings_peripherals_generic_widget_create, NULL },
     { "Drive",
       "drive",
       settings_drive_widget_create, NULL },

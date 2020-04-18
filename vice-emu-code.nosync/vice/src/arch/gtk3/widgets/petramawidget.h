@@ -1,9 +1,11 @@
+/** \file   petioramawidget.h
+ * \brief   Widget to set the PET RAMA area type - header
+ *
+ * \author  Bas Wassink <b.wassink@ziggo.nl>
+ * \author  André Fachat <fachat@web.de>
+ */
+
 /*
- * plus4memhacks.h - Plus4 memory expansion hacks control.
- *
- * Written by
- *  Marco van den Heuvel <blackystardust68@yahoo.com>
- *
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
  *
@@ -24,28 +26,15 @@
  *
  */
 
-#ifndef VICE_PLUS4MEMORYHACKS_H
-#define VICE_PLUS4MEMORYHACKS_H
+#ifndef VICE_PETRAMAWIDGET_H
+#define VICE_PETRAMAWIDGET_H
 
-#include "types.h"
+#include "vice.h"
+#include <gtk/gtk.h>
 
-/** \brief  Different types of memory expansion hack for the Plus4/C16
- */
-typedef enum plus4_memhack_e {
-    MEMORY_HACK_NONE,   /**< no memory hack*/
-    MEMORY_HACK_C256K,  /**< 256KB CSORY */
-    MEMORY_HACK_H256K,  /**< 256KB Hannes */
-    MEMORY_HACK_H1024K, /**< 1024KB Hannes */
-    MEMORY_HACK_H4096K  /**< 4096KB Hannes */
-} plus4_memhack_t;
-
-
-
-extern int plus4_memory_hacks_ram_inject(uint16_t addr, uint8_t value);
-
-extern int plus4_memory_hacks_resources_init(void);
-extern int plus4_memory_hacks_cmdline_options_init(void);
-
-extern const char *plus4_memory_hacks_desc(int hack);
+GtkWidget *pet_rama_widget_create(void);
+void pet_rama_widget_set_callback(GtkWidget *widget,
+                                     void (*func)(int));
+void pet_rama_widget_sync(GtkWidget *widget);
 
 #endif

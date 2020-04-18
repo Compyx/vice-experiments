@@ -1,10 +1,11 @@
-/** \file   settings_misc.c
- * \brief   Widget to control resources that are hard to place properly
- *
- * Currently doesn't contain a single widget, which is nice. Keeping this around
- * for future hard-to-place widgets. In the end this should go.
+/** \file   settings_peripherals_generic.c
+ * \brief   Widget to control generic peripheral settings
  *
  * \author  Bas Wassink <b.wassink@ziggo.nl>
+ */
+
+/*
+ * $VICERES VirtualDevices          -vsid
  */
 
 /*
@@ -33,33 +34,32 @@
 #include <gtk/gtk.h>
 
 #include "vice_gtk3.h"
+#include "resources.h"
+#include "machine.h"
 
-#include "settings_misc.h"
+#include "settings_peripherals_generic.h"
 
 
-/** \brief  Create miscellaneous settings widget
- *
- * Basically a widget to contain (hopefully temporarily) widgets controlling
- * resources that can't (yet) be placed in a more logical location
+/** \brief  Create generic peripheral settings widget
  *
  * \param[in]   widget  parent widget (used for dialogs)
  *
  * \return  GtkGrid
  */
-GtkWidget *settings_misc_widget_create(GtkWidget *widget)
+GtkWidget *settings_peripherals_generic_widget_create(GtkWidget *widget)
 {
     GtkWidget *grid;
-    GtkWidget *label;
+    GtkWidget *vdev_widget = NULL;
 
     grid = gtk_grid_new();
 
-    label = gtk_label_new(NULL);
-    gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
-    gtk_label_set_markup(GTK_LABEL(label),
-            "Placeholder for settings where we can't think of a better place.\n\n"
-            "Ideally this is empty, but it can <b>temporarily</b> be used to store "
-            "some widgets until we figure out a proper place.");
-    gtk_grid_attach(GTK_GRID(grid), label, 0, 1, 1, 1);
+    if (machine_class != VICE_MACHINE_VSID) {
+        vdev_widget = vice_gtk3_resource_check_button_new(
+                "VirtualDevices",
+                "Enable virtual devices");
+        g_object_set(vdev_widget, "margin-left",8, NULL);
+        gtk_grid_attach(GTK_GRID(grid), vdev_widget, 0, 1, 2, 1);
+    }
 
     gtk_widget_show_all(grid);
     return grid;
