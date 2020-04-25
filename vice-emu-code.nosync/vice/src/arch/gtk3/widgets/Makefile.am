@@ -78,6 +78,7 @@ libwidgets_a_SOURCES = \
 	ffmpegwidget.c \
 	finalexpansionwidget.c \
 	gmod2widget.c \
+	gmod3widget.c \
 	hvscsettingswidget.c \
 	hvscstilwidget.c \
 	ide64widget.c \
@@ -234,6 +235,7 @@ EXTRA_DIST = \
 	ffmpegwidget.h \
 	finalexpansionwidget.h \
 	gmod2widget.h \
+	gmod3widget.h \
 	hvscsettingswidget.h \
 	hvscstilwidget.h \
 	ide64widget.h \

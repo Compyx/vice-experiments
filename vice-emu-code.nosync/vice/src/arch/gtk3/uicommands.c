@@ -59,7 +59,7 @@
 #include "ui.h"
 #include "uicommands.h"
 #include "uimachinewindow.h"
-
+#include "widgethelpers.h"
 
 /** \brief  Swap joysticks
  *
@@ -131,7 +131,9 @@ gboolean ui_toggle_keyset_joysticks(GtkWidget *widget, gpointer data)
  */
 gboolean ui_toggle_mouse_grab(GtkWidget *widget, gpointer data)
 {
+    GtkWindow *window;
     int mouse;
+    gchar title[256];
 
     resources_get_int("Mouse", &mouse);
     resources_set_int("Mouse", !mouse);
@@ -141,6 +143,19 @@ gboolean ui_toggle_mouse_grab(GtkWidget *widget, gpointer data)
         ui_mouse_ungrab_pointer();
     }
 
+    /* `mouse` still contains the old value */
+    if (!mouse) {
+       g_snprintf(title, 256, "VICE (%s) (Use %s+M to disable mouse grab)",
+               machine_get_name(), VICE_MOD_MASK_TEXT);
+    } else {
+       g_snprintf(title, 256, "VICE (%s)",
+               machine_get_name());
+    }
+
+    window = ui_get_active_window();
+    gtk_window_set_title(window, title);
+
+
     return TRUE;    /* don't let any shortcut key end up in the emulated machine */
 }
 
@@ -149,6 +164,8 @@ gboolean ui_toggle_mouse_grab(GtkWidget *widget, gpointer data)
  *
  * \param[in]   widget      menu item triggering the event (unused)
  * \param[in]   user_data   MACHINE_RESET_MODE_SOFT/MACHINE_RESET_MODE_HARD
+ *
+ * \return  TRUE to indicate the event has been handled
  */
 gboolean ui_machine_reset_callback(GtkWidget *widget, gpointer user_data)
 {
@@ -162,6 +179,8 @@ gboolean ui_machine_reset_callback(GtkWidget *widget, gpointer user_data)
  *
  * \param[in]   widget      menu item triggering the event (unused)
  * \param[in]   user_data   drive unit number (8-11) (int)
+ *
+ * \return  TRUE
  */
 gboolean ui_drive_reset_callback(GtkWidget *widget, gpointer user_data)
 {
@@ -285,6 +304,16 @@ gboolean ui_toggle_resource(GtkWidget *widget, gpointer resource)
 
 
 /** \brief  Open the Manual
+ *
+ * Event handler for the 'Manual' menu item
+ *
+ * \param[in]   widget      parent widget triggering the event (unused)
+ * \param[in]   user_data   extra event data (unused)
+ *
+ * \return  TRUE if opening the manual succeeded, FALSE otherwise
+ *          (unreliable: gtk_show_uri_on_window() will return TRUE if the
+ *           associated application could be openened but not the actual
+ *           manual file)
  */
 gboolean ui_open_manual_callback(GtkWidget *widget, gpointer user_data)
 {
@@ -376,6 +405,8 @@ gboolean ui_open_manual_callback(GtkWidget *widget, gpointer user_data)
  *
  * \param[in]   widget  widget triggering the event (ignored)
  * \param[in]   data    extra event data (unused)
+ *
+ * \return  TRUE to signal the event was handled
  */
 gboolean ui_restore_display(GtkWidget *widget, gpointer data)
 {

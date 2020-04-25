@@ -78,6 +78,7 @@
 #include "mixerwidget.h"
 #include "uidata.h"
 #include "archdep.h"
+#include "widgethelpers.h"
 
 /* for the fullscreen_capability() stub */
 #include "fullscreen.h"
@@ -95,6 +96,7 @@ static int set_window_xpos(int val, void *param);
 static int set_window_ypos(int val, void *param);
 static int set_start_minimized(int val, void *param);
 static int set_native_monitor(int val, void *param);
+static int set_monitor_font(const char *, void *param);
 static int set_fullscreen_state(int val, void *param);
 static void ui_toggle_warp(void);
 
@@ -129,6 +131,9 @@ typedef struct ui_resources_s {
     int start_minimized;        /**< StartMinimized (bool) */
 
     int use_native_monitor;     /**< NativeMonitor (bool) */
+
+    char *monitor_font;         /**< Pango font description string of the
+                                     VTE monitor font */
 
 #if 0
     int depth;
@@ -207,11 +212,13 @@ static kbd_gtk3_hotkey_t default_hotkeys[] = {
 
 /** \brief  String type resources list
  */
-#if 0
 static const resource_string_t resources_string[] = {
+    /* VTE-monitor font */
+    { "MonitorFont", "monospace 11", RES_EVENT_NO, NULL,
+        &ui_resources.monitor_font, set_monitor_font, NULL },
+
     RESOURCE_STRING_LIST_END
 };
-#endif
 
 
 /** \brief  Boolean resources shared between windows
@@ -314,6 +321,9 @@ static const cmdline_option_t cmdline_options_common[] =
     { "+fullscreen", SET_RESOURCE, CMDLINE_ATTRIB_NONE,
         NULL, NULL, "FullscreenEnable", (void*)0,
         NULL, "Disable fullscreen" },
+    { "-monitorfont", SET_RESOURCE, CMDLINE_ATTRIB_NEED_ARGS,
+        set_monitor_font, NULL, "MonitorFont", NULL,
+        "font-description", "Set monitor font for the Gtk3 monitor" },
 
     CMDLINE_LIST_END
 };
@@ -578,6 +588,7 @@ video_canvas_t *ui_get_active_canvas(void)
  */
 int ui_get_main_window_index(void)
 {
+    /* SOMETHING CHANGED */
     return active_win_index;
 }
 
@@ -910,6 +921,27 @@ static int set_native_monitor(int val, void *param)
 }
 
 
+/** \brief  Resource handler: set monitor font for VTE-based monitor
+ *
+ * \param[in]   val     font description string
+ * \param[in]   param   extra argument (unused)
+ *
+ * \return  0 (success)
+ */
+static int set_monitor_font(const char *val, void *param)
+{
+    if (ui_resources.monitor_font != NULL) {
+        lib_free(ui_resources.monitor_font);
+        ui_resources.monitor_font = NULL;
+    }
+    if (val != NULL) {
+        ui_resources.monitor_font = lib_strdup(val);
+    }
+    return 0;
+}
+
+
+
 
 /** \brief  Set Window[X]Width resource (int)
  *
@@ -1237,7 +1269,7 @@ void ui_create_main_window(video_canvas_t *canvas)
 
     GtkWidget *kbd_widget;
     int kbd_status = 0;
-
+    int mouse_grab;
 
     GdkPixbuf *icon;
 
@@ -1251,6 +1283,8 @@ void ui_create_main_window(video_canvas_t *canvas)
     int minimized = 0;
     int full = 0;
     int restore;
+
+    resources_get_int("Mouse", &mouse_grab);
 
     new_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
     /* this needs to be here to make the menus with accelerators work */
@@ -1267,11 +1301,13 @@ void ui_create_main_window(video_canvas_t *canvas)
 #endif
 
     /* set title */
-#if 1
-    g_snprintf(title, 256, "VICE (%s)", machine_get_name());
-#else
-    g_snprintf(title, 256, "FREE MR AMMO (emu is %s, but who cares?)", machine_get_name());
-#endif
+    if (!mouse_grab) {
+        g_snprintf(title, 256, "VICE (%s)", machine_get_name());
+    } else {
+        g_snprintf(title, 256, "VICE (%s) (Use %s+M to disable mouse grab)",
+                machine_get_name(), VICE_MOD_MASK_TEXT);
+    }
+
     gtk_window_set_title(GTK_WINDOW(new_window), title);
 
     grid = gtk_grid_new();
@@ -1673,12 +1709,10 @@ int ui_resources_init(void)
     if (resources_register_int(resources_int_shared) != 0) {
         return -1;
     }
-#if 0
     /* initialize string resources */
     if (resources_register_string(resources_string) < 0) {
         return -1;
     }
-#endif
     /* initialize int/bool resources */
     if (resources_register_int(resources_int_primary_window) < 0) {
         return -1;
@@ -1987,6 +2021,11 @@ void ui_exit(void)
 
     /* deallocate memory used by the unconnected keyboard shortcuts */
     kbd_hotkey_shutdown();
+
+    /* deallocate monitor font string */
+    if (ui_resources.monitor_font != NULL) {
+        lib_free(ui_resources.monitor_font);
+    }
 
     /* trigger any remaining Gtk/GLib events */
     while (g_main_context_pending(g_main_context_default())) {

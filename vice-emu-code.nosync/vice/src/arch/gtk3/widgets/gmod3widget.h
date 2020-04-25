@@ -1,5 +1,6 @@
-/** \file   archdep_quote_parameter.c
- * \brief   Add escape sequences to a string
+/** \file   gmod3widget.h
+ * \brief   Widget to control GMod3 resources - header
+ *
  * \author  Bas Wassink <b.wassink@ziggo.nl>
  */
 
@@ -24,38 +25,12 @@
  *
  */
 
+#ifndef VICE_GMOD3WIDGET_H
+#define VICE_GMOD3WIDGET_H
+
 #include "vice.h"
-#include "archdep_defs.h"
+#include <gtk/gtk.h>
 
-#include "lib.h"
-#include "util.h"
+GtkWidget * gmod3_widget_create(GtkWidget *parent);
 
-#include "archdep_quote_parameter.h"
-
-
-/** \brief  Quote \a name for use as a parameter in exec() etc calls
- *
- * Surounds \a name with double-quotes and replaces brackets with escaped
- * versions on Windows, on Unix it simply returns a heap-allocated copy.
- * Still leaves the OSX unzip bug. (See bug #920)
- *
- * \param[in]   name    string to quote
- *
- * \return  quoted string
- */
-char *archdep_quote_parameter(const char *name)
-{
-    char *a;
-    char *c;
-
-    a = util_subst(name, "[", "\\[");
-
-#if defined(ARCHDEP_OS_WINDOWS) || defined (ARCHDEP_OS_OS2)
-    c = util_concat("\"", a, "\"", NULL);
-    return c;
-#else
-    c = lib_strdup(a);
 #endif
-    lib_free(a);
-    return c;
-}
