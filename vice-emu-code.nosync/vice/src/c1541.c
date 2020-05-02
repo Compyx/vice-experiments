@@ -74,6 +74,7 @@
 #endif
 
 #include "archdep.h"
+#include "archdep_defs.h"
 #include "cbmdos.h"
 #include "cbmimage.h"
 #include "charset.h"
@@ -443,9 +444,11 @@ const command_t command_list[] = {
       1, 2,
       name_cmd },
     { "p00save",
-      "p00save <enable> [<unit>]",
-      "Save P00 files to the file system.",
-      1, 2,
+      "p00save [<enable> [<unit>]]",
+      "Save P00 files to the file system. If no argument is given, print the "
+      "state for all drives.\n"
+      "The <enable> argument should be either 0 or 1.",
+      0, 2,
       p00save_cmd },
     { "quit",
       "quit",
@@ -2338,11 +2341,48 @@ static int extract_cmd_common(int nargs, char **args, int geos)
                 }
 
                 if (p00save[dnr]) {
+                    char cwd[4096];
+                    char *total;
+                    long idx = 0;
+
                     p00_name = p00_filename_create((const char *)name,
                             file_type & 7);
-                    fd = fopen(p00_name, "wb");
+#ifdef ARCHDEP_OS_UNIX
+                    if (getcwd(cwd, sizeof(cwd)) == NULL) {
+                        fprintf(stderr,
+                                "Couldn't get the cwd, all bets are off. "
+                                "Aborting to get a stack dump.\n");
+                        abort();
+                    }
+#else
+                    /* Assume crap */
+                    _getcwd(cwd, sizeof(cwd));
+#endif
+                    total = archdep_join_paths(cwd, p00_name, NULL);
+
+
+                    printf("Trying filename '%s'\n", total);
+                    while (archdep_file_exists(total) && idx < 100) {
+                        /* TODO: clean up this mess */
+                        char *endptr;
+                        size_t pathlen = strlen(total);
+#if 0
+                        printf("file exists, increment index\n");
+#endif
+                        idx = strtol(total + pathlen - 2, &endptr, 10);
+#if 0
+                        printf("got index %ld\n", idx);
+#endif
+                        snprintf(total + pathlen - 2, 3, "%02d", (int)(idx + 1));
+#if 0
+                        printf("new name = '%s'\n", total);
+#endif
+                    }
+                    fd = fopen(total, MODE_WRITE);
+                    lib_free(total);
+
                 } else {
-                    fd = fopen((char *)name, MODE_WRITE);
+                    fd = fopen((const char *)name, MODE_WRITE);
                 }
                 if (fd == NULL) {
                     fprintf(stderr, "cannot create file `%s': %s.",
@@ -4835,7 +4875,7 @@ int main(int argc, char **argv)
 
 /** \brief  Enable\disable saving of files as P00
  *
- * Syntax: p00save \<enable> [\<unit>]
+ * Syntax: p00save [\<enable> [\<unit>]]
  *
  * Where \a enable is either 0 or 1.
  *
@@ -4847,6 +4887,16 @@ int main(int argc, char **argv)
 static int p00save_cmd(int nargs, char **args)
 {
     int dnr = 0, enable = 0;
+
+    if (nargs == 1) {
+        /* display `p00save` state for all drives */
+        int i;
+        for (i = 0; i < DRIVE_NUM; i++) {
+            printf("#%2d: %s\n",
+                    i + DRIVE_UNIT_MIN, p00save[i] ? "enabled" : "disabled");
+        }
+        return FD_OK;
+    }
 
     arg_to_int(args[1], &enable);
 

@@ -1,9 +1,9 @@
+/** \file   archdep_file_exists.h
+ * \brief   Check if a file exists - header
+ * \author  Bas Wassink <b.wassink@ziggo.nl>
+ */
+
 /*
- * version.h
- *
- * Written by
- *  Andreas Boose <viceteam@t-online.de>
- *
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
  *
@@ -24,19 +24,11 @@
  *
  */
 
-#ifndef VICE__VERSION_H__
-#define VICE__VERSION_H__
+#ifndef VICE_ARCHDEP_FILE_EXISTS_H
+#define VICE_ARCHDEP_FILE_EXISTS_H
 
-#ifndef VERSION
-#define VERSION "3.4"
-#endif
+#include <stdbool.h>
 
-#ifndef VERSION_RC_NUMBER
-#define VERSION_RC_NUMBER 3,4,0,0
-#endif
-
-#ifndef PACKAGE
-#define PACKAGE "vice"
-#endif
+bool archdep_file_exists(const char *path);
 
 #endif

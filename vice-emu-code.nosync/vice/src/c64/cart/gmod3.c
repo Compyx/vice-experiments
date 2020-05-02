@@ -35,6 +35,7 @@
 #include "c64cartsystem.h"
 #undef CARTRIDGE_INCLUDE_SLOTMAIN_API
 #include "c64mem.h"
+#include "c64pla.h"
 #include "cartio.h"
 #include "cartridge.h"
 #include "cmdline.h"
@@ -78,12 +79,12 @@
         
     $DE08   bit7    1: bitbang mode enabled
             bit6    exrom
-            bit5    game
+            bit5    hw vector replacing enabled
         
     on read:
         
     $DE00...$DE07   bit 0-7   - lower 8 bits of the current bank    
-    $DE08...$DE0F   bit 2,3,4 - upper 3 bits of the current bank
+    $DE08...$DE0F   bit 0,1,2 - upper 3 bits of the current bank
     
     if bitbang mode is enabled:
         
@@ -118,6 +119,7 @@ static uint32_t gmod3_flashsize = 0;
 static int gmod3_enabled = 0;
 
 static int gmod3_bitbang_enabled = 0;
+static int gmod3_vectors_enabled = 0;
 
 /* current GAME/EXROM mode */
 static int gmod3_cmode = CMODE_8KGAME;
@@ -184,13 +186,10 @@ uint8_t gmod3_io1_read(uint16_t addr)
     } else {
         if ((addr >= 0x00) && (addr <= 0x07)) {
             gmod3_io1_device.io_source_valid = 1;
-            if (gmod3_cmode == CMODE_16KGAME) {
-                return (gmod3_bank & 0xfe) | (vicii_read_phi1() & 0x01);
-            }
             return gmod3_bank & 0xff;
         } else if ((addr >= 0x08) && (addr <= 0x0f)) {
             gmod3_io1_device.io_source_valid = 1;
-            return (gmod3_bank & 0x0700 >> 6) | (vicii_read_phi1() & 0xe3);
+            return (gmod3_bank & 0x0700) >> 8;
         }
     }
     return 0; /* FIXME */
@@ -206,7 +205,7 @@ uint8_t gmod3_io1_peek(uint16_t addr)
         if ((addr >= 0x00) && (addr <= 0x07)) {
             return gmod3_bank & 0xff;
         } else if ((addr >= 0x08) && (addr <= 0x0f)) {
-            return gmod3_bank & 0x0700 >> 6;
+            return (gmod3_bank & 0x0700) >> 8;
         }
     }
     return 0;
@@ -236,17 +235,18 @@ void gmod3_io1_store(uint16_t addr, uint8_t value)
         }
     } else if (addr == 0x08) {
         gmod3_bitbang_enabled = (value >> 7) & 1;
-        if ((value & 0x60) == 0x40) {
-            gmod3_cmode = CMODE_ULTIMAX;
-        } else if ((value & 0x60) == 0x20) {
-            gmod3_cmode = CMODE_8KGAME;
-        } else if ((value & 0x60) == 0x00) {
-            gmod3_cmode = CMODE_16KGAME;
-        } else if ((value & 0x60) == 0x60) {
+        gmod3_vectors_enabled = (value >> 5) & 1;
+        if ((value & 0x40) == 0x00) {
+            if (gmod3_vectors_enabled) {
+                gmod3_cmode = CMODE_ULTIMAX;
+            } else {
+                gmod3_cmode = CMODE_8KGAME;
+            }
+        } else if ((value & 0x40) == 0x40) {
             gmod3_cmode = CMODE_RAM;
         }
-        DBG(("io1 w %04x %02x (bitbang: %d mode: %d)\n", 
-            addr, value, gmod3_bitbang_enabled, gmod3_cmode));
+        DBG(("io1 w %04x %02x (bitbang: %d vectors: %d mode: %d)\n", 
+            addr, value, gmod3_bitbang_enabled, gmod3_vectors_enabled, gmod3_cmode));
     }
     
     spi_flash_write_select((uint8_t)eeprom_cs);
@@ -254,24 +254,45 @@ void gmod3_io1_store(uint16_t addr, uint8_t value)
         spi_flash_write_data((uint8_t)(eeprom_data_in));
         spi_flash_write_clock((uint8_t)(eeprom_clock));
     }
-    cart_config_changed_slotmain(gmod3_cmode, (uint8_t)(gmod3_cmode | (gmod3_bank << CMODE_BANK_SHIFT)), mode);
+    cart_config_changed_slotmain(gmod3_cmode, 
+        (uint8_t)(gmod3_cmode | (gmod3_bank << CMODE_BANK_SHIFT)), mode);
 }
 
 /* ---------------------------------------------------------------------*/
 
 uint8_t gmod3_roml_read(uint16_t addr)
 {
-    DBG(("gmod3_roml_read %04x\n", addr));
-    if (gmod3_cmode == CMODE_16KGAME) {
-        return gmod3_rom[(addr & 0x1fff) + ((gmod3_bank & 0x7fe) << 13)];
+    int mem_config = ((~pport.dir | pport.data) & 0x7);
+    if (!gmod3_vectors_enabled) {
+        return gmod3_rom[(addr & 0x1fff) + (gmod3_bank << 13)];
     }
-    return gmod3_rom[(addr & 0x1fff) + (gmod3_bank << 13)];
+    /* handle fake ultimax */
+    if ((mem_config == 7) || (mem_config == 3)) {
+        return gmod3_rom[(addr & 0x1fff) + (gmod3_bank << 13)];
+    }
+    return ram_read(addr);
 }
+
+static uint8_t vectors[8] = { 0x08, 0x00, 0x08, 0x00, 0x0c, 0x80, 0x0c, 0x00 };
 
 uint8_t gmod3_romh_read(uint16_t addr)
 {
     DBG(("gmod3_romh_read %04x\n", addr));
-    return gmod3_rom[(addr & 0x1fff) + ((gmod3_bank & 0x7fe) << 13) + 0x2000];
+    if (addr >= 0xfff8 && addr <= 0xffff) {
+        return vectors[addr & 7];
+    }
+    return mem_read_without_ultimax(addr);
+}
+
+/* VIC reads */
+int gmod3_romh_phi1_read(uint16_t addr, uint8_t *value)
+{
+    return CART_READ_C64MEM;
+}
+/* CPU reads */
+int gmod3_romh_phi2_read(uint16_t addr, uint8_t *value)
+{
+    return CART_READ_C64MEM;
 }
 
 int gmod3_peek_mem(export_t *ex, uint16_t addr, uint8_t *value)
@@ -280,14 +301,8 @@ int gmod3_peek_mem(export_t *ex, uint16_t addr, uint8_t *value)
         *value = gmod3_roml_read(addr);
         return CART_READ_VALID;
     }
-    if (gmod3_cmode == CMODE_16KGAME) {
-        if (addr >= 0xa000 && addr <= 0xbfff) {
-            *value = gmod3_romh_read(addr);
-            return CART_READ_VALID;
-        }
-    }
-    if (gmod3_cmode == CMODE_ULTIMAX) {
-        if (addr >= 0xe000 && addr <= 0xffff) {
+    if (gmod3_vectors_enabled) {
+        if (addr >= 0xfff8 && addr <= 0xffff) {
             *value = gmod3_romh_read(addr);
             return CART_READ_VALID;
         }
@@ -308,9 +323,10 @@ void gmod3_mmu_translate(unsigned int addr, uint8_t **base, int *start, int *lim
 static int gmod3_dump(void)
 {
     /* FIXME: incomplete */
-    mon_out("GAME/EXROM status: %s\n", cart_config_string(gmod3_cmode));
+    mon_out("status: %s\n", gmod3_cmode == CMODE_RAM ? "disabled" : "8k Game");
     mon_out("ROM bank: %d\n", gmod3_bank);
     mon_out("bitbang mode is %s\n", gmod3_bitbang_enabled ? "enabled" : "disabled");
+    mon_out("hw vectors are %s\n", gmod3_vectors_enabled ? "enabled" : "disabled");
     mon_out("EEPROM CS: %d clock: %d data from flash: %d data to flash: %d \n", 
             eeprom_cs, eeprom_clock, eeprom_data_out, eeprom_data_in);
 
@@ -334,6 +350,7 @@ void gmod3_reset(void)
     eeprom_cs = 1; /* active low */
     spi_flash_write_select((uint8_t)eeprom_cs);
     gmod3_bitbang_enabled = 0;
+    gmod3_vectors_enabled = 0;  /* FIXME: this can be enabled at reset as a factory option */
     gmod3_bank = 0;
 }
 

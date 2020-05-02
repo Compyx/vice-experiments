@@ -1,9 +1,9 @@
+/** \file   archdep_file_exists.c
+ * \brief   Check if a file exisys
+ * \author  Bas Wassink <b.wassink@ziggo.nl>
+ */
+
 /*
- * mon_util.h - Utilities for the VICE built-in monitor.
- *
- * Written by
- *  Spiro Trikaliotis <spiro.trikaliotis@gmx.de>
- *
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
  *
@@ -24,22 +24,45 @@
  *
  */
 
-#ifndef VICE_MON_UTIL_H
-#define VICE_MON_UTIL_H
+#include "vice.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
 
-#include "monitor.h"
-#include "types.h"
+#include "archdep.h"
+#include "archdep_defs.h"
 
-struct console_s;
 
-extern char *mon_disassemble_with_label(MEMSPACE memspace, uint16_t loc, int hex, unsigned *opc_size_p, unsigned *label_p);
-extern char *mon_dump_with_label(MEMSPACE memspace, uint16_t loc, int hex, unsigned *label_p);
-extern void mon_set_command(struct console_s *console_log, char *command, void (*)(void));
-
-extern void mon_event_opened(void);
-extern void mon_event_closed(void);
-
-extern int mon_log_file_open(const char *name);
-extern void mon_log_file_close(void);
-
+#ifdef ARCHDEP_OS_UNIX
+# include <unistd.h>
 #endif
+
+#ifdef ARCHDEP_OS_WINDOWS
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
+#include "archdep_file_exists.h"
+
+
+bool archdep_file_exists(const char *path)
+{
+#ifdef ARCHDEP_OS_UNIX
+
+    if (access(path, F_OK) == 0) {
+        return true;
+    }
+#endif
+
+#ifdef ARCHDEP_OS_WINDOWS
+    /* Possible TODO: convert path from UTF-8 to UTF-16LE and use the
+     * more consistent GetFileAttributesW call */
+    if (GetFileAttributesA(path) != INVALID_FILE_ATTRIBUTES) {
+        return true;
+    }
+#endif
+    
+    return false;
+
+}
+
