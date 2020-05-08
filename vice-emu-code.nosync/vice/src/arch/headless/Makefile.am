@@ -32,7 +32,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/imagecontents \
 	-I$(top_srcdir)/src/monitor \
 	-I$(top_srcdir)/src/tapeport \
-	-I$(top_srcdir)/src/hvsc
+	-I$(top_srcdir)/src/hvsc \
+	-I$(top_srcdir)/src/datasette
 
 AM_CFLAGS = @VICE_CFLAGS@
 
@@ -64,7 +65,8 @@ libarch_a_SOURCES = \
 	petui.c \
 	plus4ui.c \
 	cbm2ui.c \
-	cbm5x0ui.c
+	cbm5x0ui.c \
+	c64ui.c
 
 libtoolarch_a_SOURCES = \
 	archdep.c

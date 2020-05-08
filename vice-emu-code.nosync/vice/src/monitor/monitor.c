@@ -289,7 +289,6 @@ static const char *register_string[] = {
     "D",
     "U",
     "DP",
-    
     "E",    /* 658xx/6309/z80 */
 /* 6309 */
     "F",
@@ -304,9 +303,9 @@ static const char *register_string[] = {
     "IXH",
     "IYL",
     "IYH",
-    
+
     /* "CC", */ /* 6x09 */ /* FIXME: same as flags? */
-    
+
     "RL",   /* Rasterline */
     "CY",   /* Cycle in line */
 };
@@ -683,7 +682,7 @@ const char *mon_get_current_bank_name(MEMSPACE mem)
     main entry point for the monitor to read a value from memory
 
     mem_bank_peek and mem_bank_read are set up in src/drive/drivecpu.c,
-    src/drive/drivecpu65c02.c, src/mainc64cpu.c, src/mainviccpu.c, 
+    src/drive/drivecpu65c02.c, src/mainc64cpu.c, src/mainviccpu.c,
     src/maincpu.c, src/main65816cpu.c
 */
 
@@ -1417,6 +1416,16 @@ int monitor_resources_init(void)
     return resources_register_int(resources_int);
 }
 
+
+void monitor_resources_shutdown(void)
+{
+    if (monitorlogfilename != NULL) {
+        lib_free(monitorlogfilename);
+        monitorlogfilename = NULL;
+    }
+}
+
+
 static const cmdline_option_t cmdline_options[] =
 {
     { "-moncommands", CALL_FUNCTION, CMDLINE_ATTRIB_NEED_ARGS,
@@ -1485,25 +1494,55 @@ void mon_start_assemble_mode(MON_ADDR addr, char *asm_line)
 
 /* Memory.  */
 
-void mon_display_screen(void)
+
+/** \brief  Display screen memory
+ *
+ * Display (current) screen memory, converting PETSCII to ASCII.
+ *
+ * The lex/yuck stuff will pass in either -1 when no arg has been given or an
+ * address.
+ *
+ * \param[in]   address address of screen memory, -1 to show current screen
+ *
+ * \note    Currently doesn't show the addresses in the SDL monitor, since the
+ *          SDL monitor is only 40 columns
+ */
+void mon_display_screen(long addr)
 {
     uint16_t base;
     uint8_t rows, cols;
     unsigned int r, c;
     int bank;
-
+#if 0
+    printf("Address = %ld\n", addr);
+#endif
     mem_get_screen_parameter(&base, &rows, &cols, &bank);
+#if 0
+    printf("base: $%04x, rows: $%02x, cols: $%02x, bank: %d\n",
+            base, rows, cols, bank);
+#endif
+    /* hard core: change address vars */
+    if (addr >= 0) {
+        bank = (addr >> 12);
+        base = addr;
+    }
+
+
     /* We need something like bankname = something(e_comp_space, bank) here */
     mon_out("Displaying %dx%d screen at $%04x:\n", cols, rows, base);
 
     for (r = 0; r < rows; r++) {
+        /* Only show addresses of each line in non-SDL */
+#if !defined(USE_SDLUI) && !defined(USE_SDLUI2)
+        mon_out("%04x  ", base);
+#endif
         for (c = 0; c < cols; c++) {
             uint8_t data;
 
             /* Not sure this really neads to use mon_get_mem_val_ex()
                Do we want monitor sidefx in a function that's *supposed*
                to just read from screen memory? */
-            data = mon_get_mem_val_ex(e_comp_space, bank, (uint16_t)ADDR_LIMIT(base++));
+            data = mon_get_mem_val_ex_nosfx(e_comp_space, bank, (uint16_t)ADDR_LIMIT(base++));
             data = charset_p_toascii(charset_screencode_to_petcii(data), 1);
 
             mon_out("%c", data);
@@ -2635,7 +2674,7 @@ void monitor_startup(MEMSPACE mem)
         p = uimon_in(prompt);
         if (p) {
             exit_mon = monitor_process(p);
-        } else {
+        } else if (exit_mon < 1) {
             exit_mon = 1;
         }
 
