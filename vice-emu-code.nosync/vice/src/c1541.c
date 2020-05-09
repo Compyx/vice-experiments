@@ -74,6 +74,7 @@
 #endif
 
 #include "archdep.h"
+#include "archdep_defs.h"
 #include "cbmdos.h"
 #include "cbmimage.h"
 #include "charset.h"
@@ -104,6 +105,10 @@
 #include "fileio/p00.h"
 
 #include "lib/linenoise-ng/linenoise.h"
+
+#ifdef ARCHDEP_OS_UNIX
+#include <unistd.h>
+#endif
 
 /* #define DEBUG_DRIVE */
 
@@ -443,9 +448,11 @@ const command_t command_list[] = {
       1, 2,
       name_cmd },
     { "p00save",
-      "p00save <enable> [<unit>]",
-      "Save P00 files to the file system.",
-      1, 2,
+      "p00save [<enable> [<unit>]]",
+      "Save P00 files to the file system. If no argument is given, print the "
+      "state for all drives.\n"
+      "The <enable> argument should be either 0 or 1.",
+      0, 2,
       p00save_cmd },
     { "quit",
       "quit",
@@ -1059,7 +1066,8 @@ static int open_disk_image(vdrive_t *vdrive, const char *name,
 
     vdrive_device_setup(vdrive, unit);
     vdrive->image = image;
-    vdrive_attach_image(image, unit, vdrive);
+    /* TODO: do we need a drive 1 here? */
+    vdrive_attach_image(image, unit, 0, vdrive);
     return 0;
 }
 
@@ -1075,8 +1083,9 @@ static void close_disk_image(vdrive_t *vdrive, int unit)
 
     image = vdrive->image;
 
+    /* TODO: do we need a drive 1 here? */
     if (image != NULL) {
-        vdrive_detach_image(image, (unsigned int)unit, vdrive);
+        vdrive_detach_image(image, (unsigned int)unit, 0, vdrive);
         P64ImageDestroy((PP64Image)image->p64);
         lib_free(image->p64);
         if (image->device == DISK_IMAGE_DEVICE_REAL) {
@@ -2338,11 +2347,48 @@ static int extract_cmd_common(int nargs, char **args, int geos)
                 }
 
                 if (p00save[dnr]) {
+                    char cwd[4096];
+                    char *total;
+                    long idx = 0;
+
                     p00_name = p00_filename_create((const char *)name,
                             file_type & 7);
-                    fd = fopen(p00_name, "wb");
+#ifdef ARCHDEP_OS_UNIX
+                    if (getcwd(cwd, sizeof(cwd)) == NULL) {
+                        fprintf(stderr,
+                                "Couldn't get the cwd, all bets are off. "
+                                "Aborting to get a stack dump.\n");
+                        abort();
+                    }
+#else
+                    /* Assume crap */
+                    _getcwd(cwd, sizeof(cwd));
+#endif
+                    total = archdep_join_paths(cwd, p00_name, NULL);
+
+
+                    printf("Trying filename '%s'\n", total);
+                    while (archdep_file_exists(total) && idx < 100) {
+                        /* TODO: clean up this mess */
+                        char *endptr;
+                        size_t pathlen = strlen(total);
+#if 0
+                        printf("file exists, increment index\n");
+#endif
+                        idx = strtol(total + pathlen - 2, &endptr, 10);
+#if 0
+                        printf("got index %ld\n", idx);
+#endif
+                        snprintf(total + pathlen - 2, 3, "%02d", (int)(idx + 1));
+#if 0
+                        printf("new name = '%s'\n", total);
+#endif
+                    }
+                    fd = fopen(total, MODE_WRITE);
+                    lib_free(total);
+
                 } else {
-                    fd = fopen((char *)name, MODE_WRITE);
+                    fd = fopen((const char *)name, MODE_WRITE);
                 }
                 if (fd == NULL) {
                     fprintf(stderr, "cannot create file `%s': %s.",
@@ -2770,6 +2816,8 @@ static int list_cmd(int nargs, char **args)
     vdrive_t *vdrive;
     int unit = DRIVE_UNIT_MIN;
 
+    unsigned int drive = 0;
+
     if (nargs > 1) {
         /* use new version call untill all old calls are replaced */
         unit = extract_unit_from_file_name(args[1], &pattern);
@@ -2798,7 +2846,7 @@ static int list_cmd(int nargs, char **args)
     vdrive = drives[dnr];
     name = disk_image_name_get(vdrive->image);
 
-    listing = diskcontents_read(name, (unsigned int)(dnr + DRIVE_UNIT_MIN));
+    listing = diskcontents_read(name, (unsigned int)(dnr + DRIVE_UNIT_MIN), drive);
 
     if (listing != NULL) {
         char *string = image_contents_to_string(listing, 1);
@@ -4835,7 +4883,7 @@ int main(int argc, char **argv)
 
 /** \brief  Enable\disable saving of files as P00
  *
- * Syntax: p00save \<enable> [\<unit>]
+ * Syntax: p00save [\<enable> [\<unit>]]
  *
  * Where \a enable is either 0 or 1.
  *
@@ -4847,6 +4895,16 @@ int main(int argc, char **argv)
 static int p00save_cmd(int nargs, char **args)
 {
     int dnr = 0, enable = 0;
+
+    if (nargs == 1) {
+        /* display `p00save` state for all drives */
+        int i;
+        for (i = 0; i < DRIVE_NUM; i++) {
+            printf("#%2d: %s\n",
+                    i + DRIVE_UNIT_MIN, p00save[i] ? "enabled" : "disabled");
+        }
+        return FD_OK;
+    }
 
     arg_to_int(args[1], &enable);
 

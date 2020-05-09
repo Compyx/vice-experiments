@@ -272,7 +272,9 @@ machine_state_rules: CMD_BANK end_cmd
                    | CMD_DOWN opt_sep expression end_cmd
                      { mon_stack_down($3); }
                    | CMD_SCREEN end_cmd
-                     { mon_display_screen(); }
+                     { mon_display_screen(-1); }
+                   | CMD_SCREEN address end_cmd
+                     { mon_display_screen($2); }
                    | register_mod
                    ;
 
@@ -1091,7 +1093,7 @@ index_ureg:
 
 %%
 
-void parse_and_execute_line(char *input)
+int parse_and_execute_line(char *input)
 {
    char *temp_buf;
    int i, rc;
@@ -1166,6 +1168,8 @@ void parse_and_execute_line(char *input)
    }
    lib_free(temp_buf);
    free_buffer();
+
+   return rc;
 }
 
 static int yyerror(char *s)

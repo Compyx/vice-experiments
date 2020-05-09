@@ -79,6 +79,7 @@
 #include "mixerwidget.h"
 #include "uidata.h"
 #include "archdep.h"
+#include "widgethelpers.h"
 
 /* for the fullscreen_capability() stub */
 #include "fullscreen.h"
@@ -96,6 +97,7 @@ static int set_window_xpos(int val, void *param);
 static int set_window_ypos(int val, void *param);
 static int set_start_minimized(int val, void *param);
 static int set_native_monitor(int val, void *param);
+static int set_monitor_font(const char *, void *param);
 static int set_fullscreen_state(int val, void *param);
 static void ui_toggle_warp(void);
 
@@ -130,6 +132,9 @@ typedef struct ui_resources_s {
     int start_minimized;        /**< StartMinimized (bool) */
 
     int use_native_monitor;     /**< NativeMonitor (bool) */
+
+    char *monitor_font;         /**< Pango font description string of the
+                                     VTE monitor font */
 
 #if 0
     int depth;
@@ -208,11 +213,13 @@ static kbd_gtk3_hotkey_t default_hotkeys[] = {
 
 /** \brief  String type resources list
  */
-#if 0
 static const resource_string_t resources_string[] = {
+    /* VTE-monitor font */
+    { "MonitorFont", "monospace 11", RES_EVENT_NO, NULL,
+        &ui_resources.monitor_font, set_monitor_font, NULL },
+
     RESOURCE_STRING_LIST_END
 };
-#endif
 
 
 /** \brief  Boolean resources shared between windows
@@ -315,6 +322,9 @@ static const cmdline_option_t cmdline_options_common[] =
     { "+fullscreen", SET_RESOURCE, CMDLINE_ATTRIB_NONE,
         NULL, NULL, "FullscreenEnable", (void*)0,
         NULL, "Disable fullscreen" },
+    { "-monitorfont", SET_RESOURCE, CMDLINE_ATTRIB_NEED_ARGS,
+        set_monitor_font, NULL, "MonitorFont", NULL,
+        "font-description", "Set monitor font for the Gtk3 monitor" },
 
     CMDLINE_LIST_END
 };
@@ -579,6 +589,7 @@ video_canvas_t *ui_get_active_canvas(void)
  */
 int ui_get_main_window_index(void)
 {
+    /* SOMETHING CHANGED */
     return active_win_index;
 }
 
@@ -911,6 +922,27 @@ static int set_native_monitor(int val, void *param)
 }
 
 
+/** \brief  Resource handler: set monitor font for VTE-based monitor
+ *
+ * \param[in]   val     font description string
+ * \param[in]   param   extra argument (unused)
+ *
+ * \return  0 (success)
+ */
+static int set_monitor_font(const char *val, void *param)
+{
+    if (ui_resources.monitor_font != NULL) {
+        lib_free(ui_resources.monitor_font);
+        ui_resources.monitor_font = NULL;
+    }
+    if (val != NULL) {
+        ui_resources.monitor_font = lib_strdup(val);
+    }
+    return 0;
+}
+
+
+
 
 /** \brief  Set Window[X]Width resource (int)
  *
@@ -1182,7 +1214,13 @@ static gboolean rendering_area_event_handler(GtkWidget *canvas,
                                              gpointer data)
 {
     debug_gtk3("Called!");
-    if (event->type == GDK_DOUBLE_BUTTON_PRESS) {
+
+    if (machine_class == VICE_MACHINE_VSID) {
+        return FALSE;
+    }
+
+    if (event->type == GDK_DOUBLE_BUTTON_PRESS
+            && event->button == GDK_BUTTON_PRIMARY) {
         int mouse;
 
         /* only trigger fullscreen switching when mouse-grab isn't active */
@@ -1232,7 +1270,7 @@ void ui_create_main_window(video_canvas_t *canvas)
 
     GtkWidget *kbd_widget;
     int kbd_status = 0;
-
+    int mouse_grab;
 
     GdkPixbuf *icon;
 
@@ -1243,7 +1281,11 @@ void ui_create_main_window(video_canvas_t *canvas)
 
     gchar title[256];
 
+    int minimized = 0;
     int full = 0;
+    int restore;
+
+    resources_get_int("Mouse", &mouse_grab);
 
     new_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
     /* this needs to be here to make the menus with accelerators work */
@@ -1260,7 +1302,13 @@ void ui_create_main_window(video_canvas_t *canvas)
 #endif
 
     /* set title */
-    g_snprintf(title, 256, "VICE (%s)", machine_get_name());
+    if (!mouse_grab) {
+        g_snprintf(title, 256, "VICE (%s)", machine_get_name());
+    } else {
+        g_snprintf(title, 256, "VICE (%s) (Use %s+M to disable mouse grab)",
+                machine_get_name(), VICE_MOD_MASK_TEXT);
+    }
+
     gtk_window_set_title(GTK_WINDOW(new_window), title);
 
     grid = gtk_grid_new();
@@ -1377,29 +1425,58 @@ void ui_create_main_window(video_canvas_t *canvas)
      * Try to restore windows position and size
      */
 
-    if (resources_get_int_sprintf("Window%dXpos", &xpos, target_window) < 0) {
-        log_error(LOG_ERR, "No for Window%dXpos", target_window);
-    }
-    resources_get_int_sprintf("Window%dYpos", &ypos, target_window);
-    resources_get_int_sprintf("Window%dwidth", &width, target_window);
-    resources_get_int_sprintf("Window%dheight", &height, target_window);
 
-    debug_gtk3("X: %d, Y: %d, W: %d, H: %d", xpos, ypos, width, height);
-    if (xpos < 0 || ypos < 0 || width <= 0 || height <= 0) {
-        /* def. not legal */
-        debug_gtk3("shit ain't legal!");
-    } else {
-        gtk_window_move(GTK_WINDOW(new_window), xpos, ypos);
-        gtk_window_resize(GTK_WINDOW(new_window), width, height);
+    /*
+     * Do we need to restore window(s) position/size?
+     */
+    debug_gtk3("Getting value for 'RestoreWindowGeometry'");
+    if (resources_get_int("RestoreWindowGeometry", &restore) < 0) {
+        debug_gtk3("failed to get value for 'RestoreWindowGeometry'");
+        restore = 0;
     }
 
-    if (resources_get_int("FullscreenEnable", &full) < 0) {
-        debug_gtk3("failed to get FullscreenEnabled resource.");
-    } else {
-        if (full) {
-            gtk_window_fullscreen(GTK_WINDOW(new_window));
+    if (restore) {
+        if (resources_get_int_sprintf("Window%dXpos", &xpos, target_window) < 0) {
+            log_error(LOG_ERR, "No for Window%dXpos", target_window);
+        }
+        resources_get_int_sprintf("Window%dYpos", &ypos, target_window);
+        resources_get_int_sprintf("Window%dwidth", &width, target_window);
+        resources_get_int_sprintf("Window%dheight", &height, target_window);
+
+        debug_gtk3("X: %d, Y: %d, W: %d, H: %d", xpos, ypos, width, height);
+        if (xpos < 0 || ypos < 0 || width <= 0 || height <= 0) {
+            /* def. not legal */
+            debug_gtk3("shit ain't legal!");
         } else {
-            gtk_window_unfullscreen(GTK_WINDOW(new_window));
+            gtk_window_move(GTK_WINDOW(new_window), xpos, ypos);
+            gtk_window_resize(GTK_WINDOW(new_window), width, height);
+        }
+    }
+
+    /*
+     * Do we start minimized?
+     */
+    if (resources_get_int("StartMinimized", &minimized) < 0) {
+        debug_gtk3("failed to get resource 'StartMinimized', ignoring.");
+        minimized = 0;  /* fallback : not minimized */
+    }
+    if (minimized) {
+        /* there's no gtk_window_minimize() so we do this:
+         * (there is a gtk_window_maximize(), so for API consistency I'd would
+         *  probably have added gtk_window_minimize() to mirror the maximize
+         *  function)
+         */
+        gtk_window_iconify(GTK_WINDOW(new_window));
+    } else {
+        /* my guess is a minimized/iconified window cannot be fullscreen */
+        if (resources_get_int("FullscreenEnable", &full) < 0) {
+            debug_gtk3("failed to get FullscreenEnabled resource.");
+        } else {
+            if (full) {
+                gtk_window_fullscreen(GTK_WINDOW(new_window));
+            } else {
+                gtk_window_unfullscreen(GTK_WINDOW(new_window));
+            }
         }
     }
 
@@ -1407,7 +1484,7 @@ void ui_create_main_window(video_canvas_t *canvas)
         debug_gtk3("Failed to get KbdStatusbar resource, defaulting to False.");
         kbd_status = 0;
     }
-    kbd_widget = gtk_grid_get_child_at(GTK_GRID(status_bar), 0, 2);
+    kbd_widget = gtk_grid_get_child_at(GTK_GRID(status_bar), 0, 3);
 
     if (kbd_status) {
         gtk_widget_show_all(kbd_widget);
@@ -1633,12 +1710,10 @@ int ui_resources_init(void)
     if (resources_register_int(resources_int_shared) != 0) {
         return -1;
     }
-#if 0
     /* initialize string resources */
     if (resources_register_string(resources_string) < 0) {
         return -1;
     }
-#endif
     /* initialize int/bool resources */
     if (resources_register_int(resources_int_primary_window) < 0) {
         return -1;
@@ -1937,6 +2012,11 @@ void ui_exit(void)
 
     /* deallocate memory used by the unconnected keyboard shortcuts */
     kbd_hotkey_shutdown();
+
+    /* deallocate monitor font string */
+    if (ui_resources.monitor_font != NULL) {
+        lib_free(ui_resources.monitor_font);
+    }
 
     /* trigger any remaining Gtk/GLib events */
     while (g_main_context_pending(g_main_context_default())) {

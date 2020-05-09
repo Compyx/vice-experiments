@@ -50,6 +50,11 @@ then
 	CXXFLAGS=""
 fi
 
+if [ -z ${LDFLAGS+x} ]
+then
+	LDFLAGS=""
+fi
+
 # Quiet versions of pushd and popd
 function pushdq {
 	pushd $1 > /dev/null
@@ -94,17 +99,17 @@ function extract_make_var {
 }
 
 function extract_include_dirs {
-	(extract_make_var VICE_CFLAGS; space; extract_make_var VICE_CXXFLAGS; space; extract_make_var AM_CPPFLAGS) \
+	(extract_make_var AM_CPPFLAGS; space; extract_make_var VICE_CFLAGS; space; extract_make_var VICE_CXXFLAGS) \
 		| sed $'s/ -/\\\n-/g' | grep '^-I' | sed 's/^-I//' | unique_preserve_order | tr "\n" " "
 }
 
-function extract_compile_definitions {
-	(extract_make_var COMPILE; space; extract_make_var CXXCOMPILE) \
+function extract_c_compile_definitions {
+	extract_make_var COMPILE \
 		| sed $'s/ -/\\\n-/g' | grep '^-D' | sed -e 's/^-D//g' | tr "\n" " "
 }
 
-function extract_compile_definitions {
-	(extract_make_var COMPILE; space; extract_make_var CXXCOMPILE) \
+function extract_cxx_compile_definitions {
+	extract_make_var CXXCOMPILE \
 		| sed $'s/ -/\\\n-/g' | grep '^-D' | sed -e 's/^-D//g' | tr "\n" " "
 }
 
@@ -158,7 +163,12 @@ function extract_cflags {
 
 function extract_ldflags {
 	local executable=$1
-	echo "$(extract_make_var ${executable}_LDFLAGS) $(extract_make_var LDFLAGS)"
+	extract_non_include_non_def_flags \
+		$(extract_make_var \
+			${executable}_LDFLAGS; space; \
+			extract_make_var AM_LDFLAGS; space; \
+			extract_make_var LDFLAGS; \
+			echo -n " $LDFLAGS")
 }
 
 function extract_internal_libs {
@@ -233,19 +243,6 @@ function project_relative_folder {
 }
 
 #
-# Generate a few source files using the real build system
-#
-
-pushdq src
-make -s infocontrib.h svnversion.h
-
-pushdq arch/gtk3/novte
-make -s marshal.cc vtetypebuiltins.cc
-
-popdq
-popdq
-
-#
 # Recursively work though the configured Makefile tree, defining all the libs
 #
 
@@ -258,14 +255,6 @@ function process_source_makefile {
 
 	echo -n "Creating $(project_relative_folder)/CMakeLists.txt ("
 	touch CMakeLists.txt
-
-	#
-	# We have some .c files being included in other .c and .h files.
-	# To avoid cmake trying to build them directly, remove any .c file
-	# from HEADERS.
-	#
-
-	# local headers=$(grep -v '.c$' <((extract_make_var HEADERS ; extract_make_var extra_DIST) | tr " " "\n") | tr "\n" " ")
 
 	#
 	# Declare each built lib in the original Makefile
@@ -288,13 +277,14 @@ function process_source_makefile {
 			target_compile_definitions(
 			    $lib_to_build
 			    PRIVATE
-			        $(extract_compile_definitions)
+			        \$<\$<COMPILE_LANGUAGE:CXX>:$(extract_cxx_compile_definitions)>
+			        \$<\$<COMPILE_LANGUAGE:C>:$(extract_c_compile_definitions)>
 			    )
 
 			target_include_directories(
 			    $lib_to_build
 			    PRIVATE
-			        \$(CMAKE_CURRENT_SOURCE_DIR)
+			        \${CMAKE_CURRENT_SOURCE_DIR}
 			        $(extract_include_dirs)
 			    )
 
@@ -317,6 +307,21 @@ function process_source_makefile {
 	done
 
 	echo ")"
+
+	#
+	# Generate any necessary sources
+	#
+
+	local generated_sources=$(extract_make_var BUILT_SOURCES)
+	if [ ! -z "$generated_sources" ]
+	then
+		echo "- generating sources: $generated_sources"
+		make -s $generated_sources
+	fi
+
+	#
+	# Recursively process subdirs.
+	#
 
 	for subdir in $(extract_make_var SUBDIRS)
 	do
@@ -342,7 +347,7 @@ function external_lib_label {
 
 pushdq src
 
-EXECUTABLES="x64sc x128 x64dtv xscpu64 xvic xpet xplus4 xcbm2 xcbm5x0 c1541 petcat cartconv"
+EXECUTABLES="x64sc x128 x64dtv xscpu64 xvic xpet xplus4 xcbm2 xcbm5x0 c1541 petcat cartconv vsid"
 
 #
 # Find all the libraries first
@@ -382,13 +387,14 @@ do
 		target_compile_definitions(
 		    $executable
 		    PRIVATE
-		        $(extract_compile_definitions)
+				\$<\$<COMPILE_LANGUAGE:CXX>:$(extract_cxx_compile_definitions)>
+				\$<\$<COMPILE_LANGUAGE:C>:$(extract_c_compile_definitions)>
 		    )
 
 		target_include_directories(
 		    $executable
 		    PRIVATE
-		        \$(CMAKE_CURRENT_SOURCE_DIR)
+		        \${CMAKE_CURRENT_SOURCE_DIR}
 		        $(extract_include_dirs)
 		    )
 		

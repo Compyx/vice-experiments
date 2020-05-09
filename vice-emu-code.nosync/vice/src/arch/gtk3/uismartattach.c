@@ -30,6 +30,7 @@
 
 #include "attach.h"
 #include "autostart.h"
+#include "cartridge.h"
 #include "drive.h"
 #include "tape.h"
 #include "debug_gtk3.h"
@@ -37,6 +38,7 @@
 #include "contentpreviewwidget.h"
 #include "diskcontents.h"
 #include "tapecontents.h"
+#include "machine.h"
 #include "filechooserhelpers.h"
 #include "ui.h"
 #include "uimachinewindow.h"
@@ -52,7 +54,9 @@ static ui_file_filter_t filters[] = {
     { "All files", file_chooser_pattern_all },
     { "Disk images", file_chooser_pattern_disk },
     { "Tape images", file_chooser_pattern_tape },
+    { "Cartridge images", file_chooser_pattern_cart },
     { "Program files", file_chooser_pattern_program },
+    { "Snapshot files", file_chooser_pattern_snapshot },
     { "Archives files", file_chooser_pattern_archive },
     { "Compressed files", file_chooser_pattern_compressed },
     { NULL, NULL }
@@ -261,16 +265,35 @@ static void on_response(GtkWidget *widget, gint response_id, gpointer user_data)
             /* ui_message("Opening file '%s' ...", filename); */
             debug_gtk3("Opening file '%s'.", filename);
 
-            /* copied from Gtk2: I fail to see how brute-forcing your way
-             * through file types is 'smart', but hell, it works */
-            if (file_system_attach_disk(DRIVE_UNIT_DEFAULT, filename_locale) < 0
-                    && tape_image_attach(1, filename_locale) < 0
-                    && autostart_snapshot(filename_locale, NULL) < 0
-                    && autostart_prg(filename_locale, AUTOSTART_MODE_LOAD) < 0) {
-                /* failed */
-                debug_gtk3("smart attach failed.");
+            /* Smart attach for C64/C128
+             *
+             * This tries to attach a file as a cartridge image, which is only
+             * valid for C64/C128
+             */
+            if ((machine_class == VICE_MACHINE_C64)
+                    || (machine_class == VICE_MACHINE_C64SC)
+                    || (machine_class == VICE_MACHINE_SCPU64)
+                    || (machine_class == VICE_MACHINE_C128)) {
+                if (file_system_attach_disk(DRIVE_UNIT_DEFAULT, 0, filename_locale) < 0
+                        && tape_image_attach(1, filename_locale) < 0
+                        && autostart_snapshot(filename_locale, NULL) < 0
+                        && cartridge_attach_image(CARTRIDGE_CRT, filename_locale) < 0
+                        && autostart_prg(filename_locale, AUTOSTART_MODE_LOAD) < 0) {
+                    /* failed (TODO: perhaps a proper error message?) */
+                    debug_gtk3("smart attach failed.");
+                }
+            } else {
+                /* Smart attach for other emulators: don't try to attach a file
+                 * as a cartidge, it'll result in false positives
+                 */
+                if (file_system_attach_disk(DRIVE_UNIT_DEFAULT, 0, filename_locale) < 0
+                        && tape_image_attach(1, filename_locale) < 0
+                        && autostart_snapshot(filename_locale, NULL) < 0
+                        && autostart_prg(filename_locale, AUTOSTART_MODE_LOAD) < 0) {
+                    /* failed (TODO: perhaps a proper error message?) */
+                    debug_gtk3("smart attach failed.");
+                }
             }
-
             g_free(filename_locale);
             gtk_widget_destroy(widget);
             break;

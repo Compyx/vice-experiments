@@ -766,7 +766,7 @@ static void disk_eof_callback(void)
         /* FIXME: what exactly is this stuff supposed to do? */
         if (orig_drive_true_emulation_state) {
             /* log_message(autostart_log, "Turning true drive emulation on."); */
-            if (vdrive_bam_get_disk_id(8, id) == 0) {
+            if (vdrive_bam_get_disk_id(8, 0, id) == 0) {
                 vdrive_get_last_read(&track, &sector, &buffer);
             }
         }
@@ -1396,7 +1396,7 @@ int autostart_disk(const char *file_name, const char *program_name,
 
     if (name) {
         autostart_disk_cook_name(&name);
-        if (!(file_system_attach_disk(8, file_name) < 0)) {
+        if (!(file_system_attach_disk(8, 0, file_name) < 0)) {
 #if 1
             vdrive_t *vdrive;
             struct disk_image_s *diskimg;
@@ -1413,7 +1413,7 @@ int autostart_disk(const char *file_name, const char *program_name,
             /* shitty code, we really need to extend the drive API to
              * get at these sorts for things without breaking into core code
              */
-            vdrive = file_system_get_vdrive(8);
+            vdrive = file_system_get_vdrive(8, 0);
             if (vdrive == NULL) {
                 log_error(LOG_ERR, "Failed to get vdrive reference for unit 8.");
             } else {
@@ -1430,7 +1430,7 @@ int autostart_disk(const char *file_name, const char *program_name,
                             log_error(LOG_ERR, "Failed to set drive type.");
                         }
                     }
-                    if (file_system_attach_disk(8, file_name) < 0) goto exiterror;
+                    if (file_system_attach_disk(8, 0, file_name) < 0) goto exiterror;
                     drive_cpu_trigger_reset(0);
                 }
             }
@@ -1475,7 +1475,7 @@ static void setup_for_prg(int mode)
             
             /* resources_set_int("VirtualDevices", 1); */
             resources_set_int("FSDevice8ConvertP00", 1); /* FIXME: not preserved */
-            file_system_detach_disk(8);
+            file_system_detach_disk(8, 0);
             resources_set_int("FileSystemDevice8", ATTACH_DEVICE_FS); /* FIXME: not preserved */
             break;
         case AUTOSTART_PRG_MODE_INJECT:
@@ -1652,6 +1652,28 @@ int autostart_autodetect_opt_prgname(const char *file_prog_name,
     return result;
 }
 
+static void set_tapeport_device(int datasette, int tapecart)
+{
+    /* first disable all devices, so we dont get any conflicts */
+    if (resources_set_int("Datasette", 0) < 0) {
+        log_error(LOG_ERR, "Failed to disable the Datasette.");
+    }
+    if (resources_set_int("TapecartEnabled", 0) < 0) {
+        log_error(LOG_ERR, "Failed to disable the Tapecart.");
+    }
+    /* now enable the one we want to enable */
+    if (datasette) {
+        if (resources_set_int("Datasette", 1) < 0) {
+            log_error(LOG_ERR, "Failed to enable the Datasette.");
+        }
+    }
+    if (tapecart) {
+        if (resources_set_int("TapecartEnabled", 1) < 0) {
+            log_error(LOG_ERR, "Failed to enable the Tapecart.");
+        }
+    }
+}
+
 /* Autostart `file_name', trying to auto-detect its type.  */
 int autostart_autodetect(const char *file_name, const char *program_name,
                          unsigned int program_number, unsigned int runmode)
@@ -1678,16 +1700,30 @@ int autostart_autodetect(const char *file_name, const char *program_name,
     }
 
     if (machine_class != VICE_MACHINE_C64DTV && machine_class != VICE_MACHINE_SCPU64) {
+        int datasette_temp, tapecart_temp;
+
+        if (resources_get_int("Datasette", &datasette_temp) < 0) {
+            log_error(LOG_ERR, "Failed to get Datasette status.");
+        }
+        if (resources_get_int("TapecartEnabled", &tapecart_temp) < 0) {
+            log_error(LOG_ERR, "Failed to get Tapecart status.");
+        }
+        
+        set_tapeport_device(1, 0);
+        
         if (autostart_tape(file_name, program_name, program_number, runmode) == 0) {
             log_message(autostart_log, "`%s' recognized as tape image.", file_name);
             return 0;
         }
-
+        
+        set_tapeport_device(0, 1);
+        
         if (autostart_tapecart(file_name, NULL) == 0) {
             log_message(autostart_log, "`%s' recognized as tapecart image.", file_name);
             return 0;
         }
 
+        set_tapeport_device(datasette_temp, tapecart_temp);
     }
 
     if (autostart_snapshot(file_name, program_name) == 0) {

@@ -5,7 +5,7 @@ CCLD = @LINKCC@
 
 AM_CFLAGS = @VICE_CFLAGS@
 AM_CXXFLAGS = @VICE_CXXFLAGS@
-AM_LDFLAGS = @VICE_LDFLAG@
+AM_LDFLAGS = @VICE_LDFLAGS@
 
 ARCH_LIBS = @ARCH_LIBS@
 WINDRES_LIB = @WINDRES_LIB@
@@ -62,7 +62,8 @@ SUBDIRS = \
 	cbm2 \
 	arch \
 	lib \
-	hvsc
+	hvsc \
+	datasette
 
 endif
 
@@ -114,7 +115,8 @@ DIST_SUBDIRS = \
 	@RESIDDTVSUB@ \
 	lib \
 	buildtools \
-	hvsc
+	hvsc \
+	datasette
 
 AM_CPPFLAGS = \
 	@VICE_CPPFLAGS@ \
@@ -123,6 +125,7 @@ AM_CPPFLAGS = \
 	-I$(top_builddir)/src \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/c64 \
+	-I$(top_srcdir)/src/datasette \
 	-I$(top_srcdir)/src/drive \
 	-I$(top_srcdir)/src/monitor \
 	-I$(top_srcdir)/src/plus4 \
@@ -166,7 +169,6 @@ noinst_HEADERS = \
 	config.h.in \
 	console.h \
 	crc32.h \
-	datasette.h \
 	debug.h \
 	digimaxcore.c \
 	diskconstants.h \
@@ -292,7 +294,6 @@ base_sources = \
 	cmdline.c \
 	color.c \
 	crc32.c \
-	datasette.c \
 	debug.c \
 	dma.c \
 	embedded.c \
@@ -1253,6 +1254,7 @@ c64cartsystem_lib = $(top_builddir)/src/c64/cart/libc64cartsystem.a
 c64commoncart_lib = $(top_builddir)/src/c64/cart/libc64commoncart.a
 core_lib = $(top_builddir)/src/core/libcore.a
 crtc_lib = $(top_builddir)/src/crtc/libcrtc.a
+datasette_lib = $(top_builddir)/src/datasette/libdatasette.a
 diag_lib = $(top_builddir)/src/diag/libdiag.a
 diskimage_lib = $(top_builddir)/src/diskimage/libdiskimage.a
 drive_lib = $(top_builddir)/src/drive/libdrive.a
@@ -1351,7 +1353,8 @@ vsid_libs =  \
 	$(resid_libs) \
 	$(ffmpeg_libs) \
 	$(joyport_lib) \
-	$(hvsc_lib)
+	$(hvsc_lib) \
+	$(datasette_lib)
 
 vsid_SOURCES = $(base_sources) $(midi_sources)
 vsid_LDADD = $(vsid_libs) $(emu_extlibs) @TFE_LIBS@ @NETPLAY_LIBS@ @READLINE_LIBS@ @WINDRES_LIB@
@@ -1381,6 +1384,7 @@ vsid-all: \
 	libserial \
 	libcore \
 	libjoyport \
+	libdatasette \
 	vsid$(EXEEXT)
 
 # x64
@@ -1392,6 +1396,7 @@ x64_libs =  \
 	$(c64cartsystem_lib) \
 	$(c64cart_lib) \
 	$(c64commoncart_lib) \
+	$(datasette_lib) \
 	$(driveiec_lib) \
 	$(driveiecieee_lib) \
 	$(driveiecc64exp_lib) \
@@ -1431,6 +1436,7 @@ x64-all: \
 	libc64cartsystem \
 	libc64cart \
 	libc64commoncart \
+	libdatasette \
 	libdiag \
 	libdriveiec \
 	libdriveiecieee \
@@ -1479,6 +1485,7 @@ x64sc_libs =  \
 	$(c64cartsystem_lib) \
 	$(c64cart_lib) \
 	$(c64commoncart_lib) \
+	$(datasette_lib) \
 	$(driveiec_lib) \
 	$(driveiecieee_lib) \
 	$(driveiecc64exp_lib) \
@@ -1518,6 +1525,7 @@ x64sc-all: \
 	libc64cartsystem \
 	libc64cart \
 	libc64commoncart \
+	libdatasette \
 	libdiag \
 	libdriveiec \
 	libdriveiecieee \
@@ -1562,6 +1570,7 @@ x64dtv_libs =  \
 	$(archdep_lib) \
 	$(c64dtv_lib) \
 	$(c64c64dtv_lib) \
+	$(datasette_lib) \
 	$(driveiec_lib) \
 	$(driveiecieee_lib) \
 	$(driveiecc64exp_lib) \
@@ -1602,6 +1611,7 @@ x64dtv-all: \
 	libc64dtv \
 	libc64dtvstubs \
 	libc64c64dtv \
+	libdatasette \
 	libdiag \
 	libdriveiec \
 	libdriveiecieee \
@@ -1648,6 +1658,7 @@ xscpu64_libs =  \
 	$(c64cart_lib) \
 	$(c64commoncart_lib) \
 	$(c64scpu64_lib) \
+	$(datasette_lib) \
 	$(driveiec_lib) \
 	$(driveiecieee_lib) \
 	$(driveiecc64exp_lib) \
@@ -1686,6 +1697,7 @@ xscpu64-all: \
 	libc64cartsystem \
 	libc64cart \
 	libc64commoncart \
+	libdatasette \
 	libsamplerdrv \
 	libjoyport \
 	libsounddrv \
@@ -1736,6 +1748,7 @@ x128_libs =  \
 	$(c64cart_lib) \
 	$(c64commoncart_lib) \
 	$(c64c128_lib) \
+	$(datasette_lib) \
 	$(driveiec_lib) \
 	$(driveiec128dcr_lib) \
 	$(driveiecieee_lib) \
@@ -1776,6 +1789,7 @@ x128-all: \
 	libc64cartsystem \
 	libc64cart \
 	libc64commoncart \
+	libdatasette \
 	libsamplerdrv \
 	libjoyport \
 	libsounddrv \
@@ -1823,6 +1837,7 @@ x128-all: \
 xvic_libs =  \
 	$(archdep_lib) \
 	$(tapeport_lib) \
+	$(datasette_lib) \
 	$(vic20cart_lib) \
 	$(vic20_lib) \
 	$(c64commoncart_lib) \
@@ -1858,6 +1873,7 @@ xvic_LDFLAGS = @xvic_LDFLAGS@
 .PHONY: xvic-all
 xvic-all: \
 	$(BUILT_SOURCES) \
+	libdatasette \
 	libdiag \
 	libdriveiec \
 	libdriveiecieee \
@@ -1905,6 +1921,7 @@ xvic-all: \
 xpet_libs =  \
 	$(archdep_lib) \
 	$(tapeport_lib) \
+	$(datasette_lib) \
 	$(pet_lib) \
 	$(diag_lib) \
 	$(driveiecieee_lib) \
@@ -1938,6 +1955,7 @@ xpet_LDFLAGS = @xpet_LDFLAGS@
 .PHONY: xpet-all
 xpet-all: \
 	$(BUILT_SOURCES) \
+	libdatasette \
 	libdiag \
 	libdriveiec \
 	libdriveiecieee \
@@ -1981,6 +1999,7 @@ xpet-all: \
 xplus4_libs =  \
 	$(archdep_lib) \
 	$(tapeport_lib) \
+	$(datasette_lib) \
 	$(plus4_lib) \
 	$(diag_lib) \
 	$(driveiec_lib) \
@@ -2016,6 +2035,7 @@ xplus4_LDFLAGS = @xplus4_LDFLAGS@
 .PHONY: xplus4-all
 xplus4-all: \
 	$(BUILT_SOURCES) \
+	libdatasette \
 	libdiag \
 	libdriveiec \
 	libdriveiecieee \
@@ -2061,6 +2081,7 @@ xplus4-all: \
 xcbm2_libs = \
 	$(archdep_lib) \
 	$(tapeport_lib) \
+	$(datasette_lib) \
 	$(xcbm2_lib) \
 	$(diag_lib) \
 	$(driveiecieee_lib) \
@@ -2107,6 +2128,7 @@ xcbm2-all: \
 	libsid \
 	@RESID_DEP@ \
 	@FFMPEG_DEP@ \
+	libdatasette \
 	libdiag \
 	libdriveiec \
 	libdriveiecieee \
@@ -2138,6 +2160,7 @@ xcbm5x0_libs = \
 	$(archdep_lib) \
 	$(tapeport_lib) \
 	$(xcbm5x0_lib) \
+	$(datasette_lib) \
 	$(diag_lib) \
 	$(driveiecieee_lib) \
 	$(driveieee_lib) \
@@ -2185,6 +2208,7 @@ xcbm5x0-all: \
 	libsid \
 	@RESID_DEP@ \
 	@FFMPEG_DEP@ \
+	libdatasette \
 	libdiag \
 	libdriveiec \
 	libdriveiecieee \

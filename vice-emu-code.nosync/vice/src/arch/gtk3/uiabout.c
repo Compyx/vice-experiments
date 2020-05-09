@@ -31,6 +31,7 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "debug_gtk3.h"
 #include "info.h"
@@ -46,11 +47,15 @@
 #include "uiabout.h"
 
 
+/** \brief  Maximum length of generated version string
+ */
 #define VERSION_STRING_MAX 8192
 
+/** \brief  Custom response ID's for the dialog
+ */
 enum {
-    RESPONSE_RUNTIME = 1,
-    RESPONSE_COMPILE_TIME
+    RESPONSE_RUNTIME = 1,   /**< response ID for 'Runtime' button */
+    RESPONSE_COMPILE_TIME   /**< response ID for 'Compile time' button */
 };
 
 
@@ -103,7 +108,11 @@ static void destroy_current_team_list(char **list)
  */
 static GdkPixbuf *get_vice_logo(void)
 {
+#ifndef FREE_MR_AMMO
     return uidata_get_pixbuf("vice-logo-black.svg");
+#else
+    return uidata_get_pixbuf("nerd_smoking.jpg");
+#endif
 }
 
 /** \brief  Handler for the "destroy" event
@@ -140,9 +149,11 @@ static void about_response_callback(GtkWidget *widget, gint response_id,
         case RESPONSE_RUNTIME:
             debug_gtk3("Got RUNTIME! (TODO)");
             break;
+#if 0
         case RESPONSE_COMPILE_TIME:
             debug_gtk3("Got COMPILE TIME! (TODO)");
             break;
+#endif
         default:
             debug_gtk3("Warning: Unsupported response ID %d", response_id);
             break;
@@ -202,11 +213,20 @@ gboolean ui_about_dialog_callback(GtkWidget *widget, gpointer user_data)
                 runtime_info.machine);
     }
 
+#ifdef FREE_MR_AMMO
+    gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about), "FREE MR AMMO");
+#endif
+
+
     gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about), version);
 
     /* Describe the program */
     gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about),
+#ifndef FREE_MR_AMMO
             "Emulates an 8-bit Commodore computer.");
+#else
+            "Free's Mr. Ammo");
+#endif
     /* set license */
     gtk_about_dialog_set_license_type(GTK_ABOUT_DIALOG(about), GTK_LICENSE_GPL_2_0);
     /* set website link and title */
@@ -229,9 +249,9 @@ gboolean ui_about_dialog_callback(GtkWidget *widget, gpointer user_data)
         gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(about), logo);
         g_object_unref(logo);
     }
-
+#if 0
     gtk_dialog_add_button(GTK_DIALOG(about), "Runtime info", RESPONSE_RUNTIME);
-
+#endif
     /*
      * hook up event handlers
      */

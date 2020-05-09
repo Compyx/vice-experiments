@@ -29,6 +29,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "novte/novte.h"
 
@@ -61,6 +62,7 @@
 #include "monitor.h"
 #include "resources.h"
 #include "lib.h"
+#include "log.h"
 #include "ui.h"
 #include "linenoise.h"
 #include "uimon.h"
@@ -87,6 +89,7 @@ struct console_private_s {
 static console_t vte_console;
 static linenoiseCompletions command_lc = {0, NULL};
 static linenoiseCompletions need_filename_lc = {0, NULL};
+
 
 /* FIXME: this should perhaps be done using some function from archdep */
 static int is_dir(struct dirent *de)
@@ -179,40 +182,80 @@ static gboolean plain_key_pressed(char **input_buffer, guint keyval)
                 *input_buffer = append_char_to_input_buffer(*input_buffer, (char)keyval);
                 return TRUE;
             }
+            if(keyval >= GDK_KEY_KP_0 && keyval <= GDK_KEY_KP_9) {
+                *input_buffer =
+                    append_char_to_input_buffer(
+                        *input_buffer,
+                        (char)keyval - GDK_KEY_KP_0 + 48);
+                return TRUE;
+            }
             return FALSE;
-        case GDK_KEY_Return:
-            *input_buffer = append_char_to_input_buffer(*input_buffer, 13);
-            return TRUE;
-        case GDK_KEY_BackSpace:
-            *input_buffer = append_char_to_input_buffer(*input_buffer, 127);
+        case GDK_KEY_Home:
+        case GDK_KEY_KP_Home:
+            *input_buffer = append_char_to_input_buffer(*input_buffer, 1);
             return TRUE;
         case GDK_KEY_Left:
+        case GDK_KEY_KP_Left:
             *input_buffer = append_char_to_input_buffer(*input_buffer, 2);
             return TRUE;
+        case GDK_KEY_Delete:
+        case GDK_KEY_KP_Delete:
+            *input_buffer = append_char_to_input_buffer(*input_buffer, 4);
+            return TRUE;
+        case GDK_KEY_End:
+        case GDK_KEY_KP_End:
+            *input_buffer = append_char_to_input_buffer(*input_buffer, 5);
+            return TRUE;
         case GDK_KEY_Right:
+        case GDK_KEY_KP_Right:
             *input_buffer = append_char_to_input_buffer(*input_buffer, 6);
-            return TRUE;
-        case GDK_KEY_Up:
-            *input_buffer = append_char_to_input_buffer(*input_buffer, 16);
-            return TRUE;
-        case GDK_KEY_Down:
-            *input_buffer = append_char_to_input_buffer(*input_buffer, 14);
             return TRUE;
         case GDK_KEY_Tab:
             *input_buffer = append_char_to_input_buffer(*input_buffer, 9);
             return TRUE;
-        case GDK_KEY_Delete:
-            *input_buffer = append_char_to_input_buffer(*input_buffer, 4);
+        case GDK_KEY_Return:
+            *input_buffer = append_char_to_input_buffer(*input_buffer, 13);
             return TRUE;
-        case GDK_KEY_Home:
-            *input_buffer = append_char_to_input_buffer(*input_buffer, 1);
+        case GDK_KEY_Down:
+        case GDK_KEY_KP_Down:
+            *input_buffer = append_char_to_input_buffer(*input_buffer, 14);
             return TRUE;
-        case GDK_KEY_End:
-            *input_buffer = append_char_to_input_buffer(*input_buffer, 5);
+        case GDK_KEY_Up:
+        case GDK_KEY_KP_Up:
+            *input_buffer = append_char_to_input_buffer(*input_buffer, 16);
+            return TRUE;
+        case GDK_KEY_dead_diaeresis:
+            *input_buffer = append_char_to_input_buffer(*input_buffer, 34);
+            return TRUE;
+        case GDK_KEY_dead_acute:
+            *input_buffer = append_char_to_input_buffer(*input_buffer, 39);
+            return TRUE;
+        case GDK_KEY_KP_Multiply:
+            *input_buffer = append_char_to_input_buffer(*input_buffer, 42);
+            return TRUE;
+        case GDK_KEY_KP_Add:
+            *input_buffer = append_char_to_input_buffer(*input_buffer, 43);
+            return TRUE;
+        case GDK_KEY_KP_Subtract:
+            *input_buffer = append_char_to_input_buffer(*input_buffer, 45);
+            return TRUE;
+        case GDK_KEY_KP_Decimal:
+            *input_buffer = append_char_to_input_buffer(*input_buffer, 46);
+            return TRUE;
+        case GDK_KEY_KP_Divide:
+            *input_buffer = append_char_to_input_buffer(*input_buffer, 47);
+            return TRUE;
+        case GDK_KEY_dead_circumflex:
+            *input_buffer = append_char_to_input_buffer(*input_buffer, 94);
+            return TRUE;
+        case GDK_KEY_dead_grave:
+            *input_buffer = append_char_to_input_buffer(*input_buffer, 96);
             return TRUE;
         case GDK_KEY_dead_tilde:
-            *input_buffer =
-                append_char_to_input_buffer(*input_buffer, GDK_KEY_asciitilde);
+            *input_buffer = append_char_to_input_buffer(*input_buffer, 126);
+            return TRUE;
+        case GDK_KEY_BackSpace:
+            *input_buffer = append_char_to_input_buffer(*input_buffer, 127);
             return TRUE;
     }
 }
@@ -404,13 +447,59 @@ static GdkPixbuf *get_default_icon(void)
 
 console_t *uimonfb_window_open(void);
 
+
+/** \brief  Try to set VTE monitor font
+ *
+ * \return  boolean
+ */
+bool uimon_set_font(void)
+{
+    const PangoFontDescription *desc_tmp;
+    PangoFontDescription* desc;
+    const char *monitor_font = NULL;
+
+    if (resources_get_string("MonitorFont", &monitor_font) < 0) {
+        log_error(LOG_ERR, "Failed to read 'MonitorFont' resource.");
+        return false;
+    }
+
+    if (fixed.term == NULL) {
+        log_error(LOG_ERR, "No monitor instance found.");
+        return false;
+    }
+
+    /* try to set monitor font */
+    desc = pango_font_description_from_string(monitor_font);
+    if (desc == NULL) {
+        /* fall back */
+        log_warning(LOG_ERR, "Failed to parse Pango font description, falling"
+                " back to default font.");
+
+        desc_tmp = vte_terminal_get_font(VTE_TERMINAL(fixed.term));
+        desc = pango_font_description_copy_static(desc_tmp);
+        pango_font_description_set_family(desc, "Consolas,monospace");
+        pango_font_description_set_size(desc, 11 * PANGO_SCALE);
+    }
+    vte_terminal_set_font(VTE_TERMINAL(fixed.term), desc);
+    pango_font_description_free(desc);
+
+    gtk_widget_set_size_request(GTK_WIDGET(fixed.window), -1, -1);
+    gtk_widget_set_size_request(GTK_WIDGET(fixed.term), -1, -1);
+
+    /* get GtkBox */
+    GList *widgets = gtk_container_get_children(GTK_CONTAINER(fixed.window));
+    GList *box = g_list_first(widgets);
+
+    gtk_widget_set_size_request(GTK_WIDGET(box->data), -1 , -1);
+    return true;
+}
+
+
 console_t *uimon_window_open(void)
 {
     GtkWidget *scrollbar, *horizontal_container;
     GdkGeometry hints;
     GdkPixbuf *icon;
-    const PangoFontDescription *desc_tmp;
-    PangoFontDescription *desc;
     int sblines;
 
     if (native_monitor()) {
@@ -418,7 +507,7 @@ console_t *uimon_window_open(void)
     }
 
     resources_get_int("MonitorScrollbackLines", &sblines);
-    
+
     if (fixed.window == NULL) {
         fixed.window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
         gtk_window_set_title(GTK_WINDOW(fixed.window), "VICE monitor");
@@ -454,12 +543,21 @@ console_t *uimon_window_open(void)
                                      GDK_HINT_MIN_SIZE |
                                      GDK_HINT_BASE_SIZE);
         scrollbar = gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL,
-        gtk_scrollable_get_vadjustment (GTK_SCROLLABLE(fixed.term)));
+                gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(fixed.term)));
 
         horizontal_container = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
         gtk_container_add(GTK_CONTAINER(fixed.window), horizontal_container);
+
+#if 0
         gtk_container_add(GTK_CONTAINER(horizontal_container), fixed.term);
         gtk_container_add(GTK_CONTAINER(horizontal_container), scrollbar);
+#else
+        gtk_box_pack_start(GTK_BOX(horizontal_container), fixed.term,
+                TRUE, TRUE, 0);
+        gtk_box_pack_end(GTK_BOX(horizontal_container), scrollbar,
+                FALSE, FALSE, 0);
+#endif
+
 
         g_signal_connect(G_OBJECT(fixed.window), "delete-event",
             G_CALLBACK(close_window), &fixed.input_buffer);
@@ -478,22 +576,19 @@ console_t *uimon_window_open(void)
 
         vte_console.console_can_stay_open = 1;
 
-
-        desc_tmp = vte_terminal_get_font(VTE_TERMINAL(fixed.term));
-        desc = pango_font_description_copy_static(desc_tmp);
-        /* pango_font_description_set_style(desc, PANGO_STYLE_ITALIC); */
-        pango_font_description_set_family(desc, "monospace");
-        vte_terminal_set_font(VTE_TERMINAL(fixed.term), desc);
-        pango_font_description_free(desc);
+        uimon_set_font();
     } else {
         vte_terminal_set_scrollback_lines (VTE_TERMINAL(fixed.term), sblines);
     }
     return uimon_window_resume();
 }
 
+
 console_t *uimon_window_resume(void)
 {
+#if 0
     GtkWindow *active;
+#endif
 
     if (native_monitor()) {
         return uimonfb_window_resume();
@@ -507,12 +602,13 @@ console_t *uimon_window_resume(void)
      * window. This makes the monitor window show when the emulated machine
      * window is in fullscreen mode. (only tested on Windows 10)
      */
+#if 0
     active = ui_get_active_window();
     if (active != GTK_WINDOW(fixed.window)) {
         debug_gtk3("setting monitor window transient for emulator window.");
         gtk_window_set_transient_for(GTK_WINDOW(fixed.window), active);
     }
-
+#endif
     gtk_window_present(GTK_WINDOW(fixed.window));
 
     ui_dispatch_events();
@@ -527,7 +623,17 @@ void uimon_window_suspend(void)
     }
 
     if (fixed.window != NULL) {
-        gtk_widget_hide(fixed.window);
+        int keep_open = 0;
+
+        /* do need to keep the monitor window open? */
+        resources_get_int("KeepMonitorOpen", &keep_open);
+        if (!keep_open) {
+            gtk_widget_hide(fixed.window);
+        } else {
+            /* move monitor window behind the emu window */
+            GtkWidget *window = ui_get_window_by_index(ui_get_main_window_index());
+            gtk_window_present(GTK_WINDOW(window));
+        }
     }
 }
 

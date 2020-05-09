@@ -30,6 +30,7 @@
 #include "autostart-prg.h"
 #include "charset.h"
 #include "drive.h"
+#include "drive-check.h"
 #include "diskimage.h"
 #include "fliplist.h"
 #include "lib.h"
@@ -79,7 +80,9 @@ static int check_memory_expansion(int memory, int type)
 
 static int has_fs(void)
 {
-    if (machine_class == VICE_MACHINE_CBM5x0 || machine_class == VICE_MACHINE_CBM6x0 || machine_class == VICE_MACHINE_PET) {
+    if (machine_class == VICE_MACHINE_CBM5x0 || 
+        machine_class == VICE_MACHINE_CBM6x0 || 
+        machine_class == VICE_MACHINE_PET) {
         return 0;
     }
     return 1;
@@ -88,24 +91,6 @@ static int has_fs(void)
 static int is_fs(int type)
 {
     return ((type == ATTACH_DEVICE_FS || type == ATTACH_DEVICE_REAL) && has_fs());
-}
-
-static int get_drive_type(int drive)
-{
-    int iecdevice = 0;
-    int fsdevice;
-    int drivetype;
-
-    if (has_fs()) {
-        resources_get_int_sprintf("IECDevice%i", &iecdevice, drive);
-        resources_get_int_sprintf("FileSystemDevice%i", &fsdevice, drive);
-    }
-    resources_get_int_sprintf("Drive%iType", &drivetype, drive);
-    if (iecdevice) {
-        return fsdevice;
-    } else {
-        return drivetype;
-    }
 }
 
 static int check_current_drive_type(int type, int drive)
@@ -135,7 +120,7 @@ static char *get_drive_type_string(int drive)
 {
     int type;
 
-    type = get_drive_type(drive);
+    type = drive_get_type_by_devnr(drive);
     switch (type) {
         case 0:                  return MENU_SUBMENU_STRING " none";
         case ATTACH_DEVICE_FS:   return MENU_SUBMENU_STRING " directory";
@@ -250,7 +235,9 @@ static UI_MENU_CALLBACK(attach_disk_callback)
     if (activated) {
         name = sdl_ui_file_selection_dialog("Select disk image", FILEREQ_MODE_CHOOSE_FILE);
         if (name != NULL) {
-            if (file_system_attach_disk(vice_ptr_to_int(param), name) < 0) {
+            int device = vice_ptr_to_int(param) & 0xff;
+            int drive = (vice_ptr_to_int(param) >> 8) & 0xff;
+            if (file_system_attach_disk(device, drive, name) < 0) {
                 ui_error("Cannot attach disk image.");
             }
             lib_free(name);
@@ -261,17 +248,20 @@ static UI_MENU_CALLBACK(attach_disk_callback)
 
 static UI_MENU_CALLBACK(detach_disk_callback)
 {
-    int parameter;
+    int parameter, i;
 
     if (activated) {
         parameter = vice_ptr_to_int(param);
         if (parameter == 0) {
-            file_system_detach_disk(8);
-            file_system_detach_disk(9);
-            file_system_detach_disk(10);
-            file_system_detach_disk(11);
+            /* detach all disks in all drives */
+            for (i = 8; i < 12; i++) {
+                file_system_detach_disk(i, 0);
+                file_system_detach_disk(i, 1);
+            }
         } else {
-            file_system_detach_disk(parameter);
+            int device = parameter & 0xff;
+            int drive = (parameter >> 8) & 0xff;
+            file_system_detach_disk(device, drive);
         }
     }
     return NULL;
@@ -325,7 +315,7 @@ static UI_MENU_CALLBACK(fliplist_callback)
     {                                                       \
         int type;                                           \
                                                             \
-        type = get_drive_type(x);                           \
+        type = drive_get_type_by_devnr(x);                  \
                                                             \
         if (drive_check_idle_method(type)) {                \
             return MENU_SUBMENU_STRING;                     \
@@ -343,7 +333,7 @@ DRIVE_SHOW_IDLE_CALLBACK(11)
     {                                                         \
         int type;                                             \
                                                               \
-        type = get_drive_type(x);                             \
+        type = drive_get_type_by_devnr(x);                    \
                                                               \
         if (drive_check_extend_policy(type)) {                \
             return MENU_SUBMENU_STRING;                       \
@@ -361,7 +351,7 @@ DRIVE_SHOW_EXTEND_CALLBACK(11)
     {                                                         \
         int type;                                             \
                                                               \
-        type = get_drive_type(x);                             \
+        type = drive_get_type_by_devnr(x);                    \
                                                               \
         if (drive_check_expansion(type)) {                    \
             return MENU_SUBMENU_STRING;                       \
@@ -379,7 +369,7 @@ DRIVE_SHOW_EXPAND_CALLBACK(11)
     {                                                                   \
         int type;                                                       \
                                                                         \
-        type = get_drive_type(x);                                       \
+        type = drive_get_type_by_devnr(x);                              \
                                                                         \
         if (drive_check_profdos(type) || drive_check_supercard(type)) { \
             return MENU_SUBMENU_STRING;                                 \
@@ -412,7 +402,7 @@ static UI_MENU_CALLBACK(set_idle_callback)
 
     drive = (int)(vice_ptr_to_int(param) >> 8);
     parameter = (int)(vice_ptr_to_int(param) & 0xff);
-    current = get_drive_type(drive);
+    current = drive_get_type_by_devnr(drive);
 
     if (activated) {
         if (drive_check_idle_method(current)) {
@@ -440,7 +430,7 @@ static UI_MENU_CALLBACK(set_extend_callback)
 
     drive = (int)(vice_ptr_to_int(param) >> 8);
     parameter = (int)(vice_ptr_to_int(param) & 0xff);
-    current = get_drive_type(drive);
+    current = drive_get_type_by_devnr(drive);
 
     if (activated) {
         if (drive_check_extend_policy(current)) {
@@ -464,7 +454,7 @@ static UI_MENU_CALLBACK(set_extend_callback)
     {                                                           \
         int type;                                               \
                                                                 \
-        type = get_drive_type(x);                               \
+        type = drive_get_type_by_devnr(x);                      \
                                                                 \
         if (drive_check_parallel_cable(type)) {                 \
             return MENU_SUBMENU_STRING;                         \
@@ -485,7 +475,7 @@ static UI_MENU_CALLBACK(set_par_callback)
 
     drive = vice_ptr_to_int(param) >> 16;
     type = vice_ptr_to_int(param) & 0x0f;
-    current = get_drive_type(drive);
+    current = drive_get_type_by_devnr(drive);
 
     if (activated) {
         if (machine_class != VICE_MACHINE_VIC20 && drive_check_parallel_cable(current)) {
@@ -545,7 +535,8 @@ UI_MENU_DEFINE_SLIDER(Drive11Wobble, 0, 1000)
 void uidrive_menu_create(void)
 {
     int newend = 4;
-
+    int i, d0, d1;
+    
     if (machine_class == VICE_MACHINE_VIC20) {
         newend = 1;
     } else if (machine_class == VICE_MACHINE_PLUS4) {
@@ -555,6 +546,22 @@ void uidrive_menu_create(void)
     memset(&drive_9_parallel_menu[newend], 0, sizeof(ui_menu_entry_t));
     memset(&drive_10_parallel_menu[newend], 0, sizeof(ui_menu_entry_t));
     memset(&drive_11_parallel_menu[newend], 0, sizeof(ui_menu_entry_t));
+    
+    /* depending on the active drive type, enable the attach and detach
+       menu items in the drive menu */
+    for (i = 0; i < 4; i++) {
+        d0 = d1 = MENU_STATUS_INACTIVE;
+        if (drive_get_type_by_devnr(8 + i) != 0) {
+            d0 = MENU_STATUS_ACTIVE;
+            if (drive_is_dualdrive_by_devnr(8 + i)) {
+                d1 = MENU_STATUS_ACTIVE;
+            }
+        }
+        drive_menu[0 + (i * 2)].status = d0;
+        drive_menu[1 + (i * 2)].status = d1;
+        drive_menu[9 + (i * 2)].status = d0;
+        drive_menu[10 + (i * 2)].status = d1;
+    }
 }
 
 static UI_MENU_CALLBACK(set_expand_callback)
@@ -567,7 +574,7 @@ static UI_MENU_CALLBACK(set_expand_callback)
     drive = (int)(vice_ptr_to_int(param) >> 16);
     parameter = (int)(vice_ptr_to_int(param) & 0xffff);
 
-    current = get_drive_type(drive);
+    current = drive_get_type_by_devnr(drive);
 
     if (activated) {
         if (drive_check_expansion(current) && check_memory_expansion(parameter, current)) {
@@ -598,7 +605,7 @@ static UI_MENU_CALLBACK(set_exboard_callback)
     drive = (int)(vice_ptr_to_int(param) >> 16);
     parameter = (int)(vice_ptr_to_int(param) & 0xffff);
 
-    type = get_drive_type(drive);
+    type = drive_get_type_by_devnr(drive);
 
     switch (parameter) {
         case 0:
@@ -672,6 +679,8 @@ static UI_MENU_CALLBACK(set_drive_type_callback)
                 resources_set_int_sprintf("Drive%iType", parameter, drive);
             }
         }
+        /* update the drive menu items */
+        uidrive_menu_create();
     } else {
         if (!support) {
             return MENU_NOT_AVAILABLE_STRING;
@@ -738,7 +747,7 @@ static UI_MENU_CALLBACK(create_disk_image_callback)
                 /* 0-3 = unit #8 - unit #11, 4 = SKIP */
                 if (result >= 0 && result <= 3) {
                     /* try to attach disk image */
-                    if (file_system_attach_disk(result + 8, name) < 0) {
+                    if (file_system_attach_disk(result + 8, 0 /* FIXME: drive */, name) < 0) {
                         ui_error("Cannot attach disk image.");
                     }
                 }
@@ -1189,39 +1198,74 @@ static UI_MENU_CALLBACK(custom_drive_volume_callback)
     return NULL;
 }
 
-const ui_menu_entry_t drive_menu[] = {
+/* CAUTION: the position of the menu items is hardcoded in uidrive_menu_create() */
+ui_menu_entry_t drive_menu[] = {
     { "Attach disk image to drive 8",
       MENU_ENTRY_DIALOG,
       attach_disk_callback,
       (ui_callback_data_t)8 },
+    { "Attach disk image to drive 8:1",
+      MENU_ENTRY_DIALOG,
+      attach_disk_callback,
+      (ui_callback_data_t)(8 | (1 << 8)), MENU_STATUS_NA },
     { "Attach disk image to drive 9",
       MENU_ENTRY_DIALOG,
       attach_disk_callback,
       (ui_callback_data_t)9 },
+    { "Attach disk image to drive 9:1",
+      MENU_ENTRY_DIALOG,
+      attach_disk_callback,
+      (ui_callback_data_t)(9 | (1 << 8)) },
     { "Attach disk image to drive 10",
       MENU_ENTRY_DIALOG,
       attach_disk_callback,
       (ui_callback_data_t)10 },
+    { "Attach disk image to drive 10:1",
+      MENU_ENTRY_DIALOG,
+      attach_disk_callback,
+      (ui_callback_data_t)(10 | (1 << 8)) },
     { "Attach disk image to drive 11",
       MENU_ENTRY_DIALOG,
       attach_disk_callback,
       (ui_callback_data_t)11 },
+    { "Attach disk image to drive 11:1",
+      MENU_ENTRY_DIALOG,
+      attach_disk_callback,
+      (ui_callback_data_t)(11 | (1 << 8)) },
+    SDL_MENU_ITEM_SEPARATOR,
     { "Detach disk image from drive 8",
       MENU_ENTRY_OTHER,
       detach_disk_callback,
       (ui_callback_data_t)8 },
+    { "Detach disk image from drive 8:1",
+      MENU_ENTRY_OTHER,
+      detach_disk_callback,
+      (ui_callback_data_t)(8 | (1 << 8)) },
     { "Detach disk image from drive 9",
       MENU_ENTRY_OTHER,
       detach_disk_callback,
       (ui_callback_data_t)9 },
+    { "Detach disk image from drive 9:1",
+      MENU_ENTRY_OTHER,
+      detach_disk_callback,
+      (ui_callback_data_t)(9 | (1 << 8)) },
     { "Detach disk image from drive 10",
       MENU_ENTRY_OTHER,
       detach_disk_callback,
       (ui_callback_data_t)10 },
+    { "Detach disk image from drive 10:1",
+      MENU_ENTRY_OTHER,
+      detach_disk_callback,
+      (ui_callback_data_t)(10 | (1 << 8)) },
     { "Detach disk image from drive 11",
       MENU_ENTRY_OTHER,
       detach_disk_callback,
       (ui_callback_data_t)11 },
+    { "Detach disk image from drive 11:1",
+      MENU_ENTRY_OTHER,
+      detach_disk_callback,
+      (ui_callback_data_t)(11 | (1 << 8)) },
+    SDL_MENU_ITEM_SEPARATOR,
     { "Detach all disk images",
       MENU_ENTRY_OTHER,
       detach_disk_callback,

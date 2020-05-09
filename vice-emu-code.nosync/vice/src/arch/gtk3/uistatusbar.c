@@ -1616,7 +1616,7 @@ GtkWidget *ui_statusbar_create(void)
     kbd_debug_widget = kbd_debug_widget_create();
     allocated_bars[i].kbd_debug = kbd_debug_widget;
     g_object_ref_sink(kbd_debug_widget);
-    gtk_grid_attach(GTK_GRID(sb), kbd_debug_widget, 0, 2, 16, 1);
+    gtk_grid_attach(GTK_GRID(sb), kbd_debug_widget, 0, 3, 16, 1);
 
     /* Set an impossible number of joyports to enabled so that the status
      * is guarenteed to be updated. */
@@ -1881,15 +1881,17 @@ void ui_display_tape_current_image(const char *image)
 /** \brief  Statusbar API function to report changes in drive LED intensity.
  *
  *  \param  drive_number    The unit to update (0-3 for drives 8-11)
- *  \param  pwm1            The intensity of the first LED (0=off,
+ *  \param  drive_base      Drive 0 or 1 of dualdrives
+ *  \param  led_pwm1        The intensity of the first LED (0=off,
  *                          1000=maximum intensity)
  *  \param  led_pwm2        The intensity of the second LED (0=off,
  *                          1000=maximum intensity)
  *  \todo   The statusbar API does not yet support dual-unit disk
  *          drives.
  */
-void ui_display_drive_led(int drive_number,
-                          unsigned int pwm1,
+void ui_display_drive_led(unsigned int drive_number,
+                          unsigned int drive_base,
+                          unsigned int led_pwm1,
                           unsigned int led_pwm2)
 {
     int i;
@@ -1897,7 +1899,7 @@ void ui_display_drive_led(int drive_number,
         /* TODO: Fatal error? */
         return;
     }
-    sb_state.current_drive_leds[drive_number][0] = pwm1;
+    sb_state.current_drive_leds[drive_number][0] = led_pwm1;
     sb_state.current_drive_leds[drive_number][1] = led_pwm2;
     for (i = 0; i < MAX_STATUS_BARS; ++i) {
         if (allocated_bars[i].bar) {
@@ -1915,7 +1917,7 @@ void ui_display_drive_led(int drive_number,
 /** \brief  Statusbar API function to report changes in drive head location.
  *
  *  \param  drive_number        The unit to update (0-3 for drives 8-11)
- *  \param  drive_base          Currently unused.
+ *  \param  drive_base          Drive 0 or 1 of dualdrives
  *  \param  half_track_number   Twice the value of the head
  *                              location. 18.0 is 36, while 18.5 would be 37.
  *
@@ -2134,7 +2136,7 @@ static void kbd_statusbar_widget_enable(GtkWidget *window, gboolean state)
     if (main_grid != NULL) {
         statusbar = gtk_grid_get_child_at(GTK_GRID(main_grid), 0, 2);
         if (statusbar != NULL) {
-            kbd = gtk_grid_get_child_at(GTK_GRID(statusbar), 0, 2);
+            kbd = gtk_grid_get_child_at(GTK_GRID(statusbar), 0, 3);
             if (kbd != NULL) {
                 if (state) {
                     gtk_widget_show_all(kbd);

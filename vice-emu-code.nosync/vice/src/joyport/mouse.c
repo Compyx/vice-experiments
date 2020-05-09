@@ -196,7 +196,7 @@ static uint8_t mouse_digital_val = 0;
           this case is ok.
 */
 
-static uint8_t mouse_get_1351_x(void)
+static uint8_t mouse_get_1351_x(int port)
 {
     if (_mouse_enabled) {
         mouse_poll();
@@ -205,7 +205,7 @@ static uint8_t mouse_get_1351_x(void)
     return 0xff;
 }
 
-static uint8_t mouse_get_1351_y(void)
+static uint8_t mouse_get_1351_y(int port)
 {
     if (_mouse_enabled) {
         mouse_poll();
@@ -516,6 +516,7 @@ uint8_t mouse_poll(void)
 
 static int up_down_counter = 0;
 
+/* http://wiki.icomp.de/wiki/Micromys_Protocol */
 uint8_t micromys_mouse_read(void)
 {
     /* update wheel until we're ahead */
@@ -571,7 +572,7 @@ static inline uint8_t mouse_paddle_update(uint8_t paddle_v, int16_t *old_v, int1
           this case is ok.
 */
 
-static uint8_t mouse_get_paddle_x(void)
+static uint8_t mouse_get_paddle_x(int port)
 {
     if (_mouse_enabled) {
         paddle_val[2] = mouse_paddle_update(paddle_val[2], &(paddle_old[2]), (int16_t)mousedrv_get_x());
@@ -580,7 +581,7 @@ static uint8_t mouse_get_paddle_x(void)
     return 0xff;
 }
 
-static uint8_t mouse_get_paddle_y(void)
+static uint8_t mouse_get_paddle_y(int port)
 {
     if (_mouse_enabled) {
         paddle_val[3] = mouse_paddle_update(paddle_val[3], &(paddle_old[3]), (int16_t)mousedrv_get_y());
@@ -735,7 +736,7 @@ static uint8_t joyport_mouse_neos_value(int port)
     return retval;
 }
 
-static uint8_t joyport_mouse_neos_amiga_st_read_potx(void)
+static uint8_t joyport_mouse_neos_amiga_st_read_potx(int port)
 {
     return _mouse_enabled ? ((neos_and_amiga_buttons & 1) ? 0xff : 0) : 0xff;
 }
@@ -771,7 +772,7 @@ static uint8_t joyport_mouse_poll_value(int port)
     return retval;
 }
 
-static uint8_t joyport_mouse_amiga_st_read_poty(void)
+static uint8_t joyport_mouse_amiga_st_read_poty(int port)
 {
     return _mouse_enabled ? ((neos_and_amiga_buttons & 2) ? 0xff : 0) : 0xff;
 }
@@ -865,11 +866,17 @@ static joyport_t mouse_smart_joyport_device = {
 static uint8_t joyport_mouse_micromys_value(int port)
 {
     uint8_t retval = 0xff;
+    uint8_t r = 0;
 
     if (_mouse_enabled) {
-        retval = (uint8_t)((~mouse_digital_val) & micromys_mouse_read());
-        if (retval != (uint8_t)~mouse_digital_val) {
-            joyport_display_joyport(mt_to_id(mouse_type), (uint8_t)(~retval));
+        r = micromys_mouse_read();
+        if (r == 0xff) {
+            joyport_display_joyport(mt_to_id(mouse_type), mouse_digital_val);
+        } else {
+            retval = (uint8_t)((~mouse_digital_val) & r);
+            if (retval != (uint8_t)~mouse_digital_val) {
+                joyport_display_joyport(mt_to_id(mouse_type), (uint8_t)(~retval));
+            }
         }
     }
     return retval;
@@ -893,9 +900,9 @@ static joyport_t mouse_micromys_joyport_device = {
     mouse_micromys_read_snapshot   /* device read snapshot function */
 };
 
-static uint8_t joyport_koalapad_pot_x(void)
+static uint8_t joyport_koalapad_pot_x(int port)
 {
-    return _mouse_enabled ? (uint8_t)(255 - mouse_get_paddle_x()) : 0xff;
+    return _mouse_enabled ? (uint8_t)(255 - mouse_get_paddle_x(port)) : 0xff;
 }
 
 /* Some prototypes are needed */

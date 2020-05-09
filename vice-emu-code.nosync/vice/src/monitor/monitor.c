@@ -80,6 +80,7 @@
 #include "mon_util.h"
 #include "monitor.h"
 #include "monitor_network.h"
+#include "monitor_binary.h"
 #include "montypes.h"
 #include "resources.h"
 #include "screenshot.h"
@@ -288,7 +289,6 @@ static const char *register_string[] = {
     "D",
     "U",
     "DP",
-    
     "E",    /* 658xx/6309/z80 */
 /* 6309 */
     "F",
@@ -303,9 +303,9 @@ static const char *register_string[] = {
     "IXH",
     "IYL",
     "IYH",
-    
+
     /* "CC", */ /* 6x09 */ /* FIXME: same as flags? */
-    
+
     "RL",   /* Rasterline */
     "CY",   /* Cycle in line */
 };
@@ -622,6 +622,39 @@ void mon_bank(MEMSPACE mem, const char *bankname)
     }
 }
 
+/*! \internal \brief check if the bank number is valid for memspace
+
+ \param mem
+   The memspace of the bank
+
+ \param banknum
+   The number of the bank
+
+ \return
+   -1: Memspace doesn't have banks
+   0: Bank number invalid
+   1: Bank number valid
+*/
+const int mon_banknum_validate(MEMSPACE mem, int banknum)
+{
+    const int *banknums;
+
+    if(!mon_interfaces[mem]->mem_bank_list_nos) {
+        mon_out("Banks not available in this memspace\n");
+        return -1;
+    }
+
+    banknums = mon_interfaces[mem]->mem_bank_list_nos();
+    while(*banknums != -1) {
+        if(banknum == *banknums) {
+            return 1;
+        }
+        ++banknums;
+    }
+
+    return 0;
+}
+
 const char *mon_get_bank_name_for_bank(MEMSPACE mem, int banknum)
 {
     const char **bnp = NULL;
@@ -649,7 +682,7 @@ const char *mon_get_current_bank_name(MEMSPACE mem)
     main entry point for the monitor to read a value from memory
 
     mem_bank_peek and mem_bank_read are set up in src/drive/drivecpu.c,
-    src/drive/drivecpu65c02.c, src/mainc64cpu.c, src/mainviccpu.c, 
+    src/drive/drivecpu65c02.c, src/mainc64cpu.c, src/mainviccpu.c,
     src/maincpu.c, src/main65816cpu.c
 */
 
@@ -726,6 +759,36 @@ void mon_set_mem_val(MEMSPACE mem, uint16_t mem_addr, uint8_t val)
 
     bank = mon_interfaces[mem]->current_bank;
 
+    if (monitor_diskspace_dnr(mem) >= 0) {
+        if (!check_drive_emu_level_ok(monitor_diskspace_dnr(mem) + 8)) {
+            return;
+        }
+    }
+    
+    if ((sidefx == 0) && (mon_interfaces[mem]->mem_bank_poke != NULL)) {
+        mon_interfaces[mem]->mem_bank_poke(bank, mem_addr, val, mon_interfaces[mem]->context);
+    } else {
+        mon_interfaces[mem]->mem_bank_write(bank, mem_addr, val, mon_interfaces[mem]->context);
+    }    
+}
+
+/*! \internal \brief set a byte of memory in a specific bank, not the current.
+
+ \param mem
+   Memspace of bank
+
+ \param bank
+   The bank number
+
+ \param mem_addr
+   The 16 bit memory address
+
+ \param val
+   The byte to write
+
+*/
+void mon_set_mem_val_ex(MEMSPACE mem, int bank, uint16_t mem_addr, uint8_t val)
+{
     if (monitor_diskspace_dnr(mem) >= 0) {
         if (!check_drive_emu_level_ok(monitor_diskspace_dnr(mem) + 8)) {
             return;
@@ -1353,6 +1416,16 @@ int monitor_resources_init(void)
     return resources_register_int(resources_int);
 }
 
+
+void monitor_resources_shutdown(void)
+{
+    if (monitorlogfilename != NULL) {
+        lib_free(monitorlogfilename);
+        monitorlogfilename = NULL;
+    }
+}
+
+
 static const cmdline_option_t cmdline_options[] =
 {
     { "-moncommands", CALL_FUNCTION, CMDLINE_ATTRIB_NEED_ARGS,
@@ -1421,25 +1494,55 @@ void mon_start_assemble_mode(MON_ADDR addr, char *asm_line)
 
 /* Memory.  */
 
-void mon_display_screen(void)
+
+/** \brief  Display screen memory
+ *
+ * Display (current) screen memory, converting PETSCII to ASCII.
+ *
+ * The lex/yuck stuff will pass in either -1 when no arg has been given or an
+ * address.
+ *
+ * \param[in]   address address of screen memory, -1 to show current screen
+ *
+ * \note    Currently doesn't show the addresses in the SDL monitor, since the
+ *          SDL monitor is only 40 columns
+ */
+void mon_display_screen(long addr)
 {
     uint16_t base;
     uint8_t rows, cols;
     unsigned int r, c;
     int bank;
-
+#if 0
+    printf("Address = %ld\n", addr);
+#endif
     mem_get_screen_parameter(&base, &rows, &cols, &bank);
+#if 0
+    printf("base: $%04x, rows: $%02x, cols: $%02x, bank: %d\n",
+            base, rows, cols, bank);
+#endif
+    /* hard core: change address vars */
+    if (addr >= 0) {
+        bank = (addr >> 12);
+        base = addr;
+    }
+
+
     /* We need something like bankname = something(e_comp_space, bank) here */
     mon_out("Displaying %dx%d screen at $%04x:\n", cols, rows, base);
 
     for (r = 0; r < rows; r++) {
+        /* Only show addresses of each line in non-SDL */
+#if !defined(USE_SDLUI) && !defined(USE_SDLUI2)
+        mon_out("%04x  ", base);
+#endif
         for (c = 0; c < cols; c++) {
             uint8_t data;
 
             /* Not sure this really neads to use mon_get_mem_val_ex()
                Do we want monitor sidefx in a function that's *supposed*
                to just read from screen memory? */
-            data = mon_get_mem_val_ex(e_comp_space, bank, (uint16_t)ADDR_LIMIT(base++));
+            data = mon_get_mem_val_ex_nosfx(e_comp_space, bank, (uint16_t)ADDR_LIMIT(base++));
             data = charset_p_toascii(charset_screencode_to_petcii(data), 1);
 
             mon_out("%c", data);
@@ -2381,7 +2484,7 @@ static void monitor_open(void)
     mon_console_suspend_on_leaving = 1;
     mon_console_close_on_leaving = 0;
 
-    if (monitor_is_remote()) {
+    if (monitor_is_remote() || monitor_is_binary()) {
         static console_t console_log_remote = { 80, 25, 0, 0, NULL };
         console_log = &console_log_remote;
     } else {
@@ -2443,6 +2546,9 @@ static void monitor_open(void)
         int mem = monitor_diskspace_mem(dnr);
         dot_addr[mem] = new_addr(mem, ((uint16_t)((monitor_cpu_for_memspace[mem]->mon_register_get_val)(mem, e_PC))));
     }
+
+    mon_event_opened();
+
     /* disassemble at monitor entry, for single stepping */
     if (disassemble_on_entry) {
         int monbank = mon_interfaces[default_memspace]->current_bank;
@@ -2524,7 +2630,7 @@ static void monitor_close(int check)
 
     /* last_cmd = NULL; */
 
-    if (!monitor_is_remote()) {
+    if (!monitor_is_remote() && !monitor_is_binary()) {
         if (mon_console_suspend_on_leaving) {
             /*
                 if there is no log, or if the console can not stay open when the emulation
@@ -2540,6 +2646,8 @@ static void monitor_close(int check)
             }
         }
     }
+
+    mon_event_closed();
 
     if (mon_console_suspend_on_leaving) {
         console_log = NULL;
@@ -2566,7 +2674,7 @@ void monitor_startup(MEMSPACE mem)
         p = uimon_in(prompt);
         if (p) {
             exit_mon = monitor_process(p);
-        } else {
+        } else if (exit_mon < 1) {
             exit_mon = 1;
         }
 

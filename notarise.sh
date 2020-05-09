@@ -6,7 +6,7 @@ set -o nounset
 . "$HOME/bin/code-sign-env"
 
 # codesign -s "$CODESIGN_ID" --timestamp --options runtime -f --deep "$1"
-codesign -vvv --deep --strict "$1"
+#codesign -vvv --deep --strict "$1"
 
 OUTPUT="$(mktemp)"
 xcrun altool --notarize-app \

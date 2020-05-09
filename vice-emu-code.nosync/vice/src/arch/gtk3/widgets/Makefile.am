@@ -70,6 +70,7 @@ libwidgets_a_SOURCES = \
 	driveramwidget.c \
 	driverpmwidget.c \
 	driveunitwidget.c \
+	drivenowidget.c \
 	drivewidgethelpers.c \
 	ds12c887widget.c \
 	easyflashwidget.c \
@@ -78,6 +79,7 @@ libwidgets_a_SOURCES = \
 	ffmpegwidget.c \
 	finalexpansionwidget.c \
 	gmod2widget.c \
+	gmod3widget.c \
 	hvscsettingswidget.c \
 	hvscstilwidget.c \
 	ide64widget.c \
@@ -105,6 +107,8 @@ libwidgets_a_SOURCES = \
 	petdwwwidget.c \
 	pethrewidget.c \
 	petiosizewidget.c \
+	petram9widget.c \
+	petramawidget.c \
 	petkeyboardtypewidget.c \
 	petmiscwidget.c \
 	petramsizewidget.c \
@@ -113,6 +117,7 @@ libwidgets_a_SOURCES = \
 	plus4aciawidget.c \
 	plus4digiblasterwidget.c \
 	plus4memoryexpansionwidget.c \
+	plus4memorysizewidget.c \
 	printerdriverwidget.c \
 	printeremulationtypewidget.c \
 	printeroutputdevicewidget.c \
@@ -129,6 +134,8 @@ libwidgets_a_SOURCES = \
 	settings_crt.c \
 	settings_drive.c \
 	settings_ethernet.c \
+	settings_host_display.c \
+	settings_host_machine.c \
 	settings_io.c \
 	settings_io_c64_memhacks.c \
 	settings_io_georam.c \
@@ -139,6 +146,7 @@ libwidgets_a_SOURCES = \
 	settings_model.c \
 	settings_monitor.c \
 	settings_mouse.c \
+	settings_peripherals_generic.c \
 	settings_printer.c \
 	settings_ramreset.c \
 	settings_romset.c \
@@ -220,6 +228,7 @@ EXTRA_DIST = \
 	driveramwidget.h \
 	driverpmwidget.h \
 	driveunitwidget.h \
+	drivenowidget.h \
 	drivewidgethelpers.h \
 	ds12c887widget.h \
 	easyflashwidget.h \
@@ -228,6 +237,7 @@ EXTRA_DIST = \
 	ffmpegwidget.h \
 	finalexpansionwidget.h \
 	gmod2widget.h \
+	gmod3widget.h \
 	hvscsettingswidget.h \
 	hvscstilwidget.h \
 	ide64widget.h \
@@ -255,6 +265,8 @@ EXTRA_DIST = \
 	petdwwwidget.h \
 	pethrewidget.h \
 	petiosizewidget.h \
+	petram9widget.h \
+	petramawidget.h \
 	petkeyboardtypewidget.h \
 	petmiscwidget.h \
 	petramsizewidget.h \
@@ -263,6 +275,7 @@ EXTRA_DIST = \
 	plus4aciawidget.h \
 	plus4digiblasterwidget.h \
 	plus4memoryexpansionwidget.h \
+	plus4memorysizewidget.h \
 	printerdriverwidget.h \
 	printeremulationtypewidget.h \
 	printeroutputdevicewidget.h \
@@ -279,6 +292,8 @@ EXTRA_DIST = \
 	settings_crt.h \
 	settings_drive.h \
 	settings_ethernet.h \
+	settings_host_display.h \
+	settings_host_machine.h \
 	settings_io.h \
 	settings_io_c64_memhacks.h \
 	settings_io_georam.h \
@@ -289,6 +304,7 @@ EXTRA_DIST = \
 	settings_model.h \
 	settings_monitor.h \
 	settings_mouse.h \
+	settings_peripherals_generic.h \
 	settings_printer.h \
 	settings_ramreset.h \
 	settings_romset.h \

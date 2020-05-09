@@ -30,7 +30,9 @@
 #include "drive.h"
 #include "drivetypes.h"
 #include "iecdrive.h"
+#include "machine.h"
 #include "machine-drive.h"
+#include "resources.h"
 
 
 static unsigned int drive_check_ieee(unsigned int type)
@@ -132,25 +134,6 @@ int drive_check_type(unsigned int drive_type, unsigned int dnr)
 {
     if (!drive_check_bus(drive_type, iec_available_busses())) {
         return 0;
-    }
-
-    if (drive_check_dual(drive_type)) {
-        if (is_drive1(dnr)) {
-            /* Dual drives only supported on even device numbers.  */
-            return 0;
-        } else {
-            if (drive_context[mk_drive1(dnr)]->drive->type != DRIVE_TYPE_NONE) {
-                /* Disable dual drive if second device is enabled.  */
-                return 0;
-            }
-        }
-    } else {
-        if (is_drive1(dnr)) {
-            if (drive_check_dual(drive_context[mk_drive0(dnr)]->drive->type)) {
-                /* Disable second device if dual drive is enabled.  */
-                return drive_type == DRIVE_TYPE_NONE;
-            }
-        }
     }
 
     if (machine_drive_rom_check_loaded(drive_type) < 0) {
@@ -343,4 +326,29 @@ int drive_check_rtc(int drive_type)
         default:
             return 0;
     }
+}
+
+int drive_get_type_by_devnr(int devnr)
+{
+    int iecdevice = 0;
+    int fsdevice;
+    int drivetype;
+
+    if ((machine_class != VICE_MACHINE_CBM5x0) && 
+        (machine_class != VICE_MACHINE_CBM6x0) && 
+        (machine_class != VICE_MACHINE_PET)) {
+        resources_get_int_sprintf("IECDevice%i", &iecdevice, devnr);
+        resources_get_int_sprintf("FileSystemDevice%i", &fsdevice, devnr);
+    }
+    resources_get_int_sprintf("Drive%iType", &drivetype, devnr);
+    if (iecdevice) {
+        return fsdevice;
+    } else {
+        return drivetype;
+    }
+}
+
+int drive_is_dualdrive_by_devnr(int devnr)
+{
+    return drive_check_dual(drive_get_type_by_devnr(devnr));
 }

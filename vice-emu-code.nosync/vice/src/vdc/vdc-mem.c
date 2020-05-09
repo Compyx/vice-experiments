@@ -40,7 +40,6 @@
 #include "monitor.h"
 #include "types.h"
 #include "vdc-mem.h"
-#include "vdc-resources.h"
 #include "vdc.h"
 #include "vdctypes.h"
 
